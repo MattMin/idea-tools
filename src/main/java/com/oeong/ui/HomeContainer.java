@@ -1,6 +1,5 @@
 package com.oeong.ui;
 
-import com.intellij.ide.ui.laf.darcula.ui.DarculaMenuItemUIBase;
 import com.intellij.openapi.wm.ToolWindow;
 import com.intellij.ui.components.JBMenu;
 import com.intellij.ui.plaf.beg.IdeaMenuUI;
