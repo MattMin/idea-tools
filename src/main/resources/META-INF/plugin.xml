@@ -14,8 +14,8 @@
          Simple HTML elements (text formatting, paragraphs, and lists) can be added inside of <![CDATA[ ]]> tag.
          Guidelines: https://plugins.jetbrains.com/docs/marketplace/plugin-overview-page.html#plugin-description -->
     <description><![CDATA[
-    Enter short description for your plugin here.<br>
-    <em>most HTML tags may be used</em>
+    Description of the plugin displayed on the Plugin Page and IDE Plugin Manager.<br>
+    <em>Description of the plugin displayed on the Plugin Page and IDE Plugin Manager</em>
   ]]></description>
 
     <!-- Product and plugin compatibility requirements.
@@ -25,6 +25,6 @@
     <!-- Extension points defined by the plugin.
          Read more: https://plugins.jetbrains.com/docs/intellij/plugin-extension-points.html -->
     <extensions defaultExtensionNs="com.intellij">
-
+        <toolWindow id="Mulan" factoryClass="com.oeong.ui.HomeUi" secondary="false" icon="AllIcons.Toolwindows.WebToolWindow" anchor="right" />
     </extensions>
 </idea-plugin>
