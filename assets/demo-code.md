@@ -46,3 +46,23 @@ HttpResponse<String> response = HttpClient
   .build()
   .send(request, BodyHandlers.ofString());
 ```
+
+# Convert Between Java LocalDate and Epoch
+
+```java
+// Epoch to Date/Time
+long milliSecondsSinceEpoch = 2131242L;
+ZoneId zoneId = ZoneId.of("Europe/Amsterdam");
+LocalDate date = Instant.ofEpochMilli(milliSecondsSinceEpoch).atZone(zoneId).toLocalDate();
+
+LocalDateTime time = Instant.ofEpochMilli(milliSecondsSinceEpoch).atZone(zoneId).toLocalDateTime();
+
+
+// Date/Time to Epoch
+ZoneId zoneId = ZoneId.of("Europe/Tallinn");
+LocalDate date = LocalDate.now();
+long EpochMilliSecondsAtDate = date.atStartOfDay(zoneId).toInstant().toEpochMilli();
+        
+LocalDateTime localDateTime = LocalDateTime.parse("2019-11-15T13:15:30");
+long epochMilliSecondsAtTime = time.atZone(zoneId).toInstant().toEpochMilli();
+```
