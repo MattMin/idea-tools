@@ -21,7 +21,7 @@ public static String unicodeToString(String str) {
 # New HttpClient in Java
 
 ```java
-// Read more: https://www.baeldung.com/java-9-http-client
+// Read More: https://www.baeldung.com/java-9-http-client
 
 // Creating a request
 HttpRequest get = HttpRequest
@@ -65,4 +65,56 @@ long EpochMilliSecondsAtDate = date.atStartOfDay(zoneId).toInstant().toEpochMill
         
 LocalDateTime localDateTime = LocalDateTime.parse("2019-11-15T13:15:30");
 long epochMilliSecondsAtTime = time.atZone(zoneId).toInstant().toEpochMilli();
+```
+# Jackson ObjectMapper
+
+```xml
+<!-- dependencies -->
+<dependency>
+    <groupId>com.fasterxml.jackson.core</groupId>
+    <artifactId>jackson-dataformat-xml</artifactId>
+    <version>2.14.2</version>
+</dependency>
+```
+
+```java
+// Read More: https://www.baeldung.com/jackson-object-mapper-tutorial#Overview
+public class Car {
+
+    private String color;
+    private String type;
+
+    // standard getters setters
+}
+
+
+// Java Object to JSON
+ObjectMapper objectMapper = new ObjectMapper();
+Car car = new Car("yellow", "renault");
+String carAsString = objectMapper.writeValueAsString(car);
+
+
+// JSON to Java Object
+String json = "{ \"color\" : \"Black\", \"type\" : \"BMW\" }";
+Car car = objectMapper.readValue(json, Car.class);
+
+
+// JSON to Jackson JsonNode
+String json = "{ \"color\" : \"Black\", \"type\" : \"FIAT\" }";
+JsonNode jsonNode = objectMapper.readTree(json);
+String color = jsonNode.get("color").asText();
+// Output: color -> Black
+
+
+// Creating a Java List From a JSON Array String
+String jsonCarArray = 
+        "[{ \"color\" : \"Black\", \"type\" : \"BMW\" }, { \"color\" : \"Red\", \"type\" : \"FIAT\" }]";
+List<Car> listCar = objectMapper.readValue(jsonCarArray, new TypeReference<List<Car>>(){});
+
+
+// Creating Java Map From JSON String
+String json = "{ \"color\" : \"Black\", \"type\" : \"BMW\" }";
+Map<String, Object> map
+        = objectMapper.readValue(json, new TypeReference<Map<String,Object>>(){});
+
 ```
