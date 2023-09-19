@@ -7,6 +7,8 @@ import groovy.util.logging.Slf4j;
 
 import javax.swing.*;
 import java.awt.*;
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
 import java.net.URL;
 import java.util.List;
 import java.util.*;
@@ -25,7 +27,7 @@ public class HomeContainer {
 
     private final Map<String,JPanel> subJPanels = new HashMap<>();
 
-    private final JPanel parent = new JPanel();
+    private final JPanel parent = new JPanel(new BorderLayout());
 
     public HomeContainer(ToolWindow toolWindow)  {
         this.toolWindow = toolWindow;
@@ -33,22 +35,22 @@ public class HomeContainer {
         JPanel barPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
         JMenuBar menuBar = new JMenuBar();
         menuBar.setPreferredSize(new Dimension(800, 35));
-        var menu1 = createMenu("\uD83D\uDD27","Tools");
-        menu1.setFont(new Font("Default", Font.BOLD,14));
-        menus.add(menu1);
-        menuBar.add(menu1);
-        var menu2 = createMenu("\uD83D\uDC1F","Fish");
-        menu2.setFont(new Font("Default", Font.BOLD,14));
-        menus.add(menu2);
-        menuBar.add(menu2);
-        var menu3 = createMenu("\uD83E\uDD16","AI");
-        menu3.setFont(new Font("Default", Font.BOLD,14));
-        menus.add(menu3);
-        menuBar.add(menu3);
-        var menu4 = createMenu("\uD83E\uDDD1\u200D\uD83D\uDCBB","Dev");
-        menu4.setFont(new Font("Default", Font.BOLD,14));
-        menus.add(menu4);
-        menuBar.add(menu4);
+        var tools = createMenu("\uD83D\uDD27","Tools");
+        tools.setFont(new Font("Default", Font.BOLD,14));
+        menus.add(tools);
+        menuBar.add(tools);
+        var fish = createMenu("\uD83D\uDC1F","Fish");
+        fish.setFont(new Font("Default", Font.BOLD,14));
+        menus.add(fish);
+        menuBar.add(fish);
+        var ai = createMenu("\uD83E\uDD16","AI");
+        ai.setFont(new Font("Default", Font.BOLD,14));
+        menus.add(ai);
+        menuBar.add(ai);
+        var dev = createMenu("\uD83E\uDDD1\u200D\uD83D\uDCBB","Dev");
+        dev.setFont(new Font("Default", Font.BOLD,14));
+        menus.add(dev);
+        menuBar.add(dev);
         var items = new ArrayList<MenuAction>();
         try {
             URL url = getClass().getResource("/com");

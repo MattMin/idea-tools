@@ -2,6 +2,7 @@ package com.oeong.ui;
 
 
 import javax.swing.*;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import com.intellij.openapi.project.Project;
 import org.jetbrains.annotations.NotNull;
@@ -29,6 +30,8 @@ public class PwdMenuItem implements MenuAction {
 
     @Override
     public @NotNull JPanel getContainer(Project project) {
-        return HashTool.createHashPanel(project);
+        JPanel panel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        panel.add(new RandomPwdUI().getContainer());
+        return new RandomPwdUI().getContainer();
     }
 }
