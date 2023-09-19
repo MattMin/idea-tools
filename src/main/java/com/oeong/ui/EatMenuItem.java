@@ -1,26 +1,26 @@
 package com.oeong.ui;
 
-
 import com.intellij.openapi.project.Project;
 import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
 
-public class TimeMenuItem implements MenuAction {
+public class EatMenuItem implements MenuAction {
 
-    //当前菜单名称
+    // 当前菜单名称
     @Override
     public @NotNull String getName() {
-        return "timestamp";
+        return "what to eat";
     }
+
     // 一级菜单名称
     @Override
     public @NotNull String parent() {
-        return TOOLS;
+        return FISH;
     }
 
-    //子菜单排序
+    // 子菜单排序
     @Override
     public int order() {
         return 1;
@@ -34,6 +34,6 @@ public class TimeMenuItem implements MenuAction {
     // 菜单对应的面板
     @Override
     public @NotNull JPanel getContainer(Project project) {
-        return new Timestamp().getComponent();
+        return new WhatToEat().getComponent();
     }
 }

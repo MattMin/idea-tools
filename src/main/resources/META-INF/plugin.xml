@@ -26,5 +26,6 @@
          Read more: https://plugins.jetbrains.com/docs/intellij/plugin-extension-points.html -->
     <extensions defaultExtensionNs="com.intellij">
         <toolWindow id="Mulan" factoryClass="com.oeong.ui.HomeUi" secondary="false" icon="AllIcons.Toolwindows.WebToolWindow" anchor="right" />
+        <notificationGroup id="Custom Notification Group" displayType="BALLOON"/>
     </extensions>
 </idea-plugin>
