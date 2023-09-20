@@ -47,7 +47,7 @@ public class HomeContainer {
         ai.setFont(new Font("Default", Font.BOLD,14));
         menus.add(ai);
         menuBar.add(ai);
-        var dev = createMenu("\uD83E\uDDD1\u200D\uD83D\uDCBB","Dev");
+        var dev = createMenu("\u200D\uD83D\uDCBB","Dev");
         dev.setFont(new Font("Default", Font.BOLD,14));
         menus.add(dev);
         menuBar.add(dev);
