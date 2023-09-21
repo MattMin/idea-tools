@@ -45,6 +45,12 @@ tasks {
     publishPlugin {
         token.set(System.getenv("PUBLISH_TOKEN"))
     }
+
+    dependencies {
+        implementation("com.alibaba", "fastjson", "2.0.12")
+        implementation("org.commonjava.googlecode.markdown4j", "markdown4j", "2.2-cj-1.1")
+        implementation("org.jsoup", "jsoup", "1.15.3")
+    }
 }
 
 dependencies {
