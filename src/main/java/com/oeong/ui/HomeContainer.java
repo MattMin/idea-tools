@@ -59,7 +59,7 @@ public class HomeContainer {
             }
             String path = url.getPath();
             if(path.startsWith("file:")){
-                path=path.substring(6);
+                path=path.substring(5);
             }
             JarFile jarFile = new JarFile(path.substring(0,path.lastIndexOf("/com")-1));
             var enu = jarFile.entries();
