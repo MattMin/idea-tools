@@ -1,4 +1,4 @@
-package com.oeong.ui;
+package com.oeong.ui.tools;
 
 import org.apache.http.HttpHost;
 import org.apache.http.client.config.RequestConfig;
@@ -34,6 +34,7 @@ public class SimpleCode {
     private JPanel container;
     private JTextField textField1;
     private JButton searchButton;
+    private JEditorPane editorPane1;
     private JTabbedPane tabbedPane;
 
 

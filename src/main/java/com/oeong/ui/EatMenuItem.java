@@ -1,6 +1,7 @@
 package com.oeong.ui;
 
 import com.intellij.openapi.project.Project;
+import com.oeong.ui.fish.WhatToEat;
 import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;

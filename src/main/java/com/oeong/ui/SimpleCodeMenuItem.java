@@ -1,18 +1,7 @@
 package com.oeong.ui;
 
-import com.alibaba.fastjson.JSONArray;
 import com.intellij.openapi.project.Project;
-import com.intellij.ui.TabbedPane;
-import com.intellij.ui.TabbedPaneImpl;
-import com.intellij.ui.components.JBTabbedPane;
-import org.apache.http.HttpHost;
-import org.apache.http.client.config.RequestConfig;
-import org.apache.http.client.methods.CloseableHttpResponse;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.HttpClientBuilder;
-import org.apache.http.util.EntityUtils;
-import org.intellij.markdown.parser.constraints.MarkdownConstraints;
+import com.oeong.ui.tools.SimpleCode;
 import org.jetbrains.annotations.NotNull;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -21,16 +10,9 @@ import org.jsoup.select.Elements;
 import org.markdown4j.Markdown4jProcessor;
 
 import javax.swing.*;
-import javax.swing.plaf.basic.BasicTabbedPaneUI;
-import java.awt.*;
 import java.awt.event.ActionEvent;
-import java.io.IOException;
-import java.io.StringReader;
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
-
-import static javax.swing.ScrollPaneConstants.HORIZONTAL_SCROLLBAR_ALWAYS;
 
 /**
  * @descriptions:
