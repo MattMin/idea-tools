@@ -39,7 +39,7 @@ public class HomeContainer {
         tools.setFont(new Font("Default", Font.BOLD,14));
         menus.add(tools);
         menuBar.add(tools);
-        var fish = createMenu("\uD83D\uDC1F","Fish");
+        var fish = createMenu("\uD83D\uDC1F","Fun");
         fish.setFont(new Font("Default", Font.BOLD,14));
         menus.add(fish);
         menuBar.add(fish);
