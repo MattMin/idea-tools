@@ -1,4 +1,4 @@
-package com.oeong.ui;
+package com.oeong.ui.dev;
 
 import com.intellij.ui.JBColor;
 import com.oeong.notificationGroup.Notifier;
@@ -31,6 +31,7 @@ public class Timestamp {
     public static long currentTimestampSecond = 0;
 
     public Timestamp() {
+        // TODO: 2023/9/28 unit单位，去掉get按钮，加上copy的图标
         initZone();
         initUnit();
         initAll();
@@ -222,7 +223,9 @@ public class Timestamp {
         String[] zoneList = TimeZone.getAvailableIDs();
         // add the zone list to the combo box
         zoneComboBox.setModel(new DefaultComboBoxModel<>(zoneList));
-        zoneComboBox.getEditor().setItem("Asia/Shanghai");
+        // get system default zone
+        String zone = TimeZone.getDefault().getID();
+        zoneComboBox.setSelectedItem(zone);
     }
 
     void initUnit() {

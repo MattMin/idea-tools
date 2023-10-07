@@ -1,4 +1,4 @@
-package com.oeong.ui;
+package com.oeong.ui.fish;
 
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
