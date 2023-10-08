@@ -6,9 +6,7 @@ import com.oeong.notificationGroup.Notifier;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.datatransfer.*;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseMotionAdapter;
+import java.awt.event.*;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -27,6 +25,7 @@ public class Timestamp {
     private JLabel currentTimestamp;
     private JLabel timestampLabel;
     private JLabel dateLabel;
+    private JRadioButton millisecondRadioButton;
 
     public static long currentTimestampSecond = 0;
 
@@ -36,20 +35,22 @@ public class Timestamp {
         initUnit();
         initAll();
         Timer currentTimer = new Timer(1000, Timestamp -> {
-            currentTimestampSecond = secondRadioButton.isSelected() ? System.currentTimeMillis() : System.currentTimeMillis() / 1000;
+            currentTimestampSecond = secondRadioButton.isSelected() ? System.currentTimeMillis()/1000 : System.currentTimeMillis();
             currentTimestamp.setText(String.valueOf(currentTimestampSecond));
         });
         currentTimer.start();
 
         // set the unit in the second/millisecond
         secondRadioButton.addActionListener(e -> {
-            if (secondRadioButton.isSelected()) {
-                secondRadioButton.setText("millisecond");
-            } else {
-                secondRadioButton.setText("second     ");
-            }
+            millisecondRadioButton.setSelected(false);
             initAll();
         });
+
+        millisecondRadioButton.addActionListener(e -> {
+            secondRadioButton.setSelected(false);
+            initAll();
+        });
+
 
         // set zone
         zoneComboBox.addActionListener(e -> {
@@ -173,7 +174,7 @@ public class Timestamp {
 
             // 解析时间戳字符串
             long ts = Long.parseLong(timestamp);
-            ts = secondRadioButton.isSelected() ? ts : ts * 1000;
+            ts = secondRadioButton.isSelected() ? ts * 1000 : ts;
             // 解析时区字符串
             ZoneId zoneId = ZoneId.of(zone);
             // 将时间戳转换为Instant，然后获取LocalDateTime
@@ -202,7 +203,7 @@ public class Timestamp {
             ZoneId zoneId = ZoneId.of(zone);
             // 将LocalDateTime转换为Instant，然后获取时间戳（以毫秒为单位）
             long timestamp = dateTime.atZone(zoneId).toInstant().toEpochMilli();
-            timestamp = secondRadioButton.isSelected() ? timestamp : timestamp / 1000;
+            timestamp = secondRadioButton.isSelected() ? timestamp / 1000 : timestamp;
 
             // set the timestamp to the text field
             timestampLabel.setText(String.valueOf(timestamp));
@@ -213,7 +214,7 @@ public class Timestamp {
 
     private void getCurrentTime() {
         // get the current time
-        currentTimestampSecond = secondRadioButton.isSelected() ? System.currentTimeMillis() : System.currentTimeMillis() / 1000;
+        currentTimestampSecond = secondRadioButton.isSelected() ? System.currentTimeMillis() / 1000 : System.currentTimeMillis();
         // set the time to the text field
         currentTimestamp.setText(String.valueOf(currentTimestampSecond));
     }
@@ -230,7 +231,7 @@ public class Timestamp {
 
     void initUnit() {
         secondRadioButton.setSelected(true);
-        secondRadioButton.setText("millisecond");
+        millisecondRadioButton.setSelected(false);
     }
 
     /**
