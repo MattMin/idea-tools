@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<form xmlns="http://www.intellij.com/uidesigner/form/" version="1" bind-to-class="com.oeong.ui.fish.Divination">
+  <grid id="27dc6" layout-manager="BorderLayout" hgap="0" vgap="0">
+    <constraints>
+      <xy x="20" y="20" width="500" height="400"/>
+    </constraints>
+    <properties/>
+    <border type="none"/>
+    <children>
+      <grid id="eb0bd" layout-manager="FlowLayout" hgap="5" vgap="5" flow-align="1">
+        <constraints border-constraint="North"/>
+        <properties/>
+        <border type="none"/>
+        <children>
+          <component id="97336" class="javax.swing.JComboBox" binding="comboBox1" default-binding="true">
+            <constraints/>
+            <properties>
+              <model>
+                <item value="事业"/>
+                <item value="时运"/>
+                <item value="情感"/>
+              </model>
+            </properties>
+          </component>
+          <component id="b88a2" class="javax.swing.JButton" binding="divinationButton" default-binding="true">
+            <constraints/>
+            <properties>
+              <text value="Divination"/>
+            </properties>
+          </component>
+        </children>
+      </grid>
+      <grid id="f3215" layout-manager="CardLayout" hgap="0" vgap="0">
+        <constraints border-constraint="Center"/>
+        <properties/>
+        <border type="line"/>
+        <children>
+          <component id="59da8" class="javax.swing.JTextPane" binding="卦象风天小畜卦卦辞亨TextPane" default-binding="true">
+            <constraints>
+              <card name="Card1"/>
+            </constraints>
+            <properties>
+              <text value="卦象：风天小畜卦&#10;卦辞：亨。密云不雨，自我西郊&#10;财运：&#10;    外表不错，内多耗损。"/>
+            </properties>
+          </component>
+        </children>
+      </grid>
+    </children>
+  </grid>
+</form>

@@ -169,7 +169,7 @@ public class RandomPwdUI {
         panel1.add(scrollPane1, new GridConstraints(4, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, new Dimension(300, 150), new Dimension(300, 150), new Dimension(300, 150), 0, false));
         scrollPane1.setBorder(BorderFactory.createTitledBorder(BorderFactory.createLineBorder(Color.black), null, TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, null, null));
         yourPasswordTextArea = new JTextArea();
-        yourPasswordTextArea.setBackground(new Color(-4851457));
+//        yourPasswordTextArea.setBackground(new Color(-4851457));
         yourPasswordTextArea.setColumns(10);
         yourPasswordTextArea.setText("your password");
         yourPasswordTextArea.setLineWrap(true);

@@ -47,7 +47,6 @@ public class PwdTools {
     public String createRandomPwd(){
         var num = (int)randomPwdUI.getLenBox().getSelectedItem();
         List<Function<Object,Character>> functions = new ArrayList<>();
-        functions.add(o->getLowChar());
         if(randomPwdUI.getA09RadioButton().isSelected()){
             functions.add(o->getNumChar());
         }
