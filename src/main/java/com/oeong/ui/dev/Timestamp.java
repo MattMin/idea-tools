@@ -15,7 +15,6 @@ import java.util.TimeZone;
 
 public class Timestamp {
     private JComboBox<String> zoneComboBox;
-    private JButton getButton;
     private JTextField dateTextField;
     private JButton transferButton1;
     private JTextField timestampTextField1;
@@ -26,31 +25,35 @@ public class Timestamp {
     private JLabel timestampLabel;
     private JLabel dateLabel;
     private JRadioButton millisecondRadioButton;
+    private JButton currenCopyButton;
+    private JButton timestampCopyButton;
+    private JButton dateCopyButton;
 
     public static long currentTimestampSecond = 0;
 
     public Timestamp() {
-        // TODO: 2023/9/28 unit单位，去掉get按钮，加上copy的图标
-        initZone();
-        initUnit();
-        initAll();
         Timer currentTimer = new Timer(1000, Timestamp -> {
-            currentTimestampSecond = secondRadioButton.isSelected() ? System.currentTimeMillis()/1000 : System.currentTimeMillis();
+            currentTimestampSecond = secondRadioButton.isSelected()
+                    ? System.currentTimeMillis() / 1000 : System.currentTimeMillis();
             currentTimestamp.setText(String.valueOf(currentTimestampSecond));
         });
         currentTimer.start();
 
+        initZone();
+        initUnit();
+        updateAll();
+        initCopyButton();
+
         // set the unit in the second/millisecond
         secondRadioButton.addActionListener(e -> {
             millisecondRadioButton.setSelected(false);
-            initAll();
+            updateAll();
         });
 
         millisecondRadioButton.addActionListener(e -> {
             secondRadioButton.setSelected(false);
-            initAll();
+            updateAll();
         });
-
 
         // set zone
         zoneComboBox.addActionListener(e -> {
@@ -59,28 +62,17 @@ public class Timestamp {
             // set the selected item to the text field
             zoneComboBox.getEditor().setItem(selectedZone);
 
-            initAll();
-        });
-
-        // get the current time
-        getButton.addActionListener(e -> {
-            getCurrentTime();
-            copyCurrentTimestamp();
-            currentTimestamp.setForeground(JBColor.BLACK);
+            updateAll();
         });
 
         // transfer the date to the timestamp
         transferButton1.addActionListener(e -> {
             dateToTimestamp();
-            copyTimestampLabel();
-            timestampLabel.setForeground(JBColor.BLACK);
         });
 
         // transfer the timestamp to the date
         transferButton2.addActionListener(e -> {
             timestampToDate();
-            copyDateLabel();
-            dateLabel.setForeground(JBColor.BLACK);
         });
 
         // copy the current timestamp
@@ -137,6 +129,27 @@ public class Timestamp {
                 super.mouseMoved(e);
             }
         });
+        
+        // copy button
+        currenCopyButton.addActionListener(e -> {
+            copyCurrentTimestamp();
+            currentTimestamp.setForeground(JBColor.BLACK);
+        });
+        dateCopyButton.addActionListener(e -> {
+            copyDateLabel();
+            dateLabel.setForeground(JBColor.BLACK);
+        });
+        timestampCopyButton.addActionListener(e -> {
+            copyTimestampLabel();
+            timestampLabel.setForeground(JBColor.BLACK);
+        });
+    }
+
+    private void initCopyButton() {
+        // currenCopyButton.setText("\uD83D\uDCCB");
+        currenCopyButton.setIcon(null);
+        dateCopyButton.setIcon(null);
+        timestampCopyButton.setIcon(null);
     }
 
     private void copyDateLabel() {
@@ -160,7 +173,7 @@ public class Timestamp {
         Notifier.notifyInfo(clipboardStr + " has been copied to the clipboard.");
     }
 
-    private void initAll() {
+    private void updateAll() {
         getCurrentTime();
         dateToTimestamp();
         timestampToDate();
