@@ -8,7 +8,7 @@
     <name>Idea-tools</name>
 
     <!-- A displayed Vendor name or Organization ID displayed on the Plugins Page. -->
-    <vendor email="support@yourcompany.com" url="https://www.yourcompany.com">YourCompany</vendor>
+    <vendor email="support@yourcompany.com" url="https://www.yourcompany.com">l</vendor>
 
     <!-- Description of the plugin displayed on the Plugin Page and IDE Plugin Manager.
          Simple HTML elements (text formatting, paragraphs, and lists) can be added inside of <![CDATA[ ]]> tag.
@@ -25,7 +25,10 @@
     <!-- Extension points defined by the plugin.
          Read more: https://plugins.jetbrains.com/docs/intellij/plugin-extension-points.html -->
     <extensions defaultExtensionNs="com.intellij">
-        <toolWindow id="Mulan" factoryClass="com.oeong.ui.HomeUi" secondary="false" icon="AllIcons.Toolwindows.WebToolWindow" anchor="right" />
+        <toolWindow id="Mulan" factoryClass="com.oeong.ui.HomeUi" secondary="false"
+                    icon="AllIcons.Toolwindows.WebToolWindow" anchor="right"/>
         <notificationGroup id="Custom Notification Group" displayType="BALLOON"/>
     </extensions>
+
+    <depends>org.intellij.plugins.markdown</depends>
 </idea-plugin>

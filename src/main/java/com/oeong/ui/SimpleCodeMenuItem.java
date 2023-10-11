@@ -1,15 +1,16 @@
 package com.oeong.ui;
 
 import com.intellij.openapi.project.Project;
+import com.intellij.ui.components.JBTabbedPane;
+import com.intellij.ui.jcef.JBCefBrowser;
 import com.oeong.ui.tools.SimpleCode;
+import org.intellij.plugins.markdown.ui.preview.html.MarkdownUtil;
 import org.jetbrains.annotations.NotNull;
-import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
-import org.markdown4j.Markdown4jProcessor;
 
 import javax.swing.*;
+import javax.swing.plaf.TabbedPaneUI;
 import java.awt.event.ActionEvent;
 import java.util.ArrayList;
 import java.util.List;
@@ -68,62 +69,47 @@ public class SimpleCodeMenuItem implements MenuAction {
      */
     @Override
     public @NotNull JPanel getContainer(Project project) {
-        SimpleCode simpleCode = new SimpleCode();
+        SimpleCode simpleCode = new SimpleCode(project);
 
-        //解析md文档
-        Markdown4jProcessor processor = new Markdown4jProcessor();
         JTabbedPane tabbedPane = simpleCode.getTabbedPane();
-        if (tabbedPane == null){
-            tabbedPane = new JTabbedPane();
+        if (tabbedPane == null) {
+            tabbedPane = new JBTabbedPane(JTabbedPane.LEFT, JTabbedPane.SCROLL_TAB_LAYOUT);
+
         }
-        tabbedPane.setTabLayoutPolicy(JTabbedPane.SCROLL_TAB_LAYOUT);
-//        tabbedPane.setUI(
-//                new BasicTabbedPaneUI(){
-//                    @Override
-//                    protected int calculateTabWidth(int tabPlacement, int tabIndex, FontMetrics metrics) {
-//                        //自定义选项卡的宽：比默认的宽度 宽50
-//                        int i = super.calculateTabWidth(tabPlacement, tabIndex, metrics);
-//                        return 0;
-//                    }
-//                }
-//        );
+        TabbedPaneUI def = new MyTabbedPaneUI();
+        tabbedPane.setUI(def);
         try {
-            List<String> titleList = new ArrayList<>();
-            List<String> contentList = new ArrayList<>();
-            String[] responseArray = simpleCode.getResponseBody().split("# ");
-            for (String str : responseArray) {
-                if (!"".equals(str)){
-                    str = "# " + str;
-                    String strText = processor.process(str);
-                    Document parseHtml = Jsoup.parse(strText);
-                    Element title = parseHtml.select("h1").get(0);
-                    titleList.add(title.text());
-                    Elements codes = parseHtml.select("code");
-                    StringBuilder content = new StringBuilder();
-                    for (Element code : codes) {
-                        content.append(code.text());
-                    }
-                    contentList.add(content.toString());
-                }
-            }
+            List<String> titleList = simpleCode.getTitleList();
+            List<String> contentList = simpleCode.getContentList();
+//            List<String> titleList = new ArrayList<>();
+//            List<String> contentList = new ArrayList<>();
+//            String[] responseArray = simpleCode.getResponseBody().split("# ");
+//            for (String str : responseArray) {
+//                if (!"".equals(str)){
+//                    str = "# " + str;
+//                    String strText = processor.process(str);
+//                    Document parseHtml = Jsoup.parse(strText);
+//                    Element title = parseHtml.select("h1").get(0);
+//                    titleList.add(title.text());
+//                    Elements codes = parseHtml.select("code");
+//                    StringBuilder content = new StringBuilder();
+//                    for (Element code : codes) {
+//                        content.append(code.text());
+//                    }
+//                    contentList.add(content.toString());
+//                }
+//            }
             //填充数据到面板
             for (int i = 0; i < titleList.size(); i++) {
                 String title = titleList.get(i);
                 String content = contentList.get(i);
-                JPanel jPanel = new JPanel();
-                JTextArea jTextArea = new JTextArea();
-                jTextArea.append(content);
-                jPanel.add(jTextArea);
-//                JTextPane jTextPane = new JTextPane();
-//                jTextPane.setContentType("text/html");
-//                try {
-//                    jTextPane.read(new StringReader(content), null);
-//                } catch (IOException ex) {
-//                    throw new RuntimeException(ex);
-//                }
+                ConsoleVirtualFile md = new ConsoleVirtualFile("md", project);
+                String contentMd = MarkdownUtil.INSTANCE.generateMarkdownHtml(md, content, project);
+                JBCefBrowser browser = new JBCefBrowser();
+                browser.loadHTML(contentMd);
                 JScrollPane jScrollPane = new JScrollPane();
-                jScrollPane.setViewportView(jPanel);
-                tabbedPane.addTab(title,jScrollPane);
+                jScrollPane.setViewportView(browser.getComponent());
+                tabbedPane.addTab(title, null, jScrollPane, title);
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -131,12 +117,12 @@ public class SimpleCodeMenuItem implements MenuAction {
         JPanel container = simpleCode.getContainer();
 //        tabbedPane.setUI(new MyTabbedPaneUI());
         tabbedPane.setTabPlacement(JTabbedPane.LEFT);
-        container.add(tabbedPane,-1);
+        container.add(tabbedPane, -1);
         return container;
     }
 
 
-    private List<String> elementsToList(Elements elements){
+    private List<String> elementsToList(Elements elements) {
         List<String> list = new ArrayList<>();
         for (Element element : elements) {
             list.add(element.text());
