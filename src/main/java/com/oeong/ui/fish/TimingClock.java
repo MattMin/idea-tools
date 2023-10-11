@@ -4,7 +4,7 @@ import javax.swing.*;
 import java.util.Timer;
 import java.util.TimerTask;
 
-
+// TODO: 2023/10/11 初始化异步调用请求，休息时间结束后还可以休息，语气活泼一点，下面的文字大一点
 public class TimingClock {
     private JRadioButton startRadioButton;
     private JRadioButton stopRadioButton;
