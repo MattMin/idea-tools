@@ -1,6 +1,8 @@
 package com.oeong.ui.fish;
 
 import javax.swing.*;
+import java.util.Timer;
+import java.util.TimerTask;
 
 
 public class TimingClock {
@@ -16,21 +18,36 @@ public class TimingClock {
 
 
     public TimingClock() {
+        String workFieldText = workField.getText();
+        String restFieldText = restField.getText();
+
+        Timer timer = new Timer(true);
+        WorkTimerTask workTimerTask = new WorkTimerTask();
 
         // status button
         startRadioButton.addActionListener(e -> {
             if (startRadioButton.isSelected()) {
                 stopRadioButton.setSelected(false);
                 startRadioButton.setText("Running");
+                stopRadioButton.setText("Stop");
                 tipLabel.setText(startTip);
 
+                JOptionPane.showConfirmDialog(null, "Start to work, please.", "Tip", JOptionPane.DEFAULT_OPTION);
+
+                long workMinutes = Long.parseLong(workFieldText);
+                long restMinutes = Long.parseLong(restFieldText);
+                timer.schedule(workTimerTask, restMinutes * 1000, workMinutes * 1000);
             }
         });
         stopRadioButton.addActionListener(e -> {
             if (stopRadioButton.isSelected()) {
                 startRadioButton.setSelected(false);
                 startRadioButton.setText("Start");
+                stopRadioButton.setText("Stopped");
                 tipLabel.setText(stopTip);
+
+                JOptionPane.showConfirmDialog(null, "Timing clock is stopped.", "Tip", JOptionPane.DEFAULT_OPTION);
+                timer.cancel();
             }
         });
 
@@ -70,5 +87,13 @@ public class TimingClock {
 
     public JPanel getComponent() {
         return mainPanel;
+    }
+}
+
+class WorkTimerTask extends TimerTask {
+    @Override
+    public void run() {
+//        JOptionPane.showConfirmDialog(null, "Timing clock is running.", "Tip", JOptionPane.DEFAULT_OPTION);
+        System.out.println("Timing clock is running." + System.currentTimeMillis() / 1000);
     }
 }
