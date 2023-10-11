@@ -35,7 +35,7 @@
         <properties/>
         <border type="line"/>
         <children>
-          <component id="59da8" class="javax.swing.JTextPane" binding="卦象风天小畜卦卦辞亨TextPane" default-binding="true">
+          <component id="59da8" class="javax.swing.JTextPane" binding="detail">
             <constraints>
               <card name="Card1"/>
             </constraints>
