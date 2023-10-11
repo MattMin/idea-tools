@@ -112,6 +112,7 @@ public class SimpleCodeMenuItem implements MenuAction {
                 tabbedPane.addTab(title, null, jScrollPane, title);
             }
         } catch (Exception e) {
+            // todo
             e.printStackTrace();
         }
         JPanel container = simpleCode.getContainer();
