@@ -17,7 +17,7 @@ intellij {
     version.set("2022.2.5")
     type.set("IC") // Target IDE Platform
 
-    plugins.set(listOf(/* Plugin Dependencies */))
+    plugins.set(listOf("org.intellij.plugins.markdown:222.3345.126"))
 }
 
 tasks {
@@ -50,12 +50,7 @@ tasks {
         implementation("com.alibaba", "fastjson", "2.0.12")
         implementation("org.commonjava.googlecode.markdown4j", "markdown4j", "2.2-cj-1.1")
         implementation("org.jsoup", "jsoup", "1.15.3")
+        implementation("cn.hutool:hutool-http:5.8.18")
+        implementation("cn.hutool:hutool-json:5.8.18")
     }
-}
-
-dependencies {
-
-    implementation("cn.hutool:hutool-http:5.8.18")
-    implementation("cn.hutool:hutool-json:5.8.18")
-
 }

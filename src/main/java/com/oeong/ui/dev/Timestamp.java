@@ -1,13 +1,17 @@
 package com.oeong.ui.dev;
 
+import com.intellij.icons.AllIcons;
 import com.intellij.ui.JBColor;
 import com.oeong.notificationGroup.Notifier;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.datatransfer.*;
-import java.awt.event.*;
-import java.io.IOException;
+import java.awt.datatransfer.Clipboard;
+import java.awt.datatransfer.StringSelection;
+import java.awt.datatransfer.Transferable;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseMotionAdapter;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
@@ -146,10 +150,20 @@ public class Timestamp {
     }
 
     private void initCopyButton() {
-        // currenCopyButton.setText("\uD83D\uDCCB");
-        currenCopyButton.setIcon(null);
-        dateCopyButton.setIcon(null);
-        timestampCopyButton.setIcon(null);
+        currenCopyButton.setText("");
+        currenCopyButton.setContentAreaFilled(false);
+        currenCopyButton.setIcon(AllIcons.Actions.Copy);
+        currenCopyButton.setBorder(BorderFactory.createEmptyBorder());
+
+        dateCopyButton.setText("");
+        dateCopyButton.setContentAreaFilled(false);
+        dateCopyButton.setIcon(AllIcons.Actions.Copy);
+        dateCopyButton.setBorder(BorderFactory.createEmptyBorder());
+
+        timestampCopyButton.setText("");
+        timestampCopyButton.setContentAreaFilled(false);
+        timestampCopyButton.setIcon(AllIcons.Actions.Copy);
+        timestampCopyButton.setBorder(BorderFactory.createEmptyBorder());
     }
 
     private void copyDateLabel() {
@@ -245,30 +259,6 @@ public class Timestamp {
     void initUnit() {
         secondRadioButton.setSelected(true);
         millisecondRadioButton.setSelected(false);
-    }
-
-    /**
-     * 获取剪贴板内容(粘贴)
-     */
-    public String getClipboardString() {
-        //获取系统剪贴板
-        Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
-        //获取剪贴板内容
-        Transferable trans = clipboard.getContents(null);
-        if(trans != null) {
-            //判断剪贴板内容是否支持文本
-            if(trans.isDataFlavorSupported(DataFlavor.stringFlavor)) {
-                String clipboardStr = null;
-                try {
-                    //获取剪贴板的文本内容
-                    clipboardStr = (String) trans.getTransferData(DataFlavor.stringFlavor);
-                } catch (UnsupportedFlavorException | IOException e) {
-                    e.printStackTrace();
-                }
-                return clipboardStr;
-            }
-        }
-        return null;
     }
 
     /**

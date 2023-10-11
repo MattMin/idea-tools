@@ -1,5 +1,11 @@
 package com.oeong.ui.tools;
 
+import com.intellij.openapi.project.Project;
+import com.intellij.ui.components.JBTabbedPane;
+import com.intellij.ui.jcef.JBCefBrowser;
+import com.oeong.ui.ConsoleVirtualFile;
+import com.oeong.ui.MyTabbedPaneUI;
+import org.apache.commons.lang3.ObjectUtils;
 import org.apache.http.HttpHost;
 import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.methods.CloseableHttpResponse;
@@ -7,16 +13,16 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.util.EntityUtils;
-import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
-import org.jsoup.nodes.Element;
-import org.jsoup.select.Elements;
-import org.markdown4j.Markdown4jProcessor;
+import org.intellij.plugins.markdown.ui.preview.html.MarkdownUtil;
 
 import javax.swing.*;
+import javax.swing.plaf.TabbedPaneUI;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.io.BufferedReader;
+import java.io.ByteArrayInputStream;
+import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
@@ -38,9 +44,8 @@ public class SimpleCode {
     private JTabbedPane tabbedPane;
 
 
-    public SimpleCode() {
+    public SimpleCode(Project project) {
         initSimpleCode();
-
         searchButton.addMouseListener(new MouseAdapter() {
             /**
              * {@inheritDoc}
@@ -57,35 +62,36 @@ public class SimpleCode {
                 if (textField == null || "".equals(textField)) {
                     titleListSearch = titleList;
                     contentListSearch = contentList;
-                }else {
+                } else {
                     for (int i = 0; i < titleList.size(); i++) {
                         String title = titleList.get(i);
-                        if (title.contains(textField)){
+                        if (title.toLowerCase().contains(textField.toLowerCase())) {
                             titleListSearch.add(titleList.get(i));
                             contentListSearch.add(contentList.get(i));
                         }
                     }
                 }
-                JTabbedPane tabbedPaneSearch = new JTabbedPane();
-                tabbedPaneSearch.setTabLayoutPolicy(JTabbedPane.SCROLL_TAB_LAYOUT);
+                JTabbedPane tabbedPaneSearch = new JBTabbedPane(JTabbedPane.LEFT, JTabbedPane.SCROLL_TAB_LAYOUT);
+                TabbedPaneUI def = new MyTabbedPaneUI();
+                tabbedPaneSearch.setUI(def);
                 //填充数据到面板
                 for (int i = 0; i < titleListSearch.size(); i++) {
                     String title = titleListSearch.get(i);
                     String content = contentListSearch.get(i);
-                    JPanel jPanel = new JPanel();
-                    JTextArea jTextArea = new JTextArea();
-                    jTextArea.append(content);
-                    jPanel.add(jTextArea);
+                    ConsoleVirtualFile md = new ConsoleVirtualFile("md", project);
+                    String contentMd = MarkdownUtil.INSTANCE.generateMarkdownHtml(md, content, project);
+                    JBCefBrowser browser = new JBCefBrowser();
+                    browser.loadHTML(contentMd);
                     JScrollPane jScrollPane = new JScrollPane();
-                    jScrollPane.setViewportView(jTextArea);
-                    tabbedPaneSearch.addTab(title,jScrollPane);
+                    jScrollPane.setViewportView(browser.getComponent());
+                    tabbedPaneSearch.addTab(title,null,jScrollPane,title);
                 }
                 tabbedPaneSearch.setTabPlacement(JTabbedPane.LEFT);
                 Component component = container.getComponent(0);
                 container.removeAll();
                 container.setLayout(new BorderLayout());
-                container.add(component,BorderLayout.NORTH);
-                container.add(tabbedPaneSearch,BorderLayout.CENTER);
+                container.add(component, BorderLayout.NORTH);
+                container.add(tabbedPaneSearch, BorderLayout.CENTER);
                 super.mouseClicked(e);
             }
         });
@@ -134,7 +140,7 @@ public class SimpleCode {
 
     public void initSimpleCode() {
         //获取示例代码信息
-        HttpGet get = new HttpGet("https://raw.githubusercontent.com/MattMin/idea-tools/dev/assets/demo-code.md");
+        HttpGet get = new HttpGet("https://oeong.com/assets/file/demo-code.md");
         CloseableHttpClient client = HttpClientBuilder.create().useSystemProperties().build();
         CloseableHttpResponse response = null;
         RequestConfig.Builder requestConfigBuilder = RequestConfig.custom();
@@ -148,31 +154,65 @@ public class SimpleCode {
         try {
             response = client.execute(get);
             responseBody = EntityUtils.toString(response.getEntity(), StandardCharsets.UTF_8);
-            titleList = new ArrayList<>();
-            contentList = new ArrayList<>();
-            String[] responseArray = responseBody.split("# ");
-            //解析md文档
-            Markdown4jProcessor processor = new Markdown4jProcessor();
-            for (String str : responseArray) {
-                if (!"".equals(str)) {
-                    str = "# " + str;
-                    String strText = null;
-                    try {
-                        strText = processor.process(str);
-                    } catch (Exception ex) {
-                        throw new RuntimeException(ex);
+//            //剑建一个FiLe对象，指定要读取的文件路轻
+//            File file = new File("https://raw.githubusercontent.com/MattMin/idea-tools/dev/assets/demo-code.md");
+//            //创建一FileInputstream.对象，将File对象作为签数传入
+//            FileInputStream fis = null;
+            try {
+//                fis = new FileInputStream(file);
+                //创建一个InputstreamReader对象，将FileInputstream对象作为袋数传入
+                InputStreamReader isr = new InputStreamReader(new ByteArrayInputStream(responseBody.getBytes()));
+                //创建一BufferedReader对象，将InputstreamReader对象作为鉴物传入
+                BufferedReader br = new BufferedReader(isr);
+                //BufferedReader的readLine()方法遂行读欺文件中容
+                String line;
+                StringBuilder contentBuilder = new StringBuilder();
+                titleList = new ArrayList<>();
+                contentList = new ArrayList<>();
+                while ((line = br.readLine()) != null) {
+                    if (line.startsWith("# ")){
+                        titleList.add(line.substring(2));
+                        if (!ObjectUtils.isEmpty(contentBuilder)){
+                            contentList.add(contentBuilder.toString());
+                            contentBuilder = new StringBuilder();
+                        }
+                    }else {
+                        contentBuilder.append(line).append("\n");
                     }
-                    Document parseHtml = Jsoup.parse(strText);
-                    Element title = parseHtml.select("h1").get(0);
-                    titleList.add(title.text());
-                    Elements codes = parseHtml.select("code");
-                    StringBuilder content = new StringBuilder();
-                    for (Element code : codes) {
-                        content.append(code.text()).append("\n");
-                    }
-                    contentList.add(content.toString());
                 }
+                contentList.add(contentBuilder.toString());
+                //关BufferedReader、InputstreamReaderFileInputstream对象
+                br.close();
+                isr.close();
+//                fis.close();
+            } catch (Exception e) {
+                throw new RuntimeException(e);
             }
+//            titleList = new ArrayList<>();
+//            contentList = new ArrayList<>();
+//            String[] responseArray = responseBody.split("# ");
+//            //解析md文档
+//            Markdown4jProcessor processor = new Markdown4jProcessor();
+//            for (String str : responseArray) {
+//                if (!"".equals(str)) {
+//                    str = "# " + str;
+//                    String strText = null;
+//                    try {
+//                        strText = processor.process(str);
+//                    } catch (Exception ex) {
+//                        throw new RuntimeException(ex);
+//                    }
+//                    Document parseHtml = Jsoup.parse(strText);
+//                    Element title = parseHtml.select("h1").get(0);
+//                    titleList.add(title.text());
+//                    Elements codes = parseHtml.select("code");
+//                    StringBuilder content = new StringBuilder();
+//                    for (Element code : codes) {
+//                        content.append(code.text()).append("\n");
+//                    }
+//                    contentList.add(content.toString());
+//                }
+//            }
         } catch (Exception ex) {
             throw new RuntimeException(ex);
         }
