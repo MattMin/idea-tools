@@ -16,6 +16,8 @@ import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 import java.util.stream.Collectors;
 
+import static com.oeong.ui.MenuAction.*;
+
 @Slf4j
 public class HomeContainer {
 
@@ -35,19 +37,19 @@ public class HomeContainer {
         JPanel barPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
         JMenuBar menuBar = new JMenuBar();
         menuBar.setPreferredSize(new Dimension(800, 35));
-        var tools = createMenu("\uD83D\uDD27","Tools");
+        var tools = createMenu("\uD83D\uDD27",TOOLS);
         tools.setFont(new Font("Default", Font.BOLD,14));
         menus.add(tools);
         menuBar.add(tools);
-        var fish = createMenu("\uD83D\uDC1F","Fun");
+        var fish = createMenu("\uD83D\uDC1F",FISH);
         fish.setFont(new Font("Default", Font.BOLD,14));
         menus.add(fish);
         menuBar.add(fish);
-        var ai = createMenu("\uD83E\uDD16","AI");
+        var ai = createMenu("\uD83E\uDD16",AI);
         ai.setFont(new Font("Default", Font.BOLD,14));
         menus.add(ai);
         menuBar.add(ai);
-        var dev = createMenu("\u200D\uD83D\uDCBB","Dev");
+        var dev = createMenu("\u200D\uD83D\uDCBB",DEV);
         dev.setFont(new Font("Default", Font.BOLD,14));
         menus.add(dev);
         menuBar.add(dev);

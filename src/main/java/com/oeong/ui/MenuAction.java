@@ -11,7 +11,7 @@ import java.io.IOException;
 public interface MenuAction {
 
     String TOOLS = "Tools";
-    String FISH = "Fish";
+    String FISH = "Fun";
     String AI = "AI";
     String DEV = "Dev";
 
