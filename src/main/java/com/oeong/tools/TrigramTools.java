@@ -4,6 +4,8 @@
  import cn.hutool.json.JSONUtil;
 
  import java.io.IOException;
+ import java.net.InetSocketAddress;
+ import java.net.ProxySelector;
  import java.net.URI;
  import java.net.http.HttpClient;
  import java.net.http.HttpRequest;
@@ -26,8 +28,8 @@ public class TrigramTools {
     public TrigramTools() {
         HttpClient client = HttpClient.newBuilder()
                 .version(HttpClient.Version.HTTP_2)
-                .connectTimeout(Duration.ofSeconds(20))
-//                .proxy(ProxySelector.of(new InetSocketAddress("127.0.0.1", 7890)))
+                .connectTimeout(Duration.ofSeconds(5))
+                .proxy(ProxySelector.of(new InetSocketAddress("127.0.0.1", 7890)))
                 .build();
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create("https://raw.githubusercontent.com/MattMin/idea-tools/dev/assets/trigram.json"))
@@ -46,9 +48,9 @@ public class TrigramTools {
         LinkedHashMap<Integer,Boolean> arr = new LinkedHashMap<>();
         StringBuilder sb = new StringBuilder();
         for(int i=0;i<6;i++){
-            int f1 = r.nextInt(100000)%2;
-            int f2 = r.nextInt(100000)%2;
-            int f3 = r.nextInt(100000)%2;
+            int f1 = r.nextInt(r.hashCode())%2;
+            int f2 = r.nextInt(r.hashCode())%2;
+            int f3 = r.nextInt(r.hashCode())%2;
             if(f1==f2 && f2==f3){
                 arr.put(i+1,f1==1);
             }
@@ -58,7 +60,7 @@ public class TrigramTools {
         if(arr.size()==1){
             dif = arr.keySet().stream().findFirst().get();
         } else if(arr.size()==2){
-            Boolean[] bs = arr.keySet().toArray(new Boolean[0]);
+            Boolean[] bs = arr.values().toArray(new Boolean[0]);
             boolean flag = bs[0] == bs[1];
             if(flag){
                 dif= (int)arr.keySet().toArray()[1];
@@ -91,7 +93,7 @@ public class TrigramTools {
         vo.setName(tri.get("name").toString());
         vo.setOriginal(tar.get("原文").toString());
         vo.setProphecy(tar.get(prophecy).toString());
-        return null;
+        return vo;
     }
 
 
