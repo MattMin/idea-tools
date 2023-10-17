@@ -25,7 +25,7 @@ public class PwdMenuItem implements MenuAction {
 
     @Override
     public void action(ActionEvent event) {
-        System.out.println(event);
+//        System.out.println(event);
     }
 
     @Override

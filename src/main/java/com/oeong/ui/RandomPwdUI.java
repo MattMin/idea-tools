@@ -98,7 +98,7 @@ public class RandomPwdUI {
     private void $$$setupUI$$$() {
         container = new JPanel();
         container.setLayout(new FlowLayout(FlowLayout.LEFT));
-        container.setEnabled(false);
+//        container.setEnabled(false);
 //        container.setBorder(BorderFactory.createTitledBorder(BorderFactory.createLineBorder(Color.black), null, TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, null, null));
         final JPanel panel1 = new JPanel();
         panel1.setLayout(new GridLayoutManager(5, 1, new Insets(0, 0, 0, 0), -1, -1));

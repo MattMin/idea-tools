@@ -24,9 +24,7 @@
 6、五个动爻：直接取那个不是动爻的那一爻的爻辞来断。
 **/
 public class TrigramTools {
-    private final static HashMap allTrigram;
-    public TrigramTools() {
-    }
+    private static HashMap allTrigram;
     static {
         HttpClient client = HttpClient.newBuilder()
                 .version(HttpClient.Version.HTTP_2)
@@ -37,15 +35,20 @@ public class TrigramTools {
                 .uri(URI.create("https://raw.githubusercontent.com/MattMin/idea-tools/dev/assets/trigram.json"))
                 .GET()
                 .build();
-        HttpResponse<String> str = null;
-        try {
-            str = client.send(request, HttpResponse.BodyHandlers.ofString());
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-        allTrigram = JSONUtil.toBean(str.body(),HashMap.class);
+        new Thread(()->{
+            HttpResponse<String> str = null;
+            try {
+                str = client.send(request, HttpResponse.BodyHandlers.ofString());
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+            allTrigram = JSONUtil.toBean(str.body(), HashMap.class);
+        }).start();
     }
     public  TrigramVo divine(String prophecy){
+        if(allTrigram==null){
+            return null;
+        }
         Random r = new Random();
         LinkedHashMap<Integer,Boolean> arr = new LinkedHashMap<>();
         StringBuilder sb = new StringBuilder();

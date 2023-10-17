@@ -29,7 +29,7 @@ public class TimeMenuItem implements MenuAction {
 
     @Override
     public void action(ActionEvent event) {
-        System.out.println(event);
+//        System.out.println(event);
     }
 
     // 菜单对应的面板
