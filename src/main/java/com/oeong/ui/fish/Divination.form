@@ -17,7 +17,7 @@
             <properties>
               <model>
                 <item value="事业"/>
-                <item value="时运"/>
+                <item value="运势"/>
                 <item value="情感"/>
               </model>
             </properties>
@@ -49,7 +49,7 @@
                 </constraints>
                 <properties>
                   <font size="26"/>
-                  <text value="乾卦：䷁"/>
+                  <text value=""/>
                 </properties>
               </component>
               <hspacer id="5aca2">
@@ -69,7 +69,7 @@
                   <card name="Card1"/>
                 </constraints>
                 <properties>
-                  <text value="卦象：风天小畜卦&#10;卦辞：亨。密云不雨，自我西郊&#10;财运：外表不错，内多耗损。&#10;"/>
+                  <text value=""/>
                 </properties>
               </component>
             </children>

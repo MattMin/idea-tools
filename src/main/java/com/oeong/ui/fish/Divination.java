@@ -26,13 +26,13 @@ public class Divination {
         divineButton.addActionListener(e->divine());
     }
 
-    TrigramTools tools = new TrigramTools();
+    private final static TrigramTools tools = new TrigramTools();
 
     public void divine(){
         String item = (String) comboBox1.getSelectedItem();
         TrigramVo vo = tools.divine(item);
         trigramImg.setText(vo.getName()+":"+vo.getImg());
-        detail.setText("卦辞："+vo.getOriginal()+"\t"+item+"："+vo.getProphecy());
+        detail.setText("卦辞："+vo.getOriginal()+"\r"+item+"："+vo.getProphecy());
     }
 
 

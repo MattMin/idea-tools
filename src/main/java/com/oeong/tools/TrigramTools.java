@@ -24,8 +24,10 @@
 6、五个动爻：直接取那个不是动爻的那一爻的爻辞来断。
 **/
 public class TrigramTools {
-    HashMap allTrigram;
+    private final static HashMap allTrigram;
     public TrigramTools() {
+    }
+    static {
         HttpClient client = HttpClient.newBuilder()
                 .version(HttpClient.Version.HTTP_2)
                 .connectTimeout(Duration.ofSeconds(5))
@@ -48,9 +50,9 @@ public class TrigramTools {
         LinkedHashMap<Integer,Boolean> arr = new LinkedHashMap<>();
         StringBuilder sb = new StringBuilder();
         for(int i=0;i<6;i++){
-            int f1 = r.nextInt(r.hashCode())%2;
-            int f2 = r.nextInt(r.hashCode())%2;
-            int f3 = r.nextInt(r.hashCode())%2;
+            int f1 = r.nextBoolean()?1:0;
+            int f2 = r.nextBoolean()?1:0;
+            int f3 = r.nextBoolean()?1:0;
             if(f1==f2 && f2==f3){
                 arr.put(i+1,f1==1);
             }
