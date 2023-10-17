@@ -70,14 +70,10 @@ public class Timestamp {
         });
 
         // transfer the date to the timestamp
-        transferButton1.addActionListener(e -> {
-            dateToTimestamp();
-        });
+        transferButton1.addActionListener(e -> dateToTimestamp());
 
         // transfer the timestamp to the date
-        transferButton2.addActionListener(e -> {
-            timestampToDate();
-        });
+        transferButton2.addActionListener(e -> timestampToDate());
 
         // copy the current timestamp
         currentTimestamp.addMouseListener(new MouseAdapter() {

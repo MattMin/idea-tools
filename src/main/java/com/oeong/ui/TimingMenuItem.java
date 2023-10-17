@@ -2,7 +2,6 @@ package com.oeong.ui;
 
 import com.intellij.openapi.project.Project;
 import com.oeong.ui.fish.TimingClock;
-import com.oeong.ui.fish.WhatToEat;
 import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
@@ -19,7 +18,7 @@ public class TimingMenuItem implements MenuAction {
     // 一级菜单名称
     @Override
     public @NotNull String parent() {
-        return TOOLS;
+        return FISH;
     }
 
     // 子菜单排序
