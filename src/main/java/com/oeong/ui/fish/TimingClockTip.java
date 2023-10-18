@@ -44,15 +44,9 @@ public class TimingClockTip extends JDialog {
         group.add(restRadioButton);
         group.add(stopRadioButton);
 
-        workRadioButton.addActionListener(e -> {
-            statusLabel.setText(WORK_TIP);
-        });
-        restRadioButton.addActionListener(e -> {
-            statusLabel.setText(REST_TIP);
-        });
-        stopRadioButton.addActionListener(e ->{
-            statusLabel.setText(STOP_TIP);
-        });
+        workRadioButton.addActionListener(e -> statusLabel.setText(WORK_TIP));
+        restRadioButton.addActionListener(e -> statusLabel.setText(REST_TIP));
+        stopRadioButton.addActionListener(e -> statusLabel.setText(STOP_TIP));
 
         okButton.addActionListener(e -> onOK(timingClock));
 
@@ -103,7 +97,6 @@ public class TimingClockTip extends JDialog {
 
             dispose();
         }
-
     }
 
     private void onCancel() {

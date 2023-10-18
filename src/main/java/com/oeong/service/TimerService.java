@@ -78,7 +78,7 @@ public class TimerService {
             int hour = time / (60 * 60);
             int minute = (time % (60 * 60)) / 60;
             int second = time % 60;
-            return "Rest countdown：" + String.format("%s:%s:%s", fillZero(hour), fillZero(minute), fillZero(second));
+            return "Rest countdown: " + String.format("%s:%s:%s", fillZero(hour), fillZero(minute), fillZero(second));
         }
         return "The rest is over.";
     }

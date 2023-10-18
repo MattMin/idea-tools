@@ -7,8 +7,7 @@ import javax.swing.*;
 import static com.oeong.data.DataCenter.RUNNING_TIP;
 import static com.oeong.data.DataCenter.STOPPED_TIP;
 
-// TODO: 2023/10/11 初始化异步调用请求，休息时间结束后还可以休息，语气活泼一点，下面的文字大一点
-// TODO: 2023/10/12 有些包不用
+// TODO: 2023/10/11 下面的文字大一点
 
 public class TimingClock {
     public JRadioButton startRadioButton;
