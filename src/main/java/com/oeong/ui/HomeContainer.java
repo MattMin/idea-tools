@@ -7,8 +7,6 @@ import groovy.util.logging.Slf4j;
 
 import javax.swing.*;
 import java.awt.*;
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
 import java.net.URL;
 import java.util.List;
 import java.util.*;
@@ -78,15 +76,14 @@ public class HomeContainer {
                     }
                 }
             }
-        } catch (Exception e) {
-            e.printStackTrace();
+        } catch (Exception e){
             return;
         }
         addMenu(items);
         barPanel.add(menuBar);
-        c.add(barPanel, BorderLayout.PAGE_START);
+        c.add(barPanel, BorderLayout.NORTH);
         c.add(parent, BorderLayout.CENTER);
-        hide(parent);
+//        hide(parent);
     }
 
     private JBMenu createMenu(String icon,String text){
@@ -119,21 +116,21 @@ public class HomeContainer {
                     JPanel panel = subJPanels.get(ma.getName());
                     if(panel==null){
                         panel =  ma.getContainer(toolWindow.getProject());
-                        if(null==subJPanels.putIfAbsent(ma.getName(),panel)){
-                            parent.add(panel);
-                        }
+                        subJPanels.putIfAbsent(ma.getName(),panel);
                     }
+                    parent.add(panel,0);
+                    parent.repaint();
+                    parent.revalidate();
                     panel.setVisible(true);
+                    panel.repaint();
+                    panel.revalidate();
                     ma.action(e);
                 });
             });
         }
     }
     private void hide(JPanel paren){
-        Component[] list = paren.getComponents();
-        for (Component c : list) {
-            c.setVisible(false);
-        }
+        paren.removeAll();
     }
     public JPanel getContentPanel() {
         return c;
