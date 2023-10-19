@@ -29,10 +29,10 @@ public class TrigramTools {
         HttpClient client = HttpClient.newBuilder()
                 .version(HttpClient.Version.HTTP_2)
                 .connectTimeout(Duration.ofSeconds(5))
-                .proxy(ProxySelector.of(new InetSocketAddress("127.0.0.1", 7890)))
                 .build();
         HttpRequest request = HttpRequest.newBuilder()
-                .uri(URI.create("https://raw.githubusercontent.com/MattMin/idea-tools/dev/assets/trigram.json"))
+                .uri(URI.create("https://oeong.com/assets/file/trigram.json"))
+                .timeout(Duration.ofSeconds(5))
                 .GET()
                 .build();
         new Thread(()->{
@@ -40,14 +40,25 @@ public class TrigramTools {
             try {
                 str = client.send(request, HttpResponse.BodyHandlers.ofString());
             } catch (Exception e) {
-                throw new RuntimeException(e);
+            }
+            if(str==null){
+                HttpRequest req = HttpRequest.newBuilder()
+                        .uri(URI.create("https://raw.githubusercontent.com/MattMin/idea-tools/dev/assets/trigram.json"))
+                        .timeout(Duration.ofSeconds(5))
+                        .GET()
+                        .build();
+                try {
+                    str = client.send(req, HttpResponse.BodyHandlers.ofString());
+                } catch (Exception e) {
+                    throw new RuntimeException(e);
+                }
             }
             allTrigram = JSONUtil.toBean(str.body(), HashMap.class);
         }).start();
     }
     public  TrigramVo divine(String prophecy){
         if(allTrigram==null){
-            return null;
+            throw new RuntimeException("initialization failed");
         }
         Random r = new Random();
         LinkedHashMap<Integer,Boolean> arr = new LinkedHashMap<>();
