@@ -21,7 +21,8 @@
               <grid row="1" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
             </constraints>
             <properties>
-              <text value="I don't need to rest. I want to keep working! ʕु•̫͡•ʔु ✧"/>
+              <font size="16"/>
+              <text value=" I want to keep working! ʕु•̫͡•ʔु ✧"/>
             </properties>
           </component>
           <component id="6c5f9" class="javax.swing.JLabel" binding="countdownLabel">
@@ -29,7 +30,8 @@
               <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
             </constraints>
             <properties>
-              <text value="After hard work, please have a rest. ฅ՞•ﻌ•՞ฅ"/>
+              <font size="16"/>
+              <text value="It's rest time. ฅ՞•ﻌ•՞ฅ"/>
             </properties>
           </component>
         </children>
