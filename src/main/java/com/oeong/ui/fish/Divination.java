@@ -7,12 +7,11 @@ import javax.swing.*;
 import java.awt.event.ActionEvent;
 
 public class Divination {
-    private JButton divineButton;
-    private JComboBox comboBox1;
-    private JTextPane detail;
     private JPanel container;
-
+    private JComboBox comboBox1;
+    private JButton divineButton;
     private JTextPane trigramImg;
+    private JTextPane detail;
 
     public Divination(){
         divineButton.addActionListener(this::divine);
