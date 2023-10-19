@@ -1,22 +1,20 @@
 package com.oeong.ui.fish;
 
-import com.oeong.data.DataCenter;
-import com.oeong.service.TimerService;
+import com.oeong.data.TimingCenter;
+import com.oeong.notice.Notifier;
+import com.oeong.service.TimingService;
 import com.oeong.task.RestTask;
 
 import javax.swing.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.util.Date;
 import java.util.Timer;
 
-import static com.oeong.data.DataCenter.REST_TIP;
-import static com.oeong.data.DataCenter.STOP_TIP;
-import static com.oeong.data.DataCenter.WORK_TIP;
-import static com.oeong.service.TimerService.resetNextRestTime;
+import static com.oeong.data.TimingCenter.REST_TIP;
+import static com.oeong.data.TimingCenter.STOP_TIP;
+import static com.oeong.data.TimingCenter.WORK_TIP;
 
 public class TimingClockTip extends JDialog {
     private JRadioButton workRadioButton;
@@ -48,50 +46,59 @@ public class TimingClockTip extends JDialog {
         restRadioButton.addActionListener(e -> statusLabel.setText(REST_TIP));
         stopRadioButton.addActionListener(e -> statusLabel.setText(STOP_TIP));
 
+        // OK button
         okButton.addActionListener(e -> onOK(timingClock));
 
-        //绑定关闭按钮事件
+        // Bind close button event
         setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
         addWindowListener(new WindowAdapter() {
             public void windowClosing(WindowEvent e) {
                 onCancel();
             }
         });
-        contentPane.registerKeyboardAction(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                onCancel();
-            }
-        }, KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0), JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
+        contentPane.registerKeyboardAction(e -> onCancel(), KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0), JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
 
-        DataCenter.reskTimer = new Timer();
-        DataCenter.reskTimer.schedule(new RestTask(timingClock, this), new Date(), 1000);
+        // new and start rest timer
+        TimingCenter.restTimer = new Timer();
+        TimingCenter.restTimer.schedule(new RestTask(timingClock, this), new Date(), 1000);
     }
 
     private void onOK(TimingClock timingClock) {
         if (workRadioButton.isSelected()) {
-            DataCenter.reskTimer.cancel();
-            TimerService.resetRestCountDown();
+            // close previous rest timer
+            TimingCenter.restTimer.cancel();
+            TimingService.resetRestCountDown();
 
-            timingClock.handle(timingClock);
+            // new work timer
+            String notification = TimingService.openWorkTimer(timingClock);
+            timingClock.timeTipLabel.setText(notification);
+            Notifier.notifyInfo(notification);
 
-            String notifyStr = TimerService.openTimer(timingClock);
-            timingClock.timeTipLabel.setText(notifyStr);
+            // set start status
+            TimingCenter.status = TimingCenter.WORKING;
+            timingClock.chooseStartButton();
+            timingClock.startRadioButton.setSelected(true);
 
             dispose();
         } else if (restRadioButton.isSelected()) {
-            DataCenter.reskTimer.cancel();
-            TimerService.resetRestCountDown();
+            // close previous rest timer
+            TimingCenter.restTimer.cancel();
+            TimingService.resetRestCountDown();
 
-            resetNextRestTime();
+            // reset next rest time
+            TimingService.resetNextRestTime();
 
-            DataCenter.reskTimer = new Timer();
-            DataCenter.reskTimer.schedule(new RestTask(timingClock, this), new Date(), 1000);
+            // new rest timer
+            TimingCenter.restTimer = new Timer();
+            TimingCenter.restTimer.schedule(new RestTask(timingClock, this), new Date(), 1000);
         } else {
-            DataCenter.workTimer.cancel();
-            DataCenter.reskTimer.cancel();
-            DataCenter.restCountDownSecond = -1;
+            // if it stops, close all timer
+            TimingCenter.workTimer.cancel();
+            TimingCenter.restTimer.cancel();
+            TimingCenter.restCountDownSecond = -1;
 
-            DataCenter.status = DataCenter.CLOSE;
+            // set close status
+            TimingCenter.status = TimingCenter.CLOSE;
             timingClock.chooseStopButton();
             timingClock.stopRadioButton.setSelected(true);
 

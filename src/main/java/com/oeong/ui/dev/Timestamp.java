@@ -2,7 +2,7 @@ package com.oeong.ui.dev;
 
 import com.intellij.icons.AllIcons;
 import com.intellij.ui.JBColor;
-import com.oeong.notificationGroup.Notifier;
+import com.oeong.notice.Notifier;
 
 import javax.swing.*;
 import java.awt.*;

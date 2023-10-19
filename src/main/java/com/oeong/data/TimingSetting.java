@@ -1,6 +1,6 @@
 package com.oeong.data;
 
-public class SettingData {
+public class TimingSetting {
 
     public static final int DEFAULT_WORK_TIME = 1;
     public static final int DEFAULT_REST_TIME = 2;
@@ -25,8 +25,8 @@ public class SettingData {
         this.restTime = restTime;
     }
 
-    public static SettingData of(int restTime, int workTime) {
-        SettingData settings = new SettingData();
+    public static TimingSetting of(int restTime, int workTime) {
+        TimingSetting settings = new TimingSetting();
         settings.setRestTime(restTime);
         settings.setWorkTime(workTime);
         return settings;

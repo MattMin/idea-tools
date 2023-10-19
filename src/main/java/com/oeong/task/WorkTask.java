@@ -1,10 +1,10 @@
 package com.oeong.task;
 
-import com.oeong.data.DataCenter;
+import com.oeong.data.TimingCenter;
+import com.oeong.service.TimingService;
 import com.oeong.ui.fish.TimingClock;
 import com.oeong.ui.fish.TimingClockTip;
 
-import java.time.LocalDateTime;
 import java.util.TimerTask;
 
 public class WorkTask extends TimerTask {
@@ -17,8 +17,9 @@ public class WorkTask extends TimerTask {
 
     @Override
     public void run() {
-        DataCenter.status = DataCenter.RESTING;
-        DataCenter.nextWorkTime = LocalDateTime.now().plusMinutes(DataCenter.settingData.getRestTime());
+        TimingCenter.status = TimingCenter.RESTING;
+        TimingService.resetNextWorkTime();
+        // display timingClockTip page
         TimingClockTip timingClockTip = new TimingClockTip(timingClock);
         timingClockTip.setVisible(true);
     }

@@ -1,4 +1,4 @@
-package com.oeong.notificationGroup;
+package com.oeong.notice;
 
 import com.intellij.notification.Notification;
 import com.intellij.notification.NotificationGroupManager;

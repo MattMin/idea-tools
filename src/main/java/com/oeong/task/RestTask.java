@@ -1,14 +1,15 @@
 package com.oeong.task;
 
-import com.oeong.data.DataCenter;
-import com.oeong.service.TimerService;
+import com.oeong.data.TimingCenter;
+import com.oeong.notice.Notifier;
+import com.oeong.service.TimingService;
 import com.oeong.ui.fish.TimingClock;
 import com.oeong.ui.fish.TimingClockTip;
 
 import javax.swing.*;
 import java.util.TimerTask;
 
-import static com.oeong.data.DataCenter.REST_TIME_TIP;
+import static com.oeong.data.TimingCenter.REST_TIME_TIP;
 
 public class RestTask extends TimerTask {
 
@@ -22,20 +23,23 @@ public class RestTask extends TimerTask {
 
     @Override
     public void run() {
-        //设置下次工作时间（休息结束的时间）
-        TimerService.resetNextWorkTime();
-        //初始化休息倒计时
-        TimerService.initRestCountDown();
-        TimerService.restCountDown();//倒计时
-        if (DataCenter.restCountDownSecond >= 0) { //休息时间内
-            String desc = TimerService.getCountDownDesc(DataCenter.restCountDownSecond);
+        // TimingService.resetNextWorkTime();
+        TimingService.initRestCountDown();
+        TimingService.restCountDown();
+        if (TimingCenter.restCountDownSecond >= 0) {
+            // If, during the rest time, set timingClock tip
+            String desc = TimingService.getCountDownDesc(TimingCenter.restCountDownSecond);
             timingClockTip.setDesc(String.format(REST_TIME_TIP + " %s", desc));
-        } else {//休息时间结束
-            DataCenter.reskTimer.cancel();   //关闭定时器
-            timingClockTip.dispose(); //关闭提示窗口
-            String notification = TimerService.openTimer(timingClock);// 开启工作计时器
+        } else {
+            // the rest time is over, close rest timer
+            TimingCenter.restTimer.cancel();
+            timingClockTip.dispose();
 
-            JOptionPane.showMessageDialog(null, notification, "tips", JOptionPane.INFORMATION_MESSAGE);
+            // open work timer
+            String notification = TimingService.openWorkTimer(timingClock);
+            timingClock.timeTipLabel.setText(notification);
+            Notifier.notifyInfo(notification);
+            JOptionPane.showMessageDialog(null, notification);
         }
     }
 }

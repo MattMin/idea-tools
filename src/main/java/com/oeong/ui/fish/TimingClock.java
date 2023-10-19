@@ -1,13 +1,12 @@
 package com.oeong.ui.fish;
 
-import com.oeong.service.TimerService;
+import com.oeong.notice.Notifier;
+import com.oeong.service.TimingService;
 
 import javax.swing.*;
 
-import static com.oeong.data.DataCenter.RUNNING_TIP;
-import static com.oeong.data.DataCenter.STOPPED_TIP;
-
-// TODO: 2023/10/11 下面的文字大一点
+import static com.oeong.data.TimingCenter.RUNNING_TIP;
+import static com.oeong.data.TimingCenter.STOPPED_TIP;
 
 public class TimingClock {
     public JRadioButton startRadioButton;
@@ -47,6 +46,8 @@ public class TimingClock {
         startRadioButton.setText("Running");
         stopRadioButton.setText("Stop");
         statusTipLabel.setText(RUNNING_TIP);
+        workField.setEnabled(false);
+        restField.setEnabled(false);
     }
 
     public void chooseStopButton() {
@@ -56,17 +57,25 @@ public class TimingClock {
         stopRadioButton.setText("Stopped");
         statusTipLabel.setText(STOPPED_TIP);
         timeTipLabel.setText("");
+        workField.setEnabled(true);
+        restField.setEnabled(true);
     }
 
     public void handle(TimingClock timingClock) {
-        TimerService.saveSetting(restField.getText(), workField.getText());
+        // set and validate the input
+        boolean saved = TimingService.saveSetting(restField.getText(), workField.getText());
+        if (!saved) {
+            return;
+        }
 
+        // start or stop the timer according to the start button
         if (startRadioButton.isSelected()) {
-            String notification = TimerService.openTimer(timingClock);
+            String notification = TimingService.openWorkTimer(timingClock);
             timeTipLabel.setText(notification);
-            JOptionPane.showMessageDialog(null, notification, "tips", JOptionPane.INFORMATION_MESSAGE);
+            Notifier.notifyInfo(notification);
+            JOptionPane.showMessageDialog(null, notification);
         } else {
-            TimerService.closeTimer();
+            TimingService.closeWorkTimer();
         }
     }
 
