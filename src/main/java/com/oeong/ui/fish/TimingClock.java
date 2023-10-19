@@ -1,5 +1,6 @@
 package com.oeong.ui.fish;
 
+import com.intellij.openapi.util.text.StringUtil;
 import com.oeong.notice.Notifier;
 import com.oeong.service.TimingService;
 
@@ -7,6 +8,7 @@ import javax.swing.*;
 
 import static com.oeong.data.TimingCenter.RUNNING_TIP;
 import static com.oeong.data.TimingCenter.STOPPED_TIP;
+import static com.oeong.service.TimingService.isInteger;
 
 public class TimingClock {
     public JRadioButton startRadioButton;
@@ -23,6 +25,10 @@ public class TimingClock {
 
         // status button
         startRadioButton.addActionListener(e -> {
+            if  (!validateTime()) {
+                return;
+            }
+
             if (startRadioButton.isSelected()) {
                 chooseStartButton();
             } else {
@@ -31,6 +37,10 @@ public class TimingClock {
             handle(this);
         });
         stopRadioButton.addActionListener(e -> {
+            if (!validateTime()) {
+                return;
+            }
+
             if (stopRadioButton.isSelected()) {
                 chooseStopButton();
             } else {
@@ -63,10 +73,7 @@ public class TimingClock {
 
     public void handle(TimingClock timingClock) {
         // set and validate the input
-        boolean saved = TimingService.saveSetting(restField.getText(), workField.getText());
-        if (!saved) {
-            return;
-        }
+        TimingService.saveSetting(restField.getText(), workField.getText());
 
         // start or stop the timer according to the start button
         if (startRadioButton.isSelected()) {
@@ -77,6 +84,35 @@ public class TimingClock {
         } else {
             TimingService.closeWorkTimer();
         }
+    }
+
+    public boolean validateTime() {
+        String restTime = restField.getText();
+        String workTime = workField.getText();
+
+        if (StringUtil.isNotEmpty(restTime) && isInteger(restTime)) {
+            int rest = Integer.parseInt(restTime);
+            if  (rest < 1 || rest > 60) {
+                Notifier.notifyError("The rest time must be between 1 and 60 minutes.");
+                return false;
+            }
+        } else {
+            Notifier.notifyError("The rest time must be an integer.");
+            return false;
+        }
+
+        if (StringUtil.isNotEmpty(workTime) && isInteger(workTime)) {
+            int work = Integer.parseInt(workTime);
+            if (work < 1 || work > 120) {
+                Notifier.notifyError("The work time must be between 1 and 120 minutes.");
+                return false;
+            }
+        } else {
+            Notifier.notifyError("The work time must be an integer.");
+            return false;
+        }
+
+        return true;
     }
 
     public JPanel getComponent() {

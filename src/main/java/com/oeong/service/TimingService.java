@@ -2,7 +2,6 @@ package com.oeong.service;
 
 import com.oeong.data.TimingCenter;
 import com.oeong.data.TimingSetting;
-import com.oeong.notice.Notifier;
 import com.oeong.task.WorkTask;
 import com.oeong.ui.fish.TimingClock;
 
@@ -16,33 +15,8 @@ import java.util.regex.Pattern;
 import static com.oeong.data.TimingCenter.WORK_TIME_TIP;
 
 public class TimingService {
-    public static boolean saveSetting(String restTime, String workTime) {
-        int rest, work;
-
-        if (isInteger(restTime)) {
-            rest = Integer.parseInt(restTime);
-            if  (rest < 1 || rest > 60) {
-                Notifier.notifyError("The rest time must be between 1 and 60 minutes.");
-                return false;
-            }
-        } else {
-            Notifier.notifyError("The rest time must be an integer.");
-            return false;
-        }
-
-        if (isInteger(workTime)) {
-            work = Integer.parseInt(workTime);
-            if (work < 1 || work > 120) {
-                Notifier.notifyError("The work time must be between 1 and 120 minutes.");
-                return false;
-            }
-        } else {
-            Notifier.notifyError("The work time must be an integer.");
-            return false;
-        }
-
-        TimingCenter.timingSetting = TimingSetting.of(rest, work);
-        return true;
+    public static void saveSetting(String restTime, String workTime) {
+        TimingCenter.timingSetting = TimingSetting.of(Integer.parseInt(restTime), Integer.parseInt(workTime));
     }
 
     /**
