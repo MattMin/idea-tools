@@ -77,7 +77,8 @@ public class HomeContainer {
                 }
             }
         } catch (Exception e){
-            return;
+            throw new RuntimeException(e);
+//            return;
         }
         addMenu(items);
         barPanel.add(menuBar);
