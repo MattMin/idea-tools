@@ -28,7 +28,11 @@
         <toolWindow id="Mulan" factoryClass="com.oeong.ui.HomeUi" secondary="false"
                     icon="AllIcons.Toolwindows.WebToolWindow" anchor="right"/>
         <notificationGroup id="Custom Notification Group" displayType="BALLOON"/>
+
+        <projectService serviceImplementation="com.oeong.service.ConnectionsService"/>
+        <projectService serviceImplementation="com.oeong.tools.ConnectionManager"/>
     </extensions>
 
     <depends>org.intellij.plugins.markdown</depends>
+    <!--    <depends>com.aspose.ocr.java.intellij.maven</depends>-->
 </idea-plugin>

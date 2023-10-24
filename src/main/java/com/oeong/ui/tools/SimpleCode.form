@@ -11,35 +11,31 @@
     </properties>
     <border type="empty"/>
     <children>
-      <grid id="d5d6e" layout-manager="FlowLayout" hgap="5" vgap="5" flow-align="1">
+      <grid id="d5d6e" binding="searchPanel" layout-manager="FlowLayout" hgap="5" vgap="5" flow-align="0">
         <constraints border-constraint="North"/>
         <properties>
-          <preferredSize width="100" height="50"/>
+          <preferredSize width="100" height="40"/>
         </properties>
         <border type="none"/>
+        <children/>
+      </grid>
+      <scrollpane id="3397d" binding="contentPanel">
+        <constraints border-constraint="South"/>
+        <properties/>
+        <border type="none"/>
+        <children/>
+      </scrollpane>
+      <scrollpane id="9f63" binding="titleListPanel">
+        <constraints border-constraint="Center"/>
+        <properties/>
+        <border type="none"/>
         <children>
-          <component id="7cbb" class="javax.swing.JEditorPane" binding="editorPane1" default-binding="true">
+          <component id="e06b7" class="javax.swing.JList" binding="titleJList">
             <constraints/>
             <properties/>
           </component>
-          <component id="69bdb" class="javax.swing.JTextField" binding="textField1" default-binding="true">
-            <constraints/>
-            <properties>
-              <preferredSize width="100" height="40"/>
-            </properties>
-          </component>
-          <component id="9ddbe" class="javax.swing.JButton" binding="searchButton" default-binding="true">
-            <constraints/>
-            <properties>
-              <hideActionText value="true"/>
-              <maximumSize width="78" height="40"/>
-              <minimumSize width="78" height="40"/>
-              <preferredSize width="78" height="40"/>
-              <text value="search"/>
-            </properties>
-          </component>
         </children>
-      </grid>
+      </scrollpane>
     </children>
   </grid>
   <buttonGroups>

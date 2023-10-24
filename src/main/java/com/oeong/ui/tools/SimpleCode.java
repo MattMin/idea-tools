@@ -1,10 +1,12 @@
 package com.oeong.ui.tools;
 
 import com.intellij.openapi.project.Project;
+import com.intellij.ui.SearchTextField;
+import com.intellij.ui.components.JBList;
+import com.intellij.ui.components.JBScrollPane;
 import com.intellij.ui.components.JBTabbedPane;
 import com.intellij.ui.jcef.JBCefBrowser;
 import com.oeong.ui.ConsoleVirtualFile;
-import com.oeong.ui.MyTabbedPaneUI;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.http.HttpHost;
 import org.apache.http.client.config.RequestConfig;
@@ -16,8 +18,11 @@ import org.apache.http.util.EntityUtils;
 import org.intellij.plugins.markdown.ui.preview.html.MarkdownUtil;
 
 import javax.swing.*;
-import javax.swing.plaf.TabbedPaneUI;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 import java.awt.*;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.BufferedReader;
@@ -26,6 +31,8 @@ import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * @descriptions:
@@ -36,63 +43,45 @@ public class SimpleCode {
     String responseBody;
     List<String> titleList;
     List<String> contentList;
+    List<String> initTitleList;
+    List<String> initContentList;
 
     private JPanel container;
-    private JTextField textField1;
-    private JButton searchButton;
-    private JEditorPane editorPane1;
-    private JTabbedPane tabbedPane;
+    private SearchTextField searchTextField;
+    private JScrollPane titleListPanel;
+    private JScrollPane contentPanel;
+    private JList titleJList;
+    private JPanel searchPanel;
+    private JPanel searchBoxPanel;
 
 
     public SimpleCode(Project project) {
         initSimpleCode();
-        searchButton.addMouseListener(new MouseAdapter() {
+
+        titleJList.addListSelectionListener(new ListSelectionListener() {
             /**
-             * {@inheritDoc}
+             * Called whenever the value of the selection changes.
              *
-             * @param e
+             * @param e the event that characterizes the change.
              */
             @Override
-            public void mouseClicked(MouseEvent e) {
-                // 获取到搜索框的数据
-                String textField = textField1.getText();
-                List<String> titleListSearch = new ArrayList<>();
-                List<String> contentListSearch = new ArrayList<>();
-
-                if (textField == null || "".equals(textField)) {
-                    titleListSearch = titleList;
-                    contentListSearch = contentList;
-                } else {
-                    for (int i = 0; i < titleList.size(); i++) {
-                        String title = titleList.get(i);
-                        if (title.toLowerCase().contains(textField.toLowerCase())) {
-                            titleListSearch.add(titleList.get(i));
-                            contentListSearch.add(contentList.get(i));
-                        }
-                    }
-                }
-                JTabbedPane tabbedPaneSearch = new JBTabbedPane(JTabbedPane.LEFT, JTabbedPane.SCROLL_TAB_LAYOUT);
-                TabbedPaneUI def = new MyTabbedPaneUI();
-                tabbedPaneSearch.setUI(def);
-                //填充数据到面板
-                for (int i = 0; i < titleListSearch.size(); i++) {
-                    String title = titleListSearch.get(i);
-                    String content = contentListSearch.get(i);
+            public void valueChanged(ListSelectionEvent e) {
+                if (titleJList != null) {
+                    //获取被选中项的index
+                    int selectedIndex = titleJList.getSelectedIndex();
+                    //拿到选中项标题对应的内容
+                    String content = contentList.get(selectedIndex);
+                    //显示内容
                     ConsoleVirtualFile md = new ConsoleVirtualFile("md", project);
                     String contentMd = MarkdownUtil.INSTANCE.generateMarkdownHtml(md, content, project);
                     JBCefBrowser browser = new JBCefBrowser();
                     browser.loadHTML(contentMd);
-                    JScrollPane jScrollPane = new JScrollPane();
-                    jScrollPane.setViewportView(browser.getComponent());
-                    tabbedPaneSearch.addTab(title,null,jScrollPane,title);
+                    //获取content显示的区域
+                    if (contentPanel == null) {
+                        contentPanel = new JBScrollPane();
+                    }
+                    contentPanel.setViewportView(browser.getComponent());
                 }
-                tabbedPaneSearch.setTabPlacement(JTabbedPane.LEFT);
-                Component component = container.getComponent(0);
-                container.removeAll();
-                container.setLayout(new BorderLayout());
-                container.add(component, BorderLayout.NORTH);
-                container.add(tabbedPaneSearch, BorderLayout.CENTER);
-                super.mouseClicked(e);
             }
         });
     }
@@ -105,37 +94,44 @@ public class SimpleCode {
         this.container = container;
     }
 
-    public JTabbedPane getTabbedPane() {
-        return tabbedPane;
-    }
-
-    public void setTabbedPane(JTabbedPane tabbedPane) {
-        this.tabbedPane = tabbedPane;
-    }
-
-
-    public String getResponseBody() {
-        return responseBody;
-    }
-
-    public void setResponseBody(String responseBody) {
-        this.responseBody = responseBody;
-    }
-
     public List<String> getTitleList() {
         return titleList;
-    }
-
-    public void setTitleList(List<String> titleList) {
-        this.titleList = titleList;
     }
 
     public List<String> getContentList() {
         return contentList;
     }
 
-    public void setContentList(List<String> contentList) {
-        this.contentList = contentList;
+    public JScrollPane getTitleListPanel() {
+        return titleListPanel;
+    }
+
+    public void setTitleListPanel(JScrollPane titleListPanel) {
+        this.titleListPanel = titleListPanel;
+    }
+
+    public JScrollPane getContentPanel() {
+        return contentPanel;
+    }
+
+    public void setContentPanel(JScrollPane contentPanel) {
+        this.contentPanel = contentPanel;
+    }
+
+    public JList getTitleJList() {
+        return titleJList;
+    }
+
+    public void setTitleJList(JList titleJList) {
+        this.titleJList = titleJList;
+    }
+
+    public JPanel getSearchPanel() {
+        return searchPanel;
+    }
+
+    public void setSearchPanel(JPanel searchPanel) {
+        this.searchPanel = searchPanel;
     }
 
     public void initSimpleCode() {
@@ -149,7 +145,7 @@ public class SimpleCode {
                 .setConnectTimeout(5000)
                 .setConnectionRequestTimeout(5000);
         //添加代理
-        requestConfigBuilder.setProxy(new HttpHost("127.0.0.1", 7890));
+//        requestConfigBuilder.setProxy(new HttpHost("127.0.0.1", 7890));
         get.setConfig(requestConfigBuilder.build());
         try {
             response = client.execute(get);
@@ -170,17 +166,19 @@ public class SimpleCode {
                 titleList = new ArrayList<>();
                 contentList = new ArrayList<>();
                 while ((line = br.readLine()) != null) {
-                    if (line.startsWith("# ")){
+                    if (line.startsWith("# ")) {
                         titleList.add(line.substring(2));
-                        if (!ObjectUtils.isEmpty(contentBuilder)){
+                        if (!ObjectUtils.isEmpty(contentBuilder)) {
                             contentList.add(contentBuilder.toString());
                             contentBuilder = new StringBuilder();
                         }
-                    }else {
+                    } else {
                         contentBuilder.append(line).append("\n");
                     }
                 }
                 contentList.add(contentBuilder.toString());
+                initContentList = contentList;
+                initTitleList = titleList;
                 //关BufferedReader、InputstreamReaderFileInputstream对象
                 br.close();
                 isr.close();
@@ -188,33 +186,121 @@ public class SimpleCode {
             } catch (Exception e) {
                 throw new RuntimeException(e);
             }
-//            titleList = new ArrayList<>();
-//            contentList = new ArrayList<>();
-//            String[] responseArray = responseBody.split("# ");
-//            //解析md文档
-//            Markdown4jProcessor processor = new Markdown4jProcessor();
-//            for (String str : responseArray) {
-//                if (!"".equals(str)) {
-//                    str = "# " + str;
-//                    String strText = null;
-//                    try {
-//                        strText = processor.process(str);
-//                    } catch (Exception ex) {
-//                        throw new RuntimeException(ex);
-//                    }
-//                    Document parseHtml = Jsoup.parse(strText);
-//                    Element title = parseHtml.select("h1").get(0);
-//                    titleList.add(title.text());
-//                    Elements codes = parseHtml.select("code");
-//                    StringBuilder content = new StringBuilder();
-//                    for (Element code : codes) {
-//                        content.append(code.text()).append("\n");
-//                    }
-//                    contentList.add(content.toString());
-//                }
-//            }
         } catch (Exception ex) {
             throw new RuntimeException(ex);
+        }
+    }
+
+
+    public JPanel getSimpleCodeContainer(Project project, String searchStr) {
+        //添加搜索框
+        JPanel searchBox = this.createSearchBox(project,searchStr);
+        searchPanel.add(searchBox);
+        this.getSearchResult(searchStr);
+        //获取DefaultListModel
+        DefaultListModel<String> titleListModel = this.listToModel(titleList);
+
+        if (titleJList == null) {
+            titleJList = new JBList<>();
+        }
+        titleJList.setModel(titleListModel);
+        //设置jblist的布局
+        titleJList.setLayoutOrientation(JList.VERTICAL);
+        //设置选中的数据
+        titleJList.setSelectedIndex(0);
+        //初始化内容数据
+        String content = contentList.get(0);
+        ConsoleVirtualFile md = new ConsoleVirtualFile("md", project);
+        String contentMd = MarkdownUtil.INSTANCE.generateMarkdownHtml(md, content, project);
+        JBCefBrowser browser = new JBCefBrowser();
+        browser.loadHTML(contentMd);
+        //获取content显示的区域
+        contentPanel = this.getContentPanel();
+        if (contentPanel == null) {
+            contentPanel = new JBScrollPane();
+        }
+        contentPanel.setViewportView(browser.getComponent());
+        //设置显示数量
+        titleJList.setVisibleRowCount(5);
+        //获取Title显示的区域
+        if (titleListPanel == null) {
+            titleListPanel = new JBScrollPane();
+        }
+        titleListPanel.setViewportView(titleJList);
+        return this.getContainer();
+    }
+
+
+    public JPanel createSearchBox(Project project,String searchStr) {
+        if (searchTextField == null){
+            searchTextField = new SearchTextField();
+        }
+        searchTextField.setText(searchStr);
+        searchTextField.addKeyboardListener(new KeyListener() {
+            @Override
+            public void keyTyped(KeyEvent e) {
+            }
+
+            @Override
+            public void keyPressed(KeyEvent e) {
+            }
+
+            @Override
+            public void keyReleased(KeyEvent e) {
+                if (e.getKeyCode() == KeyEvent.VK_ENTER) {
+                    String text = searchTextField.getText();
+                    getSimpleCodeContainer(project, text);
+                }
+            }
+        });
+        if (searchBoxPanel == null){
+            searchBoxPanel = new JPanel();
+        }
+        searchBoxPanel.add(searchTextField);
+        return searchBoxPanel;
+    }
+
+    private DefaultListModel<String> listToModel(List<String> titleList) {
+        DefaultListModel<String> titleListModel = new DefaultListModel<>();
+        for (int i = 0; i < titleList.size(); i++) {
+            titleListModel.add(i, titleList.get(i));
+        }
+        return titleListModel;
+    }
+
+    public void getSearchResult(String searchStr) {
+        List<String> resultList = new ArrayList<>();
+        List<String> contentResultList = new ArrayList<>();
+        if (searchStr != null && !"".equals(searchStr)) {
+            String[] strArray = searchStr.split(" ");
+            List<Pattern> patternList = new ArrayList<>();
+            for (String str : strArray) {
+                String regex =  str.toLowerCase() + "+";
+                // 创建模式对象
+                Pattern p = Pattern.compile(regex);
+                patternList.add(p);
+            }
+            for (int i = 0; i < initTitleList.size(); i++) {
+                boolean flag = true;
+                for (Pattern pattern : patternList) {
+                    // 创建匹配器对象
+                    Matcher m = pattern.matcher(initTitleList.get(i).toLowerCase());
+                    flag = m.find();
+                    if (!flag){
+                        break;
+                    }
+                }
+                if (flag) {
+                    resultList.add(initTitleList.get(i));
+                    contentResultList.add(initContentList.get(i));
+                }
+            }
+
+            titleList = resultList;
+            contentList = contentResultList;
+        }else {
+            titleList = initTitleList;
+            contentList = initContentList;
         }
     }
 }
