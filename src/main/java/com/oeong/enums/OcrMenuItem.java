@@ -1,7 +1,8 @@
-package com.oeong.ui;
+package com.oeong.enums;
 
 import com.intellij.openapi.project.Project;
-import com.oeong.ui.tools.SimpleCode;
+import com.oeong.ui.MenuAction;
+import com.oeong.ui.tools.Ocr;
 import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
@@ -10,9 +11,9 @@ import java.awt.event.ActionEvent;
 /**
  * @descriptions:
  * @author: Zzw
- * @date: 2023/9/15 9:17
+ * @date: 2023/10/13 9:54
  */
-public class SimpleCodeMenuItem implements MenuAction {
+public class OcrMenuItem implements MenuAction {
     /**
      * 当前菜单名称
      *
@@ -20,7 +21,7 @@ public class SimpleCodeMenuItem implements MenuAction {
      */
     @Override
     public @NotNull String getName() {
-        return "simple code";
+        return "ocr";
     }
 
     /**
@@ -30,7 +31,7 @@ public class SimpleCodeMenuItem implements MenuAction {
      */
     @Override
     public @NotNull String parent() {
-        return DEV;
+        return TOOLS;
     }
 
     /**
@@ -40,7 +41,7 @@ public class SimpleCodeMenuItem implements MenuAction {
      */
     @Override
     public int order() {
-        return 0;
+        return 1;
     }
 
     /**
@@ -61,10 +62,7 @@ public class SimpleCodeMenuItem implements MenuAction {
      */
     @Override
     public @NotNull JPanel getContainer(Project project) {
-        SimpleCode simpleCode = new SimpleCode(project);
-        return simpleCode.getSimpleCodeContainer(project,null);
+        Ocr ocr = new Ocr(project);
+        return ocr.getContainer();
     }
-
-
-
 }

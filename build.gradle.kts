@@ -51,5 +51,9 @@ tasks {
         implementation("org.commonjava.googlecode.markdown4j", "markdown4j", "2.2-cj-1.1")
         implementation("org.jsoup", "jsoup", "1.15.3")
         implementation("cn.hutool:hutool-json:5.8.18")
+        compileOnly("org.projectlombok:lombok:1.18.22")
+        annotationProcessor("org.projectlombok:lombok:1.18.22")
+        testCompileOnly("org.projectlombok:lombok:1.18.22")
+        testAnnotationProcessor("org.projectlombok:lombok:1.18.22")
     }
 }
