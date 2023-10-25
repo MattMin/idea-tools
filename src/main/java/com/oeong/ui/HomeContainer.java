@@ -8,6 +8,8 @@ import groovy.util.logging.Slf4j;
 import javax.swing.*;
 import java.awt.*;
 import java.net.URL;
+import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.*;
 import java.util.jar.JarEntry;
@@ -61,7 +63,7 @@ public class HomeContainer {
             if(path.startsWith("file:")){
                 path=path.substring(5);
             }
-            JarFile jarFile = new JarFile(path.substring(0,path.lastIndexOf("/com")-1));
+            JarFile jarFile = new JarFile(URLDecoder.decode(path.substring(0,path.lastIndexOf("/com")-1), StandardCharsets.UTF_8));
             var enu = jarFile.entries();
             while (enu.hasMoreElements()) {
                 JarEntry jarEntry = enu.nextElement();
