@@ -8,7 +8,11 @@ import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable;
 import java.awt.datatransfer.UnsupportedFlavorException;
-import java.awt.event.*;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseMotionAdapter;
 import java.awt.image.BufferedImage;
 import java.awt.image.RescaleOp;
 import java.io.BufferedInputStream;
@@ -36,7 +40,9 @@ public class ScreenshotTools extends JFrame {
     public ScreenshotTools() {
         snapshot();
         setVisible(true);
-        //setSize(d);//最大化窗口
+        setPreferredSize(d);
+        setSize(d);//最大化窗口
+        setAlwaysOnTop(true);
         setDefaultCloseOperation(EXIT_ON_CLOSE);
 
         this.addMouseListener(new MouseAdapter() {
@@ -89,8 +95,14 @@ public class ScreenshotTools extends JFrame {
         ScreenshotTools rd = new ScreenshotTools();
         GraphicsDevice gd = GraphicsEnvironment.getLocalGraphicsEnvironment()
                 .getDefaultScreenDevice();
+
         gd.setFullScreenWindow(rd);
 
+        try {
+            gd.setFullScreenWindow(rd);
+        } catch (Exception e){
+            gd.setFullScreenWindow(null);
+        }
     }
 
     /**

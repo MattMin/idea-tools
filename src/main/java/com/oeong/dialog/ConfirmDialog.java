@@ -62,6 +62,7 @@ public class ConfirmDialog extends DialogWrapper {
         @Override
         protected void doAction(ActionEvent e) {
             if (customOkFunction != null) {
+                close(OK_EXIT_CODE);
                 customOkFunction.accept(e);
             }
             close(OK_EXIT_CODE);
