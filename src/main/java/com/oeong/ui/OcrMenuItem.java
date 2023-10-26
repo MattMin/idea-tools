@@ -1,4 +1,4 @@
-package com.oeong.enums;
+package com.oeong.ui;
 
 import com.intellij.openapi.project.Project;
 import com.oeong.ui.MenuAction;
@@ -41,7 +41,7 @@ public class OcrMenuItem implements MenuAction {
      */
     @Override
     public int order() {
-        return 1;
+        return 2;
     }
 
     /**
