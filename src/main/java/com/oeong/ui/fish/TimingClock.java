@@ -1,6 +1,7 @@
 package com.oeong.ui.fish;
 
 import com.intellij.openapi.util.text.StringUtil;
+import com.oeong.data.TimingCenter;
 import com.oeong.notice.Notifier;
 import com.oeong.service.TimingService;
 
@@ -23,30 +24,31 @@ public class TimingClock {
 
         statusTipLabel.setText(STOPPED_TIP);
 
+        // radio button
+        ButtonGroup group = new ButtonGroup();
+        group.add(startRadioButton);
+        group.add(stopRadioButton);
+
         // status button
         startRadioButton.addActionListener(e -> {
             if  (!validateTime()) {
                 return;
             }
 
-            if (startRadioButton.isSelected()) {
+            if (TimingCenter.status.equals(TimingCenter.CLOSE)) {
                 chooseStartButton();
-            } else {
-                chooseStopButton();
+                handle(this);
             }
-            handle(this);
         });
         stopRadioButton.addActionListener(e -> {
             if (!validateTime()) {
                 return;
             }
 
-            if (stopRadioButton.isSelected()) {
+            if (!TimingCenter.status.equals(TimingCenter.CLOSE)) {
                 chooseStopButton();
-            } else {
-                chooseStartButton();
+                handle(this);
             }
-            handle(this);
         });
     }
 
