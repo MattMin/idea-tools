@@ -247,12 +247,13 @@ public class Timestamp {
         initZoneMap();
         ArrayList<Object> timeZones = new ArrayList<>();
         for (int offset = -12; offset <= 13; offset++) {
-            String timeZone = "UTC" + (offset >= 0 ? "+" : "") + offset + ":00";
-            timeZones.add(timeZone);
+            String sign = offset >= 0 ? "+" : "-";
+            String zone = "UTC" + sign + String.format("%02d:00", Math.abs(offset));
+            timeZones.add(zone);
         }
 
         zoneComboBox.setModel(new DefaultComboBoxModel<>(timeZones.toArray(new String[0])));
-        zoneComboBox.setSelectedItem("UTC+8:00");
+        zoneComboBox.setSelectedItem("UTC+08:00");
     }
 
     public static void initZoneMap() {
@@ -263,7 +264,8 @@ public class Timestamp {
             int offset = zoneId.getRules().getOffset(java.time.Instant.now()).getTotalSeconds() / 3600;
 
             if (offset >= -12 && offset <= 13) {
-                String zone = "UTC" + (offset >= 0 ? "+" : "") + offset + ":00";
+                String sign = offset >= 0 ? "+" : "-";
+                String zone = "UTC" + sign + String.format("%02d:00", Math.abs(offset));
                 zoneMap.put(zone, timeZone);
             }
         }
