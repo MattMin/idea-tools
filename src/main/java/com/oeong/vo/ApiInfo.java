@@ -14,7 +14,7 @@ import lombok.Setter;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class ConnectionInfo {
+public class ApiInfo {
 
 
     private String id;
@@ -46,7 +46,7 @@ public class ConnectionInfo {
         if (o == null || getClass() != o.getClass()) {
             return false;
         }
-        ConnectionInfo that = (ConnectionInfo) o;
+        ApiInfo that = (ApiInfo) o;
         return Objects.equal(id, that.id);
     }
 

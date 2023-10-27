@@ -5,7 +5,7 @@ import com.intellij.openapi.components.State;
 import com.intellij.openapi.components.Storage;
 import com.intellij.openapi.components.StoragePathMacros;
 import com.intellij.openapi.project.Project;
-import com.oeong.vo.ConnectionInfo;
+import com.oeong.vo.ApiInfo;
 import lombok.Data;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -16,15 +16,15 @@ import java.util.List;
 @State(name = "Mulan", storages = {
         @Storage(StoragePathMacros.WORKSPACE_FILE)
 })
-public class ConnectionsService implements PersistentStateComponent<ConnectionsService.State> {
+public class ApiInfosService implements PersistentStateComponent<ApiInfosService.State> {
 
-    public static ConnectionsService getInstance(Project project) {
-        return project.getService(ConnectionsService.class);
+    public static ApiInfosService getInstance(Project project) {
+        return project.getService(ApiInfosService.class);
     }
 
     @Data
     static class State {
-        private List<ConnectionInfo> connections = new ArrayList<>();
+        private List<ApiInfo> apiInfos = new ArrayList<>();
     }
 
     private State myState = new State();
@@ -40,7 +40,8 @@ public class ConnectionsService implements PersistentStateComponent<ConnectionsS
         myState = state;
     }
 
-    public List<ConnectionInfo> getConnections() {
-        return myState.getConnections();
+    public List<ApiInfo> getApiInfos() {
+        return myState.getApiInfos();
     }
+
 }

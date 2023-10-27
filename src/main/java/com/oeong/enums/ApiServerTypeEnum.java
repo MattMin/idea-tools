@@ -1,4 +1,4 @@
-package com.oeong.ui;
+package com.oeong.enums;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -10,7 +10,7 @@ import java.util.List;
  * @version: 1.0
  */
 
-public enum ConnectionTypeEnum {
+public enum ApiServerTypeEnum {
     aliyun(1,"阿里云"),
     baidu(2,"百度");
 
@@ -33,7 +33,7 @@ public enum ConnectionTypeEnum {
         return description;
     }
 
-    private ConnectionTypeEnum (int type,String description) {
+    private ApiServerTypeEnum(int type, String description) {
         this.description = description;
         this.type = type;
     }
@@ -46,7 +46,7 @@ public enum ConnectionTypeEnum {
 
     public static List<Integer> getConnectionTypeList() {
         List<Integer> connectionTypeList = new ArrayList<>();
-        for (ConnectionTypeEnum e : values()) {
+        for (ApiServerTypeEnum e : values()) {
             connectionTypeList.add(e.getType());
         }
         return connectionTypeList;

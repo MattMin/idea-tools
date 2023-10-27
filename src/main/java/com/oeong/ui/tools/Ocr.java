@@ -2,8 +2,8 @@ package com.oeong.ui.tools;
 
 import com.intellij.openapi.actionSystem.ActionToolbar;
 import com.intellij.openapi.project.Project;
-import com.oeong.vo.ConnectionInfo;
-import com.oeong.tools.ConnectionManager;
+import com.oeong.vo.ApiInfo;
+import com.oeong.tools.ApiSettingManager;
 
 import javax.swing.*;
 import java.awt.*;
@@ -21,9 +21,9 @@ public class Ocr {
     private JPanel ocrPanel;
     private JScrollPane connectionListPanel;
     private JList connectionJList;
-    private Map<String, ConnectionInfo> connectionMap;
-    private ConnectionInfo connectionInfo;
-    private ConnectionManager connectionManager;
+    private Map<String, ApiInfo> connectionMap;
+    private ApiInfo apiInfo;
+    private ApiSettingManager apiSettingManager;
 
 
     public Ocr(Project project) {
@@ -35,13 +35,13 @@ public class Ocr {
         container = new JPanel(new BorderLayout());
         ocrPanel = new JPanel();
         ocrPanel.setLayout(new BorderLayout());
-
         //添加工具栏
-        connectionManager = ConnectionManager.getInstance(project);
-        ActionToolbar ocrToolbar = connectionManager.createOcrToolbar(connectionInfo,container);
+        apiSettingManager = ApiSettingManager.getInstance(project);
+        ApiInfo conConnectionDefault = apiSettingManager.getConConnectionDefault();
+        ActionToolbar ocrToolbar = apiSettingManager.createOcrToolbar(conConnectionDefault,container);
         container.add(ocrToolbar.getComponent(), BorderLayout.NORTH);
         //初始化连接
-        connectionManager.createListPanel();
+        apiSettingManager.createListPanel();
         container.add(ocrPanel, BorderLayout.SOUTH);
     }
 
@@ -62,12 +62,12 @@ public class Ocr {
         this.ocrPanel = ocrPanel;
     }
 
-    public ConnectionInfo getConnectionInfo() {
-        return connectionInfo;
+    public ApiInfo getConnectionInfo() {
+        return apiInfo;
     }
 
-    public void setConnectionInfo(ConnectionInfo connectionInfo) {
-        this.connectionInfo = connectionInfo;
+    public void setConnectionInfo(ApiInfo apiInfo) {
+        this.apiInfo = apiInfo;
     }
 
 

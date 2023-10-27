@@ -10,9 +10,11 @@ import com.oeong.action.*;
 import com.oeong.dialog.ApiKeySettingsDialog;
 import com.oeong.dialog.ConfirmDialog;
 import com.oeong.dialog.OcrDialog;
-import com.oeong.vo.ConnectionInfo;
+import com.oeong.vo.ApiInfo;
 
 import javax.swing.*;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -28,36 +30,40 @@ import static com.oeong.tools.ScreenshotTools.startScreenshot;
  * @author: Zzw
  * @date: 2023/10/18 10:59
  */
-public class ConnectionManager {
+public class ApiSettingManager {
     private Project project;
     private JScrollPane connectionListPanel;
     private JList connectionJList;
     private JPanel container;
     private PropertyUtil propertyUtil;
+    private ApiInfo apiInfo;
 
     /**
      * 插件初始化时会调用
      *
      * @param project
      */
-    protected ConnectionManager(Project project) {
+    protected ApiSettingManager(Project project) {
         this.project = project;
         this.propertyUtil = PropertyUtil.getInstance(project);
     }
 
-    public static ConnectionManager getInstance(Project project) {
-        return project.getService(ConnectionManager.class);
+    public static ApiSettingManager getInstance(Project project) {
+        return project.getService(ApiSettingManager.class);
     }
 
 
-    public ActionToolbar createOcrToolbar(ConnectionInfo connectionInfo, JPanel container) {
+    public ActionToolbar createOcrToolbar(ApiInfo apiInfo, JPanel container) {
+        if (apiInfo != null) {
+            this.apiInfo = apiInfo;
+        }
         this.container = container;
         // 工具栏
         DefaultActionGroup actions = new DefaultActionGroup();
         // 增加key
-        actions.add(createAddAction(connectionInfo));
+        actions.add(createAddAction(apiInfo));
         // 删除key
-        actions.add(createDeleteAction(connectionInfo));
+        actions.add(createDeleteAction(apiInfo));
         actions.addSeparator();
         // 截图
         actions.add(createScreenshotAction());
@@ -73,14 +79,14 @@ public class ConnectionManager {
     /**
      * 创建添加按钮
      *
-     * @param connectionInfo
+     * @param apiInfo
      * @return
      */
-    public AddAction createAddAction(ConnectionInfo connectionInfo) {
+    public AddAction createAddAction(ApiInfo apiInfo) {
         AddAction addAction = new AddAction();
         addAction.setAction(e -> {
             // 弹出连接配置窗口
-            ApiKeySettingsDialog apiKeySettingsDialog = new ApiKeySettingsDialog(project, connectionInfo, this);
+            ApiKeySettingsDialog apiKeySettingsDialog = new ApiKeySettingsDialog(project, apiInfo, this);
             apiKeySettingsDialog.show();
         });
         return addAction;
@@ -91,18 +97,22 @@ public class ConnectionManager {
      *
      * @return
      */
-    private DeleteAction createDeleteAction(ConnectionInfo connectionInfo) {
+    private DeleteAction createDeleteAction(ApiInfo apiInfo) {
+        if (apiInfo != null) {
+            this.apiInfo = apiInfo;
+        }
         DeleteAction deleteAction = new DeleteAction();
         deleteAction.setAction(e -> {
             // 弹出删除确认对话框
             ConfirmDialog removeConnectionDialog = new ConfirmDialog(
                     project,
                     "Confirm",
-                    "Are you sure you want to delete these connections?",
+                    "Are you sure you want to delete these Api setting?",
                     actionEvent -> {
-                        if (connectionInfo != null) {
+                        if (this.apiInfo != null) {
                             // connection列表中移除
-                            propertyUtil.removeConnection(connectionInfo);
+                            propertyUtil.removeConnection(this.apiInfo);
+                            this.apiInfo = null;
                             createListPanel();
                         }
                     });
@@ -176,13 +186,13 @@ public class ConnectionManager {
         // 为Action添加快捷键
         ActionManager actionManager = ActionManager.getInstance();
         actionManager.getAction(action.getActionId());
-        keymap.addShortcut(action.getActionId(),keyboardShortcut);
+        keymap.addShortcut(action.getActionId(), keyboardShortcut);
     }
 
-    public Map<String, ConnectionInfo> getConnectionMap() {
-        Map<String, ConnectionInfo> stringConnectionInfoMap = new HashMap<>();
-        List<ConnectionInfo> connections = propertyUtil.getConnections();
-        for (ConnectionInfo connection : connections) {
+    public Map<String, ApiInfo> getConnectionMap() {
+        Map<String, ApiInfo> stringConnectionInfoMap = new HashMap<>();
+        List<ApiInfo> connections = propertyUtil.getConnections();
+        for (ApiInfo connection : connections) {
             stringConnectionInfoMap.put(connection.getId(), connection);
         }
         return stringConnectionInfoMap;
@@ -190,33 +200,37 @@ public class ConnectionManager {
 
     /**
      * 保存或修改连接
-     * @param connectionInfo
+     *
+     * @param apiInfo
      */
-    public void saveOrEditConnectionInfo(ConnectionInfo connectionInfo) {
-        Boolean global = connectionInfo.getGlobal();
-        Map<String, ConnectionInfo> connectionMap = this.getConnectionMap();
-        ConnectionInfo globalConnection = propertyUtil.getGlobalConnections();
+    public void saveOrEditConnectionInfo(ApiInfo apiInfo) {
+        Boolean global = apiInfo.getGlobal();
+        Map<String, ApiInfo> connectionMap = this.getConnectionMap();
+        ApiInfo globalConnection = propertyUtil.getGlobalConnection();
         //没有全局配置的连接或者是没有连接
         if (global && (globalConnection != null || connectionMap == null)) {
             //如果是配置了全局,将其它所有全局都清除
             globalConnection.setGlobal(Boolean.FALSE);
             propertyUtil.saveConnection(globalConnection);
         }
-        propertyUtil.saveConnection(connectionInfo);
+        propertyUtil.saveConnection(apiInfo);
     }
 
     /**
      * 连接名称有无重复
+     *
      * @param connectionName
-     * @return  true 没有重复 ; false 重复
+     * @return true 没有重复 ; false 重复
      */
-    public boolean saveOrEditConnectionInfo(String connectionName ) {
+    public boolean checkApiName(String connectionName,ApiInfo apiInfo) {
         boolean flag = true;
-        List<ConnectionInfo> connections = propertyUtil.getConnections();
-        for (ConnectionInfo connection : connections) {
+        List<ApiInfo> connections = propertyUtil.getConnections();
+        for (ApiInfo connection : connections) {
             String name = connection.getName();
-            if (connectionName.equals(name)){
-                flag = false;
+            if (connectionName.equals(name)) {
+                if (apiInfo == null || !connection.getId().equals(apiInfo.getId())){
+                    flag = false;
+                }
             }
         }
         return flag;
@@ -227,10 +241,10 @@ public class ConnectionManager {
      *
      * @return
      */
-    private ActionPopupMenu createConnectionPopupMenu(ConnectionInfo connectionInfo, JScrollPane connectionListPanel) {
+    private ActionPopupMenu createConnectionPopupMenu(ApiInfo apiInfo, JScrollPane connectionListPanel) {
         DefaultActionGroup actionGroup = new DefaultActionGroup();
-        actionGroup.add(createAddAction(connectionInfo));
-        actionGroup.add(createDeleteAction(connectionInfo));
+        actionGroup.add(createAddAction(apiInfo));
+        actionGroup.add(createDeleteAction(apiInfo));
         ActionPopupMenu menu = ActionManager.getInstance().createActionPopupMenu(ActionPlaces.POPUP, actionGroup);
         menu.setTargetComponent(connectionListPanel);
         return menu;
@@ -239,8 +253,8 @@ public class ConnectionManager {
     public void createListPanel() {
         //添加连接显示
         //获取DefaultListModel
-        Map<String, ConnectionInfo> connectionMap = this.getConnectionMap();
-        DefaultListModel<ConnectionInfo> connectionModel = this.listToModel(connectionMap);
+        Map<String, ApiInfo> connectionMap = this.getConnectionMap();
+        DefaultListModel<ApiInfo> connectionModel = this.listToModel(connectionMap);
         connectionJList = new JBList<>();
         connectionJList.setModel(connectionModel);
 
@@ -250,10 +264,20 @@ public class ConnectionManager {
                 int x = e.getX();
                 int y = e.getY();
                 if (e.getButton() == MouseEvent.BUTTON3) {
-                    ConnectionInfo connection = (ConnectionInfo) connectionJList.getSelectedValue();
+                    ApiInfo connection = (ApiInfo) connectionJList.getSelectedValue();
                     if (connection != null) {
                         createConnectionPopupMenu(connection, connectionListPanel).getComponent().show(connectionJList, x, y);
                     }
+                }
+            }
+        });
+
+        connectionJList.addListSelectionListener(new ListSelectionListener() {
+            @Override
+            public void valueChanged(ListSelectionEvent e) {
+                if (connectionJList != null) {
+                    //获取被选中项的Api
+                    apiInfo = (ApiInfo) connectionJList.getSelectedValue();
                 }
             }
         });
@@ -271,17 +295,29 @@ public class ConnectionManager {
         container.updateUI();
     }
 
-    private DefaultListModel<ConnectionInfo> listToModel(Map<String, ConnectionInfo> connectionMap) {
-        DefaultListModel<ConnectionInfo> titleListModel = new DefaultListModel<>();
-        List<ConnectionInfo> connectionInfoList = new ArrayList<>();
+    private DefaultListModel<ApiInfo> listToModel(Map<String, ApiInfo> connectionMap) {
+        DefaultListModel<ApiInfo> titleListModel = new DefaultListModel<>();
+        List<ApiInfo> apiInfoList = new ArrayList<>();
         if (connectionMap != null) {
             for (String id : connectionMap.keySet()) {
-                connectionInfoList.add(connectionMap.get(id));
+                apiInfoList.add(connectionMap.get(id));
             }
-            for (int i = 0; i < connectionInfoList.size(); i++) {
-                titleListModel.add(i, connectionInfoList.get(i));
+            for (int i = 0; i < apiInfoList.size(); i++) {
+                titleListModel.add(i, apiInfoList.get(i));
             }
         }
         return titleListModel;
+    }
+
+    public ApiInfo getConConnectionDefault() {
+        ApiInfo globalConnection = propertyUtil.getGlobalConnection();
+        if (globalConnection == null) {
+            if (connectionJList != null) {
+                int selectedIndex = connectionJList.getSelectedIndex();
+                Map<String, ApiInfo> connectionMap = this.getConnectionMap();
+                return connectionMap.get(selectedIndex);
+            }
+        }
+        return globalConnection;
     }
 }

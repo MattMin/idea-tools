@@ -11,11 +11,11 @@ import com.intellij.openapi.ui.LoadingDecorator;
 import com.intellij.ui.JBColor;
 import com.intellij.ui.components.JBRadioButton;
 import com.intellij.util.ui.JBUI;
+import com.oeong.enums.ApiServerTypeEnum;
 import com.oeong.tools.AliyunTools;
+import com.oeong.tools.ApiSettingManager;
 import com.oeong.tools.BaiduTools;
-import com.oeong.tools.ConnectionManager;
-import com.oeong.ui.ConnectionTypeEnum;
-import com.oeong.vo.ConnectionInfo;
+import com.oeong.vo.ApiInfo;
 import org.jetbrains.annotations.Nullable;
 
 import javax.imageio.ImageIO;
@@ -45,18 +45,18 @@ import static com.oeong.tools.ScreenshotTools.getClipboardImage;
 public class OcrDialog extends DialogWrapper implements Disposable {
     private JTextField urlTextField;
     private JComboBox connectionComboBox;
-    private ConnectionInfo connectionInfo;
+    private ApiInfo apiInfo;
 
     private int type = 0;
 
-    private ConnectionManager connectionManager;
+    private ApiSettingManager apiSettingManager;
 
-    public OcrDialog(@Nullable Project project, ConnectionManager connectionManager) {
+    public OcrDialog(@Nullable Project project, ApiSettingManager apiSettingManager) {
         super(project);
         this.setTitle("Ocr");
         this.setSize(650, 240);
         this.myOKAction = new CustomOKAction();
-        this.connectionManager = connectionManager;
+        this.apiSettingManager = apiSettingManager;
         this.init();
     }
 
@@ -70,8 +70,8 @@ public class OcrDialog extends DialogWrapper implements Disposable {
 
         //ocr图片来源选择框
         JBRadioButton urlRadio = new JBRadioButton("url");
-        JBRadioButton screenshotRadio = new JBRadioButton("screenshot");
-        urlRadio.setSelected(true);
+        JBRadioButton screenshotRadio = new JBRadioButton("clipboard");
+        screenshotRadio.setSelected(true);
 
         ButtonGroup group = new ButtonGroup();
         group.add(urlRadio);
@@ -84,7 +84,7 @@ public class OcrDialog extends DialogWrapper implements Disposable {
         // 连接下拉框
         connectionComboBox = new JComboBox();
         final DefaultComboBoxModel defaultComboBoxModel = new DefaultComboBoxModel();
-        Map<String, ConnectionInfo> connectionMap = connectionManager.getConnectionMap();
+        Map<String, ApiInfo> connectionMap = apiSettingManager.getConnectionMap();
         if (connectionMap != null) {
             for (String id : connectionMap.keySet()) {
                 defaultComboBoxModel.addElement(connectionMap.get(id));
@@ -112,8 +112,8 @@ public class OcrDialog extends DialogWrapper implements Disposable {
 
         JPanel optionRadioRowPanel = new JPanel(new GridLayout());
         optionRadioRowPanel.add(optionRadioRowLabel);
-        optionRadioRowPanel.add(urlRadio);
         optionRadioRowPanel.add(screenshotRadio);
+        optionRadioRowPanel.add(urlRadio);
 
         //url
         JLabel urlLabel = new JLabel("url:");
@@ -136,24 +136,27 @@ public class OcrDialog extends DialogWrapper implements Disposable {
         //ocr 结果
         JPanel row = new JPanel(new FlowLayout(FlowLayout.LEFT));
         row.add(ocrButton);
-        JTextArea component = (JTextArea) loadingDecorator.getComponent().getComponent(0);
+        Component loadingComponent = loadingDecorator.getComponent().getComponent(0);
+        JTextArea component = (JTextArea) loadingComponent;
         int lineCount = component.getLineCount();
-        JPanel ocrResultPanel = new JPanel(new BorderLayout());
-        ocrResultPanel.add(row, BorderLayout.NORTH);
-        ocrResultPanel.add(loadingDecorator.getComponent().getComponent(0), BorderLayout.CENTER);
+        JScrollPane ocrResultPanel = new JScrollPane();
+        ocrResultPanel.setViewportView(loadingComponent);
+//        String text = ((JTextArea) loadingComponent).getText();
 
 
         JPanel ocrPanel = new JPanel();
         BoxLayout boxLayout = new BoxLayout(ocrPanel, BoxLayout.Y_AXIS);
         ocrPanel.setLayout(boxLayout);
         ocrPanel.add(optionRadioRowPanel);
-        ocrPanel.add(urlRowPanel);
+        if (urlRadio.isSelected()){
+            ocrPanel.add(urlRowPanel);
+        }
         ocrPanel.add(connectionRowPanel);
-
+        ocrPanel.add(row);
 
         JPanel centerPanel = new JPanel(new BorderLayout());
         centerPanel.add(ocrPanel, BorderLayout.NORTH);
-        centerPanel.add(ocrResultPanel, BorderLayout.SOUTH);
+        centerPanel.add(ocrResultPanel, BorderLayout.CENTER);
 
         //添加单选框监听器
         urlRadio.addItemListener(new ItemListener() {
@@ -162,8 +165,10 @@ public class OcrDialog extends DialogWrapper implements Disposable {
                 if (e.getStateChange() == ItemEvent.SELECTED) {
                     type = 0;
                     ocrPanel.remove(connectionRowPanel);
+                    ocrPanel.remove(ocrResultPanel);
                     ocrPanel.add(urlRowPanel);
                     ocrPanel.add(connectionRowPanel);
+                    ocrPanel.add(row);
                     ocrPanel.updateUI();
                 }
             }
@@ -222,7 +227,7 @@ public class OcrDialog extends DialogWrapper implements Disposable {
                             }
                         }
 
-                        ConnectionInfo connectionSelected = (ConnectionInfo) connectionComboBox.getSelectedItem();
+                        ApiInfo connectionSelected = (ApiInfo) connectionComboBox.getSelectedItem();
                         Map<String, String> bodyMap = new HashMap<>();
                         if (connectionSelected == null) {
                             resultArea.setText("");
@@ -231,7 +236,7 @@ public class OcrDialog extends DialogWrapper implements Disposable {
                             int server = connectionSelected.getType();
                             String apiKey = connectionSelected.getApiKey();
                             String apiSecret = connectionSelected.getApiSecret();
-                            if (server == ConnectionTypeEnum.baidu.getType()) {
+                            if (server == ApiServerTypeEnum.baidu.getType()) {
                                 bodyMap.put("image", image);
                                 bodyMap.put("url", url);
                                 if (!"".equals(image) || !"".equals(url)) {
@@ -253,7 +258,7 @@ public class OcrDialog extends DialogWrapper implements Disposable {
                                         }
                                     }
                                 }
-                            } else if (server == ConnectionTypeEnum.aliyun.getType()) {
+                            } else if (server == ApiServerTypeEnum.aliyun.getType()) {
                                 bodyMap.put("img", image);
                                 bodyMap.put("url", url);
                                 if (!"".equals(image) || !"".equals(url)) {

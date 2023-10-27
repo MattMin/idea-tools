@@ -29,8 +29,8 @@
                     icon="AllIcons.Toolwindows.WebToolWindow" anchor="right"/>
         <notificationGroup id="Custom Notification Group" displayType="BALLOON"/>
 
-        <projectService serviceImplementation="com.oeong.service.ConnectionsService"/>
-        <projectService serviceImplementation="com.oeong.tools.ConnectionManager"/>
+        <projectService serviceImplementation="com.oeong.service.ApiInfosService"/>
+        <projectService serviceImplementation="com.oeong.tools.ApiSettingManager"/>
     </extensions>
 
     <depends>org.intellij.plugins.markdown</depends>

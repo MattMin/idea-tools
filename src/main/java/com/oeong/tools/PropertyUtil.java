@@ -8,8 +8,8 @@ import com.intellij.credentialStore.Credentials;
 import com.intellij.ide.passwordSafe.PasswordSafe;
 import com.intellij.ide.util.PropertiesComponent;
 import com.intellij.openapi.project.Project;
-import com.oeong.service.ConnectionsService;
-import com.oeong.vo.ConnectionInfo;
+import com.oeong.service.ApiInfosService;
+import com.oeong.vo.ApiInfo;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 
@@ -35,11 +35,11 @@ public class PropertyUtil {
     private PropertiesComponent properties;
 
 
-    private ConnectionsService connectionsService;
+    private ApiInfosService apiInfosService;
 
     private PropertyUtil(Project project) {
         properties = PropertiesComponent.getInstance(project);
-        connectionsService = ConnectionsService.getInstance(project);
+        apiInfosService = ApiInfosService.getInstance(project);
     }
 
     public static PropertyUtil getInstance(Project project) {
@@ -52,10 +52,10 @@ public class PropertyUtil {
         }
 
         // 迁移CONNECTION_ID_LIST_KEY
-        final List<ConnectionInfo> connections = propertyUtil.getConnectionsOld();
+        final List<ApiInfo> connections = propertyUtil.getConnectionsOld();
         if (!connections.isEmpty()) {
-            final List<ConnectionInfo> newConnections = propertyUtil.connectionsService.getConnections();
-            for (ConnectionInfo connection : connections) {
+            final List<ApiInfo> newConnections = propertyUtil.apiInfosService.getApiInfos();
+            for (ApiInfo connection : connections) {
                 connection.setGlobal(false);
                 propertyUtil.removeConnectionOld(connection.getId());
                 newConnections.add(connection);
@@ -70,31 +70,31 @@ public class PropertyUtil {
      *
      * @return 连接列表元素
      */
-    public List<ConnectionInfo> getConnectionsOld() {
+    public List<ApiInfo> getConnectionsOld() {
         List<String> ids = properties.getList(CONNECTION_ID_LIST_KEY);
         if (CollectionUtils.isEmpty(ids)) {
             return Lists.newArrayList();
         }
 
-        List<ConnectionInfo> result = new ArrayList<>();
+        List<ApiInfo> result = new ArrayList<>();
         for (String id : ids) {
             String connection = properties.getValue(id);
             if (StringUtils.isEmpty(connection)) {
                 removeConnectionOld(id);
                 continue;
             }
-            result.add(JSON.parseObject(connection, ConnectionInfo.class));
+            result.add(JSON.parseObject(connection, ApiInfo.class));
         }
         return result;
     }
 
-    public List<ConnectionInfo> getConnections() {
-        final List<ConnectionInfo> connections = connectionsService.getConnections();
+    public List<ApiInfo> getConnections() {
+        final List<ApiInfo> connections = apiInfosService.getApiInfos();
         if (connections.isEmpty()) {
             return Lists.newArrayList();
         }
 
-        for (ConnectionInfo connection : connections) {
+        for (ApiInfo connection : connections) {
             // connectionInfo 如果有 password 则将 connection 中存储的 password 删除, 使用 PasswordSafe 存储 password
             if (StringUtils.isEmpty(connection.getApiSecret())) {
                 String password = retrievePassword(connection.getId());
@@ -105,53 +105,55 @@ public class PropertyUtil {
         return connections;
     }
 
-    public ConnectionInfo getGlobalConnections() {
-        final List<ConnectionInfo> connections = connectionsService.getConnections();
+    public ApiInfo getGlobalConnection() {
+        final List<ApiInfo> connections = apiInfosService.getApiInfos();
         if (connections.isEmpty()) {
             return null;
         }
 
-        ConnectionInfo connectionInfo = null;
-        for (ConnectionInfo connection : connections) {
+        ApiInfo apiInfo = null;
+        for (ApiInfo connection : connections) {
             if (connection.getGlobal()) {
-                connectionInfo = connection;
+                apiInfo = connection;
             }
         }
 
         // connectionInfo 如果有 password 则将 connection 中存储的 password 删除, 使用 PasswordSafe 存储 password
-        if (connectionInfo != null && StringUtils.isEmpty(connectionInfo.getApiSecret())) {
-            String password = retrievePassword(connectionInfo.getId());
-            connectionInfo.setApiSecret(password);
+        if (apiInfo != null && StringUtils.isEmpty(apiInfo.getApiSecret())) {
+            String password = retrievePassword(apiInfo.getId());
+            apiInfo.setApiSecret(password);
         }
 
-        return connectionInfo;
+        return apiInfo;
     }
 
     /**
      * 保存连接信息
      *
-     * @param connectionInfo 连接信息
+     * @param apiInfo 连接信息
      * @return 连接ID
      */
-    public String saveConnection(ConnectionInfo connectionInfo) {
-        if (connectionInfo == null) {
+    public String saveConnection(ApiInfo apiInfo) {
+        if (apiInfo == null) {
             return null;
         }
 
-        String connectionInfoId = connectionInfo.getId();
+        String connectionInfoId = apiInfo.getId();
         if (StringUtils.isEmpty(connectionInfoId)) {
             connectionInfoId = UUID.randomUUID().toString();
-            connectionInfo.setId(connectionInfoId);
+            apiInfo.setId(connectionInfoId);
+        } else {
+
         }
 
         // Brainless deletion
-        connectionsService.getConnections().remove(connectionInfo);
+        apiInfosService.getApiInfos().remove(apiInfo);
 
         // 保存密码
-        savePassword(connectionInfoId, connectionInfo.getApiSecret());
+        savePassword(connectionInfoId, apiInfo.getApiSecret());
 
         // 保存 connection
-        connectionsService.getConnections().add(connectionInfo);
+        apiInfosService.getApiInfos().add(apiInfo);
         return connectionInfoId;
     }
 
@@ -175,9 +177,9 @@ public class PropertyUtil {
         properties.unsetValue(id);
     }
 
-    public void removeConnection(ConnectionInfo connectionInfo) {
-        connectionsService.getConnections().remove(connectionInfo);
-        savePassword(connectionInfo.getId(), null);
+    public void removeConnection(ApiInfo apiInfo) {
+        apiInfosService.getApiInfos().remove(apiInfo);
+        savePassword(apiInfo.getId(), null);
     }
 
     /**
@@ -186,16 +188,16 @@ public class PropertyUtil {
      * @param id 连接ID
      * @return 连接信息
      */
-    public ConnectionInfo getConnection(String id) {
+    public ApiInfo getConnection(String id) {
         if (StringUtils.isEmpty(id)) {
             return null;
         }
 
-        final Map<String, ConnectionInfo> collect = getConnections().stream()
-                .collect(Collectors.toMap(ConnectionInfo::getId, Function.identity()));
+        final Map<String, ApiInfo> collect = getConnections().stream()
+                .collect(Collectors.toMap(ApiInfo::getId, Function.identity()));
 
-        ConnectionInfo connectionInfo = collect.get(id);
-        return connectionInfo;
+        ApiInfo apiInfo = collect.get(id);
+        return apiInfo;
     }
 
 

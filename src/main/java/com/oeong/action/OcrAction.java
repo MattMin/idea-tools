@@ -4,7 +4,7 @@ import com.intellij.icons.AllIcons;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.project.Project;
 import com.oeong.dialog.OcrDialog;
-import com.oeong.tools.ConnectionManager;
+import com.oeong.tools.ApiSettingManager;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -26,8 +26,8 @@ public class OcrAction extends CustomAction {
         Project project = anActionEvent.getProject();
         this.setAction(e -> {
             // 弹出Ocr窗口
-            ConnectionManager connectionManager = project.getService(ConnectionManager.class);
-            OcrDialog ocrDialog = new OcrDialog(project, connectionManager);
+            ApiSettingManager apiSettingManager = project.getService(ApiSettingManager.class);
+            OcrDialog ocrDialog = new OcrDialog(project, apiSettingManager);
             ocrDialog.show();
         });
         action.accept(anActionEvent);

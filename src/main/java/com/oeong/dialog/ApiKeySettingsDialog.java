@@ -10,11 +10,11 @@ import com.intellij.openapi.ui.ValidationInfo;
 import com.intellij.ui.JBColor;
 import com.intellij.ui.components.JBRadioButton;
 import com.intellij.util.ui.JBUI;
+import com.oeong.enums.ApiServerTypeEnum;
 import com.oeong.tools.AliyunTools;
 import com.oeong.tools.BaiduTools;
-import com.oeong.tools.ConnectionManager;
-import com.oeong.ui.*;
-import com.oeong.vo.ConnectionInfo;
+import com.oeong.tools.ApiSettingManager;
+import com.oeong.vo.ApiInfo;
 import org.apache.commons.lang.StringUtils;
 import org.jetbrains.annotations.Nullable;
 
@@ -30,7 +30,7 @@ import java.util.concurrent.LinkedBlockingDeque;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
-import static com.oeong.ui.ConnectionTypeEnum.getConnectionTypeList;
+import static com.oeong.enums.ApiServerTypeEnum.getConnectionTypeList;
 
 /**
  * @descriptions:
@@ -43,19 +43,20 @@ public class ApiKeySettingsDialog extends DialogWrapper implements Disposable {
     private JPasswordField apiSecretField;
     private JCheckBox globalCheckBox;
 
-    private int type = ConnectionTypeEnum.baidu.getType();
+    private int type = ApiServerTypeEnum.baidu.getType();
 
 
-    private ConnectionInfo connection;
-    private ConnectionManager connectionManager;
+    private ApiInfo apiInfo;
+    private ApiSettingManager apiSettingManager;
+    private boolean editFlag = false;
 
-    public ApiKeySettingsDialog(@Nullable Project project, ConnectionInfo connectionInfo, ConnectionManager connectionManager) {
+    public ApiKeySettingsDialog(@Nullable Project project, ApiInfo apiInfo, ApiSettingManager apiSettingManager) {
         super(project);
         this.setTitle("ApiKey Settings");
         this.setSize(650, 240);
-        this.connection = connectionInfo;
+        this.apiInfo = apiInfo;
         this.myOKAction = new CustomOKAction();
-        this.connectionManager = connectionManager;
+        this.apiSettingManager = apiSettingManager;
         this.init();
     }
 
@@ -66,29 +67,37 @@ public class ApiKeySettingsDialog extends DialogWrapper implements Disposable {
 
     @Override
     protected @Nullable JComponent createCenterPanel() {
-        boolean newConnection = connection == null;
+        boolean newApiInfo = apiInfo == null;
 
-        nameTextField = new JTextField(newConnection ? null : connection.getName());
-        nameTextField.setToolTipText("Connection Name");
+        nameTextField = new JTextField(newApiInfo ? null : apiInfo.getName());
+        nameTextField.setToolTipText("Api Name");
         //api服务选择框
-        JBRadioButton aliRadio = new JBRadioButton(ConnectionTypeEnum.aliyun.getDescription());
-        JBRadioButton baiduRadio = new JBRadioButton(ConnectionTypeEnum.baidu.getDescription());
-        baiduRadio.setSelected(true);
+        JBRadioButton aliRadio = new JBRadioButton(ApiServerTypeEnum.aliyun.getDescription());
+        JBRadioButton baiduRadio = new JBRadioButton(ApiServerTypeEnum.baidu.getDescription());
+        //设置选中
+        int typeSelect = newApiInfo ? type :apiInfo.getType();
+        if (typeSelect == ApiServerTypeEnum.baidu.getType()){
+            baiduRadio.setSelected(true);
+        } else if (typeSelect == ApiServerTypeEnum.aliyun.getType()){
+            aliRadio.setSelected(true);
+        } else {
+            baiduRadio.setSelected(true);
+        }
 
         ButtonGroup group = new ButtonGroup();
         group.add(aliRadio);
         group.add(baiduRadio);
 
         // apiKey 输入框
-        apiKeyField = new JTextField(newConnection ? null : connection.getApiKey());
-        apiKeyField.setToolTipText("ApiKey");
+        apiKeyField = new JTextField(newApiInfo ? null : apiInfo.getApiKey());
+        apiKeyField.setToolTipText("Api Key");
 
         // ApiSecret输入框
-        apiSecretField = new JPasswordField(newConnection ? null : connection.getApiSecret());
-        apiSecretField.setToolTipText("ApiSecret");
+        apiSecretField = new JPasswordField(newApiInfo ? null : apiInfo.getApiSecret());
+        apiSecretField.setToolTipText("Api Secret");
 
         // 显示ApiSecret
-        JCheckBox showApiSecretCheckBox = new JCheckBox("Show ApiSecret");
+        JCheckBox showApiSecretCheckBox = new JCheckBox("Show Api Secret");
         showApiSecretCheckBox.setBorder(JBUI.Borders.emptyRight(10));
         showApiSecretCheckBox.setPreferredSize(new Dimension(140, 12));
         showApiSecretCheckBox.addItemListener(e -> {
@@ -101,7 +110,7 @@ public class ApiKeySettingsDialog extends DialogWrapper implements Disposable {
 
         // 设为全局
         globalCheckBox = new JCheckBox("As Global");
-        globalCheckBox.setSelected(!newConnection && connection.getGlobal());
+        globalCheckBox.setSelected(!newApiInfo && apiInfo.getGlobal());
         globalCheckBox.setBorder(JBUI.Borders.emptyRight(10));
         globalCheckBox.setPreferredSize(new Dimension(140, 12));
 
@@ -114,7 +123,7 @@ public class ApiKeySettingsDialog extends DialogWrapper implements Disposable {
 
         LoadingDecorator loadingDecorator = new LoadingDecorator(testResult, this, 0);
         // 测试连接按钮
-        JButton testButton = new JButton("Test Connection");
+        JButton testButton = new JButton("Test Api");
         testButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -134,9 +143,9 @@ public class ApiKeySettingsDialog extends DialogWrapper implements Disposable {
                     ReadAction.nonBlocking(() -> {
                         try {
                             boolean success = getTestResult(apiKeyField.getText(), apiSecret);
-                            String message = "测试失败";
+                            String message = "Fail";
                             if (success){
-                                message = "测试成功";
+                                message = "Success";
                             }
                             testResult.setText(message);
                             if (success) {
@@ -160,21 +169,21 @@ public class ApiKeySettingsDialog extends DialogWrapper implements Disposable {
                 }
             }
         });
-        JLabel connectionNameLabel = new JLabel("Connection Name:");
+        JLabel connectionNameLabel = new JLabel("Api Name:");
         connectionNameLabel.setPreferredSize(new Dimension(130, 12));
         connectionNameLabel.setBorder(JBUI.Borders.emptyLeft(10));
 
-        JLabel apiKeyLabel = new JLabel("ApiKey:");
+        JLabel apiKeyLabel = new JLabel("Api Key:");
         apiKeyLabel.setBorder(JBUI.Borders.emptyLeft(10));
         apiKeyLabel.setPreferredSize(new Dimension(130, 12));
 
 
-        JLabel apiSecretLabel = new JLabel("ApiSecret:");
+        JLabel apiSecretLabel = new JLabel("Api Secret:");
         apiSecretLabel.setBorder(JBUI.Borders.emptyLeft(10));
         apiSecretLabel.setPreferredSize(new Dimension(130, 12));
 
 
-        JLabel typeRadioRowLabel = new JLabel("ApiServer:");
+        JLabel typeRadioRowLabel = new JLabel("Api Server:");
         typeRadioRowLabel.setBorder(JBUI.Borders.emptyLeft(10));
         typeRadioRowLabel.setPreferredSize(new Dimension(130, 12));
 
@@ -213,7 +222,9 @@ public class ApiKeySettingsDialog extends DialogWrapper implements Disposable {
         connectionSettingsPanel.setLayout(boxLayout);
         connectionSettingsPanel.add(typeRadioRowPanel);
         connectionSettingsPanel.add(connectionNameRowPanel);
-        connectionSettingsPanel.add(apiKeyRowPanel);
+        if (typeSelect != ApiServerTypeEnum.aliyun.getType()){
+            connectionSettingsPanel.add(apiKeyRowPanel);
+        }
         connectionSettingsPanel.add(apiSecretRowPanel);
 
 
@@ -226,7 +237,7 @@ public class ApiKeySettingsDialog extends DialogWrapper implements Disposable {
             @Override
             public void itemStateChanged(ItemEvent e) {
                 if (e.getStateChange() == ItemEvent.SELECTED) {
-                    type = ConnectionTypeEnum.aliyun.getType();
+                    type = ApiServerTypeEnum.aliyun.getType();
                     connectionSettingsPanel.remove(apiKeyRowPanel);
                     centerPanel.updateUI();
                 }
@@ -237,7 +248,7 @@ public class ApiKeySettingsDialog extends DialogWrapper implements Disposable {
             @Override
             public void itemStateChanged(ItemEvent e) {
                 if (e.getStateChange() == ItemEvent.SELECTED) {
-                    type = ConnectionTypeEnum.baidu.getType();
+                    type = ApiServerTypeEnum.baidu.getType();
                     connectionSettingsPanel.remove(apiSecretRowPanel);
                     connectionSettingsPanel.add(apiKeyRowPanel);
                     connectionSettingsPanel.add(apiSecretRowPanel);
@@ -257,14 +268,18 @@ public class ApiKeySettingsDialog extends DialogWrapper implements Disposable {
      */
     @Nullable
     protected ValidationInfo doValidate(boolean isTest) {
+        if (apiInfo != null){
+            editFlag = true;
+            type = apiInfo.getType();
+        }
         if (!isTest) {
             String text = nameTextField.getText();
             if (StringUtils.isBlank(text)) {
-                return new ValidationInfo("Connection Name can not be empty");
+                return new ValidationInfo("Api Name can not be empty");
             } else {
-                boolean b = connectionManager.saveOrEditConnectionInfo(text);
+                boolean b = apiSettingManager.checkApiName(text,apiInfo);
                 if (!b){
-                    return new ValidationInfo("Connection Name is exist");
+                    return new ValidationInfo("Api Name is exist");
                 }
             }
         }
@@ -276,15 +291,15 @@ public class ApiKeySettingsDialog extends DialogWrapper implements Disposable {
             return new ValidationInfo("Api server is illegal");
         }
 
-        if (type == ConnectionTypeEnum.baidu.getType()) {
+        if (type == ApiServerTypeEnum.baidu.getType()) {
             if (StringUtils.isBlank(apiKeyField.getText())) {
-                return new ValidationInfo("Apikey can not be empty");
+                return new ValidationInfo("Api key can not be empty");
             }
         }
 
         String apiSecret = new String(apiSecretField.getPassword());
         if (StringUtils.isEmpty(apiSecret)) {
-            return new ValidationInfo("ApiSecret can not be empty");
+            return new ValidationInfo("Api Secret can not be empty");
         }
         return null;
     }
@@ -292,13 +307,13 @@ public class ApiKeySettingsDialog extends DialogWrapper implements Disposable {
 
     public boolean getTestResult(String apiKey,String apiSecret){
         boolean success = false;
-        if (type == ConnectionTypeEnum.baidu.getType()) {
+        if (type == ApiServerTypeEnum.baidu.getType()) {
             String auth = BaiduTools.getAuth(apiKey, apiSecret);
             if (auth != null) {
                 success = true;
 
             }
-        } else if (type == ConnectionTypeEnum.aliyun.getType()) {
+        } else if (type == ApiServerTypeEnum.aliyun.getType()) {
             String send = AliyunTools.send(apiSecret, null);
             if (send != null) {
                 JSONObject sendObj = JSONObject.parseObject(send);
@@ -339,21 +354,21 @@ public class ApiKeySettingsDialog extends DialogWrapper implements Disposable {
             } else {
                 String apiSecret = new String(apiSecretField.getPassword());
                 if (!getTestResult(apiKeyField.getText(),apiSecret)){
-                    ErrorDialog.show("connection failed");
+                    ErrorDialog.show("connect Api failed");
                     return;
                 }
-                // 保存或修改connection
+                // 保存或修改Api setting
                 String connectionInfoId = UUID.randomUUID().toString();
-                ConnectionInfo connectionInfo = ConnectionInfo.builder()
-                        .id(connectionInfoId)
+                ApiInfo apiInfoNew = ApiInfo.builder()
+                        .id(editFlag ? apiInfo.getId():connectionInfoId)
                         .name(nameTextField.getText())
                         .type(type)
                         .apiKey(apiKeyField.getText())
                         .global(globalCheckBox.isSelected())
                         .apiSecret(apiSecret)
                         .build();
-                connectionManager.saveOrEditConnectionInfo(connectionInfo);
-                connectionManager.createListPanel();
+                apiSettingManager.saveOrEditConnectionInfo(apiInfoNew);
+                apiSettingManager.createListPanel();
                 close(CANCEL_EXIT_CODE);
             }
         }
