@@ -82,7 +82,7 @@ public class TimingClock {
             String notification = TimingService.openWorkTimer(timingClock);
             timeTipLabel.setText(notification);
             Notifier.notifyInfo(notification);
-            JOptionPane.showMessageDialog(null, notification);
+            JOptionPane.showMessageDialog(null, notification, "Timing Clock", JOptionPane.INFORMATION_MESSAGE);
         } else {
             TimingService.closeWorkTimer();
         }
