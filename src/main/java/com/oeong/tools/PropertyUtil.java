@@ -142,8 +142,6 @@ public class PropertyUtil {
         if (StringUtils.isEmpty(connectionInfoId)) {
             connectionInfoId = UUID.randomUUID().toString();
             apiInfo.setId(connectionInfoId);
-        } else {
-
         }
 
         // Brainless deletion
