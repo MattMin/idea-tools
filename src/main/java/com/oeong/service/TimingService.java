@@ -65,7 +65,7 @@ public class TimingService {
         TimingCenter.workTimer.schedule(new WorkTask(timingClock),
                 Date.from(TimingCenter.nextRestTime.atZone(ZoneId.systemDefault()).toInstant()));
         TimingCenter.status = TimingCenter.WORKING;
-        return String.format(WORK_TIME_TIP, getDateStr(TimingCenter.nextRestTime));
+        return String.format(WORK_TIME_TIP, getDateStr(LocalDateTime.now()), getDateStr(TimingCenter.nextRestTime));
     }
 
     /**

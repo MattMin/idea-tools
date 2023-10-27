@@ -39,7 +39,9 @@ public class RestTask extends TimerTask {
             String notification = TimingService.openWorkTimer(timingClock);
             timingClock.timeTipLabel.setText(notification);
             Notifier.notifyInfo(notification);
-            JOptionPane.showMessageDialog(null, notification);
+            Object[] options = {"OK"};
+            JOptionPane.showOptionDialog(null, notification, "Timing Clock",
+                    JOptionPane.DEFAULT_OPTION, JOptionPane.INFORMATION_MESSAGE, null, options, options[0]);
         }
     }
 }
