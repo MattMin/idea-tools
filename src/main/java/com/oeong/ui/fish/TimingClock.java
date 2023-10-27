@@ -32,6 +32,7 @@ public class TimingClock {
         // status button
         startRadioButton.addActionListener(e -> {
             if  (!validateTime()) {
+                chooseStopButton();
                 return;
             }
 
@@ -42,6 +43,7 @@ public class TimingClock {
         });
         stopRadioButton.addActionListener(e -> {
             if (!validateTime()) {
+                chooseStopButton();
                 return;
             }
 
@@ -82,26 +84,17 @@ public class TimingClock {
             String notification = TimingService.openWorkTimer(timingClock);
             timeTipLabel.setText(notification);
             Notifier.notifyInfo(notification);
-            JOptionPane.showMessageDialog(null, notification, "Timing Clock", JOptionPane.INFORMATION_MESSAGE);
+            Object[] options = {"OK"};
+            JOptionPane.showOptionDialog(null, notification, "Timing Clock",
+                    JOptionPane.DEFAULT_OPTION, JOptionPane.INFORMATION_MESSAGE, null, options, options[0]);
         } else {
             TimingService.closeWorkTimer();
         }
     }
 
     public boolean validateTime() {
-        String restTime = restField.getText();
         String workTime = workField.getText();
-
-        if (StringUtil.isNotEmpty(restTime) && isInteger(restTime)) {
-            int rest = Integer.parseInt(restTime);
-            if  (rest < 1 || rest > 60) {
-                Notifier.notifyError("The rest time must be between 1 and 60 minutes.");
-                return false;
-            }
-        } else {
-            Notifier.notifyError("The rest time must be an integer.");
-            return false;
-        }
+        String restTime = restField.getText();
 
         if (StringUtil.isNotEmpty(workTime) && isInteger(workTime)) {
             int work = Integer.parseInt(workTime);
@@ -111,6 +104,17 @@ public class TimingClock {
             }
         } else {
             Notifier.notifyError("The work time must be an integer.");
+            return false;
+        }
+
+        if (StringUtil.isNotEmpty(restTime) && isInteger(restTime)) {
+            int rest = Integer.parseInt(restTime);
+            if  (rest < 1 || rest > 60) {
+                Notifier.notifyError("The rest time must be between 1 and 60 minutes.");
+                return false;
+            }
+        } else {
+            Notifier.notifyError("The rest time must be an integer.");
             return false;
         }
 
