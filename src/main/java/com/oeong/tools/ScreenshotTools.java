@@ -43,7 +43,7 @@ public class ScreenshotTools extends JFrame {
         setPreferredSize(d);
         setSize(d);//最大化窗口
         setAlwaysOnTop(true);
-        setDefaultCloseOperation(EXIT_ON_CLOSE);
+        setDefaultCloseOperation(DISPOSE_ON_CLOSE);
 
         this.addMouseListener(new MouseAdapter() {
             public void mousePressed(MouseEvent e) {

@@ -47,7 +47,7 @@ public class OcrDialog extends DialogWrapper implements Disposable {
     private JComboBox connectionComboBox;
     private ApiInfo apiInfo;
 
-    private int type = 0;
+    private int type = 1;
 
     private ApiSettingManager apiSettingManager;
 
@@ -193,7 +193,7 @@ public class OcrDialog extends DialogWrapper implements Disposable {
                         String image = "";
                         String url = "";
                         boolean success = false;
-                        if (type != 0 || type != 1) {
+                        if (!(type == 0 || type == 1)) {
                             resultArea.setText("");
                             //ocr图片来源选择框 没有选择
                             resultArea.append("Picture source is must be choose");
