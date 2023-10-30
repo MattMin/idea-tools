@@ -15,7 +15,8 @@ import java.awt.event.MouseMotionAdapter;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
-import java.util.HashSet;
+import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.Set;
 
 public class Timestamp {
@@ -244,7 +245,7 @@ public class Timestamp {
     void initZone() {
 
         Set<String> timeZones = ZoneId.getAvailableZoneIds();
-        Set<String> timeUTCZones = new HashSet<>();
+        ArrayList<String> timeUTCZones = new ArrayList<>();
 
         for (String timeZone : timeZones) {
             ZoneId zoneId = ZoneId.of(timeZone);
@@ -256,6 +257,7 @@ public class Timestamp {
                 timeUTCZones.add(timeZone + utc);
             }
         }
+        timeUTCZones.sort(Comparator.naturalOrder());
 
         zoneComboBox.setModel(new DefaultComboBoxModel<>(timeUTCZones.toArray(new String[0])));
         zoneComboBox.setSelectedItem("Asia/Shanghai (UTC+08:00)");
