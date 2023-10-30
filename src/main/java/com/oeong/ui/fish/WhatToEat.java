@@ -14,6 +14,7 @@ public class WhatToEat {
     private JButton startButton;
     private JPanel mainPanel;
     private JLabel whatLabel;
+    private JButton stopButton;
 
     JSONArray foodArray;
 
@@ -24,11 +25,19 @@ public class WhatToEat {
     public WhatToEat() {
         initFoodList();
 
-        // choose food randomly
-        startButton.addActionListener(e -> {
+        Timer foodTimer = new Timer(100, e -> {
             Object o = foodArray.get((int) (Math.random() * foodArray.size()));
             String food = o.toString();
             whatLabel.setText(food);
+        });
+
+        // choose food randomly
+        startButton.addActionListener(e -> {
+            foodTimer.start();
+        });
+
+        stopButton.addActionListener(e -> {
+            foodTimer.stop();
         });
     }
 
