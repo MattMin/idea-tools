@@ -1,7 +1,6 @@
 package com.oeong.ui;
 
 import com.intellij.openapi.project.Project;
-import com.oeong.ui.MenuAction;
 import com.oeong.ui.tools.Ocr;
 import org.jetbrains.annotations.NotNull;
 

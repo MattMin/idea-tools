@@ -3,15 +3,15 @@
  import cn.hutool.json.JSONObject;
  import cn.hutool.json.JSONUtil;
 
- import java.io.IOException;
- import java.net.InetSocketAddress;
- import java.net.ProxySelector;
  import java.net.URI;
  import java.net.http.HttpClient;
  import java.net.http.HttpRequest;
  import java.net.http.HttpResponse;
  import java.time.Duration;
- import java.util.*;
+ import java.util.HashMap;
+ import java.util.LinkedHashMap;
+ import java.util.Random;
+ import java.util.Set;
 
  /**
 1、没有动爻：直接使用本卦卦辞来断。

@@ -1,6 +1,5 @@
 package com.oeong.ui;
 
-import com.google.common.base.Objects;
 import com.intellij.openapi.fileTypes.FileType;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.NlsContexts;

@@ -1,11 +1,12 @@
 package com.oeong.ui;
 
 
+import com.intellij.openapi.project.Project;
+import org.jetbrains.annotations.NotNull;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
-import com.intellij.openapi.project.Project;
-import org.jetbrains.annotations.NotNull;
 
 public class PwdMenuItem implements MenuAction {
     @Override

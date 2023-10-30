@@ -21,7 +21,9 @@
         <children>
           <component id="41633" class="javax.swing.JList" binding="connectionJList">
             <constraints/>
-            <properties/>
+            <properties>
+              <model/>
+            </properties>
           </component>
         </children>
       </scrollpane>
