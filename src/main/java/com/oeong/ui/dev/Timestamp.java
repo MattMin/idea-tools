@@ -15,8 +15,7 @@ import java.awt.event.MouseMotionAdapter;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Set;
 
 public class Timestamp {
@@ -36,7 +35,6 @@ public class Timestamp {
     private JButton dateCopyButton;
 
     public static long currentTimestampSecond = 0;
-    public static HashMap<String, String> zoneMap = new HashMap<>();
 
     public Timestamp() {
         Timer currentTimer = new Timer(1000, Timestamp -> {
@@ -201,7 +199,7 @@ public class Timestamp {
             long ts = Long.parseLong(timestamp);
             ts = secondRadioButton.isSelected() ? ts * 1000 : ts;
             // 解析时区字符串
-            ZoneId zoneId = ZoneId.of(zoneMap.get(zone));
+            ZoneId zoneId = ZoneId.of(zone.split(" ")[0]);
             // 将时间戳转换为Instant，然后获取LocalDateTime
             LocalDateTime dateTime = LocalDateTime.ofInstant(java.time.Instant.ofEpochMilli(ts), zoneId);
             // 格式化日期
@@ -224,7 +222,7 @@ public class Timestamp {
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
             LocalDateTime dateTime = LocalDateTime.parse(date, formatter);
             // 解析时区字符串
-            ZoneId zoneId = ZoneId.of(zoneMap.get(zone));
+            ZoneId zoneId = ZoneId.of(zone.split(" ")[0]);
             // 将LocalDateTime转换为Instant，然后获取时间戳（以毫秒为单位）
             long timestamp = dateTime.atZone(zoneId).toInstant().toEpochMilli();
             timestamp = secondRadioButton.isSelected() ? timestamp / 1000 : timestamp;
@@ -244,20 +242,9 @@ public class Timestamp {
     }
 
     void initZone() {
-        initZoneMap();
-        ArrayList<Object> timeZones = new ArrayList<>();
-        for (int offset = -12; offset <= 13; offset++) {
-            String sign = offset >= 0 ? "+" : "-";
-            String zone = "UTC" + sign + String.format("%02d:00", Math.abs(offset));
-            timeZones.add(zone);
-        }
 
-        zoneComboBox.setModel(new DefaultComboBoxModel<>(timeZones.toArray(new String[0])));
-        zoneComboBox.setSelectedItem("UTC+08:00");
-    }
-
-    public static void initZoneMap() {
         Set<String> timeZones = ZoneId.getAvailableZoneIds();
+        Set<String> timeUTCZones = new HashSet<>();
 
         for (String timeZone : timeZones) {
             ZoneId zoneId = ZoneId.of(timeZone);
@@ -265,10 +252,13 @@ public class Timestamp {
 
             if (offset >= -12 && offset <= 13) {
                 String sign = offset >= 0 ? "+" : "-";
-                String zone = "UTC" + sign + String.format("%02d:00", Math.abs(offset));
-                zoneMap.put(zone, timeZone);
+                String utc = " (UTC" + sign + String.format("%02d:00", Math.abs(offset)) + ")";
+                timeUTCZones.add(timeZone + utc);
             }
         }
+
+        zoneComboBox.setModel(new DefaultComboBoxModel<>(timeUTCZones.toArray(new String[0])));
+        zoneComboBox.setSelectedItem("Asia/Shanghai (UTC+08:00)");
     }
 
     void initUnit() {
