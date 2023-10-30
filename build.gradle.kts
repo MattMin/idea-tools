@@ -47,7 +47,6 @@ tasks {
     }
 
     dependencies {
-        implementation("com.alibaba", "fastjson", "2.0.12")
         implementation("cn.hutool:hutool-json:5.8.18")
         compileOnly("org.projectlombok:lombok:1.18.22")
         annotationProcessor("org.projectlombok:lombok:1.18.22")

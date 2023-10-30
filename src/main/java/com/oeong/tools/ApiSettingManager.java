@@ -107,7 +107,7 @@ public class ApiSettingManager {
             ConfirmDialog removeConnectionDialog = new ConfirmDialog(
                     project,
                     "Confirm",
-                    "Are you sure you want to delete these Api setting?",
+                    "Are you sure you want to delete these Api settings?",
                     actionEvent -> {
                         if (this.apiInfo != null) {
                             // connection列表中移除
@@ -137,11 +137,11 @@ public class ApiSettingManager {
                             "<p width=\"300px\">(drag the mouse to select the screenshot area, ESC key to exit, " +
                             "enter key to confirm the screenshot area, after the screenshot is completed, " +
                             "it will be saved to the clipboard)</p></body></html>"
-                    ,
-                    actionEvent -> {
-                        //开始截图
-                        startScreenshot();
-                    });
+                    , null);
+            screenshotDialog.addCustomOkFunction(actionEvent -> {
+                //开始截图
+                startScreenshot();
+            });
             screenshotDialog.show();
         });
 

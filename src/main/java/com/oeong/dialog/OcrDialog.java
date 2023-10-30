@@ -1,8 +1,8 @@
 package com.oeong.dialog;
 
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONArray;
-import com.alibaba.fastjson.JSONObject;
+import cn.hutool.json.JSONArray;
+import cn.hutool.json.JSONObject;
+import cn.hutool.json.JSONUtil;
 import com.intellij.openapi.Disposable;
 import com.intellij.openapi.application.ReadAction;
 import com.intellij.openapi.project.Project;
@@ -37,6 +37,8 @@ import java.util.concurrent.TimeUnit;
 
 import static com.oeong.tools.ScreenshotTools.getClipboardImage;
 
+;
+
 /**
  * @descriptions:
  * @author: Zzw
@@ -45,7 +47,6 @@ import static com.oeong.tools.ScreenshotTools.getClipboardImage;
 public class OcrDialog extends DialogWrapper implements Disposable {
     private JTextField urlTextField;
     private JComboBox connectionComboBox;
-    private ApiInfo apiInfo;
 
     private int type = 1;
 
@@ -69,8 +70,8 @@ public class OcrDialog extends DialogWrapper implements Disposable {
     protected @Nullable JComponent createCenterPanel() {
 
         //ocr图片来源选择框
-        JBRadioButton urlRadio = new JBRadioButton("url");
-        JBRadioButton screenshotRadio = new JBRadioButton("clipboard");
+        JBRadioButton urlRadio = new JBRadioButton("URL");
+        JBRadioButton screenshotRadio = new JBRadioButton("Clipboard");
         screenshotRadio.setSelected(true);
 
         ButtonGroup group = new ButtonGroup();
@@ -79,7 +80,7 @@ public class OcrDialog extends DialogWrapper implements Disposable {
 
         // url 输入框
         urlTextField = new JTextField();
-        urlTextField.setToolTipText("url");
+        urlTextField.setToolTipText("URL");
 
         // 连接下拉框
         connectionComboBox = new JComboBox();
@@ -106,7 +107,7 @@ public class OcrDialog extends DialogWrapper implements Disposable {
         // ocr按钮
         JButton ocrButton = new JButton("OCR");
         //ocr图片来源单选框
-        JLabel optionRadioRowLabel = new JLabel("Picture source:");
+        JLabel optionRadioRowLabel = new JLabel("Picture Source:");
         optionRadioRowLabel.setBorder(JBUI.Borders.emptyLeft(10));
         optionRadioRowLabel.setPreferredSize(new Dimension(130, 12));
 
@@ -116,7 +117,7 @@ public class OcrDialog extends DialogWrapper implements Disposable {
         optionRadioRowPanel.add(urlRadio);
 
         //url
-        JLabel urlLabel = new JLabel("url:");
+        JLabel urlLabel = new JLabel("URL:");
         urlLabel.setBorder(JBUI.Borders.emptyLeft(10));
         urlLabel.setPreferredSize(new Dimension(130, 12));
 
@@ -125,7 +126,7 @@ public class OcrDialog extends DialogWrapper implements Disposable {
         urlRowPanel.add(urlTextField, BorderLayout.CENTER);
 
         //连接选择下拉框
-        JLabel connectionLabel = new JLabel("connection:");
+        JLabel connectionLabel = new JLabel("Api Server:");
         connectionLabel.setBorder(JBUI.Borders.emptyLeft(10));
         connectionLabel.setPreferredSize(new Dimension(130, 12));
 
@@ -148,7 +149,7 @@ public class OcrDialog extends DialogWrapper implements Disposable {
         BoxLayout boxLayout = new BoxLayout(ocrPanel, BoxLayout.Y_AXIS);
         ocrPanel.setLayout(boxLayout);
         ocrPanel.add(optionRadioRowPanel);
-        if (urlRadio.isSelected()){
+        if (urlRadio.isSelected()) {
             ocrPanel.add(urlRowPanel);
         }
         ocrPanel.add(connectionRowPanel);
@@ -240,21 +241,22 @@ public class OcrDialog extends DialogWrapper implements Disposable {
                                 bodyMap.put("image", image);
                                 bodyMap.put("url", url);
                                 if (!"".equals(image) || !"".equals(url)) {
-                                    String sendResult = BaiduTools.send(apiKey, apiSecret, JSON.toJSONString(bodyMap));
+                                    String sendResult = BaiduTools.send(apiKey, apiSecret, JSONUtil.toJsonStr(bodyMap));
                                     if (sendResult != null) {
-
-                                        JSONObject jsonObject = JSONObject.parseObject(sendResult);
-                                        JSONArray wordsResult = jsonObject.getJSONArray("words_result");
-                                        if (wordsResult != null) {
-                                            resultArea.setText("");
-                                            for (Object obj : wordsResult) {
-                                                JSONObject word = (JSONObject) obj;
-                                                String words = word.getString("words");
-                                                resultArea.append(words + "\r\n");
+                                        JSONObject jsonObject = JSONUtil.parseObj(sendResult);
+                                        if (jsonObject != null) {
+                                            JSONArray wordsResult = jsonObject.getJSONArray("words_result");
+                                            if (wordsResult != null) {
+                                                resultArea.setText("");
+                                                for (Object obj : wordsResult) {
+                                                    JSONObject word = (JSONObject) obj;
+                                                    String words = word.getStr("words");
+                                                    resultArea.append(words + "\r\n");
+                                                }
+                                                success = Boolean.TRUE;
+                                                resultArea.setEditable(true);
+                                                resultArea.setFocusable(true);
                                             }
-                                            success = Boolean.TRUE;
-                                            resultArea.setEditable(true);
-                                            resultArea.setFocusable(true);
                                         }
                                     }
                                 }
@@ -262,15 +264,15 @@ public class OcrDialog extends DialogWrapper implements Disposable {
                                 bodyMap.put("img", image);
                                 bodyMap.put("url", url);
                                 if (!"".equals(image) || !"".equals(url)) {
-                                    String sendResult = AliyunTools.send(apiSecret, JSON.toJSONString(bodyMap));
+                                    String sendResult = AliyunTools.send(apiSecret, JSONUtil.toJsonStr(bodyMap));
                                     if (sendResult != null) {
-                                        JSONObject resultObj = JSONObject.parseObject(sendResult);
+                                        JSONObject resultObj = JSONUtil.parseObj(sendResult);
                                         JSONArray prismWordsArr = resultObj.getJSONArray("prism_wordsInfo");
                                         if (prismWordsArr != null) {
                                             resultArea.setText("");
                                             for (Object obj : prismWordsArr) {
                                                 JSONObject wordObject = (JSONObject) obj;
-                                                String word = wordObject.getString("word");
+                                                String word = wordObject.getStr("word");
                                                 resultArea.append(word + "\r\n");
                                             }
                                         }

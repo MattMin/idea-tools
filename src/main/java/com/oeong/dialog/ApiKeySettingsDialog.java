@@ -1,6 +1,7 @@
 package com.oeong.dialog;
 
-import com.alibaba.fastjson.JSONObject;
+import cn.hutool.json.JSONObject;
+import cn.hutool.json.JSONUtil;
 import com.intellij.openapi.Disposable;
 import com.intellij.openapi.application.ReadAction;
 import com.intellij.openapi.project.Project;
@@ -316,8 +317,8 @@ public class ApiKeySettingsDialog extends DialogWrapper implements Disposable {
         } else if (type == ApiServerTypeEnum.aliyun.getType()) {
             String send = AliyunTools.send(apiSecret, null);
             if (send != null) {
-                JSONObject sendObj = JSONObject.parseObject(send);
-                Integer errorCode = sendObj.getInteger("error_code");
+                JSONObject sendObj = JSONUtil.parseObj(send);
+                Integer errorCode = sendObj.getInt("error_code");
                 if (errorCode != null && errorCode == 400) {
                     success = true;
                 }

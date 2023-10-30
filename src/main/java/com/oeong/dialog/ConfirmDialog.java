@@ -18,7 +18,7 @@ import java.util.function.Consumer;
  */
 public class ConfirmDialog extends DialogWrapper {
     private final String centerPanelText;
-    private final Consumer<ActionEvent> customOkFunction;
+    private Consumer<ActionEvent> customOkFunction;
 
     /**
      * @param project
@@ -35,6 +35,10 @@ public class ConfirmDialog extends DialogWrapper {
         this.setAutoAdjustable(true);
         this.myOKAction = new CustomOKAction();
         this.init();
+    }
+
+    public void addCustomOkFunction(Consumer<ActionEvent> customOkFunction) {
+        this.customOkFunction = customOkFunction;
     }
 
     @Override
@@ -62,7 +66,6 @@ public class ConfirmDialog extends DialogWrapper {
         @Override
         protected void doAction(ActionEvent e) {
             if (customOkFunction != null) {
-                close(OK_EXIT_CODE);
                 customOkFunction.accept(e);
             }
             close(OK_EXIT_CODE);

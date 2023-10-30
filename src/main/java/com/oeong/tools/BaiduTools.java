@@ -1,6 +1,7 @@
 package com.oeong.tools;
 
-import com.alibaba.fastjson.JSONObject;
+import cn.hutool.json.JSONObject;
+import cn.hutool.json.JSONUtil;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
@@ -77,8 +78,8 @@ public class BaiduTools {
             response = client.execute(post);
             String bodys = EntityUtils.toString(response.getEntity(), StandardCharsets.UTF_8);
 
-            JSONObject jsonObject = JSONObject.parseObject(bodys);
-            String access_token = jsonObject.getString("access_token");
+            JSONObject jsonObject = JSONUtil.parseObj(bodys);
+            String access_token = jsonObject.getStr("access_token");
             return access_token;
 
 
@@ -108,7 +109,7 @@ public class BaiduTools {
 
         try {
             if (bodys != null) {
-                Map<String, String> map = JSONObject.parseObject(bodys, Map.class);
+                Map<String, String> map = JSONUtil.toBean(bodys, Map.class);
                 List<NameValuePair> nameValuePairs = getNameValuePairList(map);
                 UrlEncodedFormEntity urlEncodedFormEntity = new UrlEncodedFormEntity(nameValuePairs, "UTF-8");
                 /*发送json数据需要设置contentType*/

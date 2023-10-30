@@ -64,18 +64,20 @@ public class SimpleCode {
                 if (titleJList != null) {
                     //获取被选中项的index
                     int selectedIndex = titleJList.getSelectedIndex();
-                    //拿到选中项标题对应的内容
-                    String content = contentList.get(selectedIndex);
-                    //显示内容
-                    ConsoleVirtualFile md = new ConsoleVirtualFile("md", project);
-                    String contentMd = MarkdownUtil.INSTANCE.generateMarkdownHtml(md, content, project);
-                    JBCefBrowser browser = new JBCefBrowser();
-                    browser.loadHTML(contentMd);
-                    //获取content显示的区域
-                    if (contentPanel == null) {
-                        contentPanel = new JBScrollPane();
+                    if (selectedIndex >= 0) {
+                        //拿到选中项标题对应的内容
+                        String content = contentList.get(selectedIndex);
+                        //显示内容
+                        ConsoleVirtualFile md = new ConsoleVirtualFile("md", project);
+                        String contentMd = MarkdownUtil.INSTANCE.generateMarkdownHtml(md, content, project);
+                        JBCefBrowser browser = new JBCefBrowser();
+                        browser.loadHTML(contentMd);
+                        //获取content显示的区域
+                        if (contentPanel == null) {
+                            contentPanel = new JBScrollPane();
+                        }
+                        contentPanel.setViewportView(browser.getComponent());
                     }
-                    contentPanel.setViewportView(browser.getComponent());
                 }
             }
         });
@@ -139,29 +141,27 @@ public class SimpleCode {
                 .setSocketTimeout(5000)
                 .setConnectTimeout(5000)
                 .setConnectionRequestTimeout(5000);
-        //添加代理
-//        requestConfigBuilder.setProxy(new HttpHost("127.0.0.1", 7890));
         get.setConfig(requestConfigBuilder.build());
         try {
             response = client.execute(get);
             responseBody = EntityUtils.toString(response.getEntity(), StandardCharsets.UTF_8);
-//            //剑建一个FiLe对象，指定要读取的文件路轻
-//            File file = new File("https://raw.githubusercontent.com/MattMin/idea-tools/dev/assets/demo-code.md");
-//            //创建一FileInputstream.对象，将File对象作为签数传入
-//            FileInputStream fis = null;
-            try {
+            try (InputStreamReader isr = new InputStreamReader(new ByteArrayInputStream(responseBody.getBytes()));
+                 BufferedReader br = new BufferedReader(isr)) {
 //                fis = new FileInputStream(file);
                 //创建一个InputstreamReader对象，将FileInputstream对象作为袋数传入
-                InputStreamReader isr = new InputStreamReader(new ByteArrayInputStream(responseBody.getBytes()));
                 //创建一BufferedReader对象，将InputstreamReader对象作为鉴物传入
-                BufferedReader br = new BufferedReader(isr);
+
                 //BufferedReader的readLine()方法遂行读欺文件中容
                 String line;
                 StringBuilder contentBuilder = new StringBuilder();
                 titleList = new ArrayList<>();
                 contentList = new ArrayList<>();
+                boolean contentFlag = false;
                 while ((line = br.readLine()) != null) {
-                    if (line.startsWith("# ")) {
+                    if (line.startsWith("```")) {
+                        contentFlag = !contentFlag;
+                    }
+                    if (line.startsWith("# ") && !contentFlag) {
                         titleList.add(line.substring(2));
                         if (!ObjectUtils.isEmpty(contentBuilder)) {
                             contentList.add(contentBuilder.toString());
@@ -174,10 +174,6 @@ public class SimpleCode {
                 contentList.add(contentBuilder.toString());
                 initContentList = contentList;
                 initTitleList = titleList;
-                //关BufferedReader、InputstreamReaderFileInputstream对象
-                br.close();
-                isr.close();
-//                fis.close();
             } catch (Exception e) {
                 throw new RuntimeException(e);
             }
@@ -189,7 +185,7 @@ public class SimpleCode {
 
     public JPanel getSimpleCodeContainer(Project project, String searchStr) {
         //添加搜索框
-        JPanel searchBox = this.createSearchBox(project,searchStr);
+        JPanel searchBox = this.createSearchBox(project, searchStr);
         searchPanel.add(searchBox);
         this.getSearchResult(searchStr);
         //获取DefaultListModel
@@ -226,8 +222,8 @@ public class SimpleCode {
     }
 
 
-    public JPanel createSearchBox(Project project,String searchStr) {
-        if (searchTextField == null){
+    public JPanel createSearchBox(Project project, String searchStr) {
+        if (searchTextField == null) {
             searchTextField = new SearchTextField();
         }
         searchTextField.setText(searchStr);
@@ -248,7 +244,7 @@ public class SimpleCode {
                 }
             }
         });
-        if (searchBoxPanel == null){
+        if (searchBoxPanel == null) {
             searchBoxPanel = new JPanel();
         }
         searchBoxPanel.add(searchTextField);
@@ -270,7 +266,7 @@ public class SimpleCode {
             String[] strArray = searchStr.split(" ");
             List<Pattern> patternList = new ArrayList<>();
             for (String str : strArray) {
-                String regex =  str.toLowerCase() + "+";
+                String regex = str.toLowerCase() + "+";
                 // 创建模式对象
                 Pattern p = Pattern.compile(regex);
                 patternList.add(p);
@@ -281,7 +277,7 @@ public class SimpleCode {
                     // 创建匹配器对象
                     Matcher m = pattern.matcher(initTitleList.get(i).toLowerCase());
                     flag = m.find();
-                    if (!flag){
+                    if (!flag) {
                         break;
                     }
                 }
@@ -290,10 +286,9 @@ public class SimpleCode {
                     contentResultList.add(initContentList.get(i));
                 }
             }
-
             titleList = resultList;
             contentList = contentResultList;
-        }else {
+        } else {
             titleList = initTitleList;
             contentList = initContentList;
         }

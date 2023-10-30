@@ -1,6 +1,6 @@
 package com.oeong.tools;
 
-import com.alibaba.fastjson.JSON;
+import cn.hutool.json.JSONUtil;
 import com.google.common.collect.Lists;
 import com.intellij.credentialStore.CredentialAttributes;
 import com.intellij.credentialStore.CredentialAttributesKt;
@@ -83,7 +83,7 @@ public class PropertyUtil {
                 removeConnectionOld(id);
                 continue;
             }
-            result.add(JSON.parseObject(connection, ApiInfo.class));
+            result.add(JSONUtil.toBean(connection, ApiInfo.class));
         }
         return result;
     }
