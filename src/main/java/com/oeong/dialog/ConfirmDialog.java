@@ -19,6 +19,7 @@ import java.util.function.Consumer;
 public class ConfirmDialog extends DialogWrapper {
     private final String centerPanelText;
     private Consumer<ActionEvent> customOkFunction;
+    private Project project;
 
     /**
      * @param project
@@ -28,6 +29,7 @@ public class ConfirmDialog extends DialogWrapper {
      */
     public ConfirmDialog(@NotNull Project project, String title, String centerPanelText, Consumer<ActionEvent> customOkFunction) {
         super(project);
+        this.project = project;
         this.centerPanelText = centerPanelText;
         this.customOkFunction = customOkFunction;
         this.setTitle(title);

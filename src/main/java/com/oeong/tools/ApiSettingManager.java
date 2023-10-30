@@ -129,20 +129,7 @@ public class ApiSettingManager {
     public ScreenshotAction createScreenshotAction() {
         ScreenshotAction screenshotAction = new ScreenshotAction();
         screenshotAction.setAction(e -> {
-            // 弹出截图确认对话框
-            ConfirmDialog screenshotDialog = new ConfirmDialog(
-                    project,
-                    "Screenshot",
-                    "<html><body><p align=\"center\">Are you sure you want to start taking screenshots?</p>" +
-                            "<p width=\"300px\">(drag the mouse to select the screenshot area, ESC key to exit, " +
-                            "enter key to confirm the screenshot area, after the screenshot is completed, " +
-                            "it will be saved to the clipboard)</p></body></html>"
-                    , null);
-            screenshotDialog.addCustomOkFunction(actionEvent -> {
-                //开始截图
-                startScreenshot();
-            });
-            screenshotDialog.show();
+            startScreenshot();
         });
 
         KeyStroke firstKeyStroke = KeyStroke.getKeyStroke("alt A");

@@ -10,7 +10,9 @@ import com.intellij.icons.AllIcons;
 public class ScreenshotAction extends CustomAction {
 
     public ScreenshotAction() {
-        super("com.oeong.action.ScreenshotAction","Screenshot", "Screenshot", AllIcons.CodeWithMe.CwmScreenOn);
+        super("com.oeong.action.ScreenshotAction", "(drag the mouse to select the screenshot area, ESC key to exit, " +
+                "enter key to confirm the screenshot area, after the screenshot is completed, " +
+                "it will be saved to the clipboard)", "Screenshot", AllIcons.CodeWithMe.CwmScreenOn);
     }
 
 
