@@ -236,6 +236,8 @@ public class ApiSettingManager {
         Map<String, ApiInfo> connectionMap = this.getConnectionMap();
         DefaultListModel<ApiInfo> connectionModel = this.listToModel(connectionMap);
         connectionJList = new JBList<>();
+        // 禁止多选
+        connectionJList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         connectionJList.setModel(connectionModel);
 
         connectionJList.addMouseListener(new MouseAdapter() {
