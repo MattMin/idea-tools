@@ -19,7 +19,10 @@ public abstract class CustomAction extends AnAction {
     public CustomAction(String actionId,String text, String description, Icon icon) {
         super(text, description, icon);
         ActionManager actionManager = ActionManager.getInstance();
-        actionManager.registerAction(actionId, this, PluginId.findId("com.oeong.idea-tools"));
+        AnAction findAction = actionManager.getAction(actionId);
+        if (findAction == null) {
+            actionManager.registerAction(actionId, this, PluginId.findId("com.oeong.idea-tools"));
+        }
         this.actionId = actionId;
     }
 

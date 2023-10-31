@@ -42,7 +42,7 @@ public class ApiKeySettingsDialog extends DialogWrapper implements Disposable {
     private JTextField nameTextField;
     private JTextField apiKeyField;
     private JPasswordField apiSecretField;
-    private JCheckBox globalCheckBox;
+    private JCheckBox defaultCheckBox;
 
     private int type = ApiServerTypeEnum.baidu.getType();
 
@@ -53,7 +53,7 @@ public class ApiKeySettingsDialog extends DialogWrapper implements Disposable {
 
     public ApiKeySettingsDialog(@Nullable Project project, ApiInfo apiInfo, ApiSettingManager apiSettingManager) {
         super(project);
-        this.setTitle("ApiKey Settings");
+        this.setTitle("API Key Settings");
         this.setSize(650, 240);
         this.apiInfo = apiInfo;
         this.myOKAction = new CustomOKAction();
@@ -71,7 +71,7 @@ public class ApiKeySettingsDialog extends DialogWrapper implements Disposable {
         boolean newApiInfo = apiInfo == null;
 
         nameTextField = new JTextField(newApiInfo ? null : apiInfo.getName());
-        nameTextField.setToolTipText("Api Name");
+        nameTextField.setToolTipText("API Name");
         //api服务选择框
         JBRadioButton aliRadio = new JBRadioButton(ApiServerTypeEnum.aliyun.getDescription());
         JBRadioButton baiduRadio = new JBRadioButton(ApiServerTypeEnum.baidu.getDescription());
@@ -91,16 +91,16 @@ public class ApiKeySettingsDialog extends DialogWrapper implements Disposable {
 
         // apiKey 输入框
         apiKeyField = new JTextField(newApiInfo ? null : apiInfo.getApiKey());
-        apiKeyField.setToolTipText("Api Key");
+        apiKeyField.setToolTipText("API Key");
 
         // ApiSecret输入框
         apiSecretField = new JPasswordField(newApiInfo ? null : apiInfo.getApiSecret());
-        apiSecretField.setToolTipText("Api Secret");
+        apiSecretField.setToolTipText("API Secret");
 
         // 显示ApiSecret
-        JCheckBox showApiSecretCheckBox = new JCheckBox("Show Api Secret");
+        JCheckBox showApiSecretCheckBox = new JCheckBox("Show API Secret");
         showApiSecretCheckBox.setBorder(JBUI.Borders.emptyRight(10));
-        showApiSecretCheckBox.setPreferredSize(new Dimension(140, 12));
+        showApiSecretCheckBox.setPreferredSize(new Dimension(160, 12));
         showApiSecretCheckBox.addItemListener(e -> {
             if (e.getStateChange() == ItemEvent.SELECTED) {
                 apiSecretField.setEchoChar((char) 0);
@@ -109,11 +109,11 @@ public class ApiKeySettingsDialog extends DialogWrapper implements Disposable {
             }
         });
 
-        // 设为全局
-        globalCheckBox = new JCheckBox("As Global");
-        globalCheckBox.setSelected(!newApiInfo && apiInfo.getGlobal());
-        globalCheckBox.setBorder(JBUI.Borders.emptyRight(10));
-        globalCheckBox.setPreferredSize(new Dimension(140, 12));
+        // 设为默认的api设置
+        defaultCheckBox = new JCheckBox("As Default API Setting");
+        defaultCheckBox.setSelected(!newApiInfo && apiInfo.getDefaultFlag());
+        defaultCheckBox.setBorder(JBUI.Borders.emptyRight(10));
+        defaultCheckBox.setPreferredSize(new Dimension(160, 12));
 
         JTextPane testResult = new JTextPane();
         testResult.setMargin(JBUI.insetsLeft(10));
@@ -124,7 +124,7 @@ public class ApiKeySettingsDialog extends DialogWrapper implements Disposable {
 
         LoadingDecorator loadingDecorator = new LoadingDecorator(testResult, this, 0);
         // 测试连接按钮
-        JButton testButton = new JButton("Test Api");
+        JButton testButton = new JButton("Test API");
         testButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -170,21 +170,21 @@ public class ApiKeySettingsDialog extends DialogWrapper implements Disposable {
                 }
             }
         });
-        JLabel connectionNameLabel = new JLabel("Api Name:");
+        JLabel connectionNameLabel = new JLabel("API Name:");
         connectionNameLabel.setPreferredSize(new Dimension(130, 12));
         connectionNameLabel.setBorder(JBUI.Borders.emptyLeft(10));
 
-        JLabel apiKeyLabel = new JLabel("Api Key:");
+        JLabel apiKeyLabel = new JLabel("API Key:");
         apiKeyLabel.setBorder(JBUI.Borders.emptyLeft(10));
         apiKeyLabel.setPreferredSize(new Dimension(130, 12));
 
 
-        JLabel apiSecretLabel = new JLabel("Api Secret:");
+        JLabel apiSecretLabel = new JLabel("API Secret:");
         apiSecretLabel.setBorder(JBUI.Borders.emptyLeft(10));
         apiSecretLabel.setPreferredSize(new Dimension(130, 12));
 
 
-        JLabel typeRadioRowLabel = new JLabel("Api Server:");
+        JLabel typeRadioRowLabel = new JLabel("API Server:");
         typeRadioRowLabel.setBorder(JBUI.Borders.emptyLeft(10));
         typeRadioRowLabel.setPreferredSize(new Dimension(130, 12));
 
@@ -197,13 +197,13 @@ public class ApiKeySettingsDialog extends DialogWrapper implements Disposable {
         JPanel connectionNameRowPanel = new JPanel(new BorderLayout());
         connectionNameRowPanel.add(connectionNameLabel, BorderLayout.WEST);
         connectionNameRowPanel.add(nameTextField, BorderLayout.CENTER);
-        connectionNameRowPanel.add(globalCheckBox, BorderLayout.EAST);
+        connectionNameRowPanel.add(defaultCheckBox, BorderLayout.EAST);
 
         JPanel apiKeyRowPanel = new JPanel(new BorderLayout());
         apiKeyRowPanel.add(apiKeyLabel, BorderLayout.WEST);
         apiKeyRowPanel.add(apiKeyField, BorderLayout.CENTER);
         JLabel emptyLabel = new JLabel();
-        emptyLabel.setBorder(JBUI.Borders.emptyRight(140));
+        emptyLabel.setBorder(JBUI.Borders.emptyRight(160));
         apiKeyRowPanel.add(emptyLabel, BorderLayout.EAST);
 
         JPanel apiSecretRowPanel = new JPanel(new BorderLayout());
@@ -276,31 +276,31 @@ public class ApiKeySettingsDialog extends DialogWrapper implements Disposable {
         if (!isTest) {
             String text = nameTextField.getText();
             if (StringUtils.isBlank(text)) {
-                return new ValidationInfo("Api Name can not be empty");
+                return new ValidationInfo("API Name can not be empty");
             } else {
                 boolean b = apiSettingManager.checkApiName(text,apiInfo);
                 if (!b){
-                    return new ValidationInfo("Api Name is exist");
+                    return new ValidationInfo("API Name is exist");
                 }
             }
         }
         if (type == 0) {
-            return new ValidationInfo("Api server is must be choose");
+            return new ValidationInfo("API server is must be choose");
         }
 
         if (!getConnectionTypeList().contains(type)) {
-            return new ValidationInfo("Api server is illegal");
+            return new ValidationInfo("API server is illegal");
         }
 
         if (type == ApiServerTypeEnum.baidu.getType()) {
             if (StringUtils.isBlank(apiKeyField.getText())) {
-                return new ValidationInfo("Api key can not be empty");
+                return new ValidationInfo("API key can not be empty");
             }
         }
 
         String apiSecret = new String(apiSecretField.getPassword());
         if (StringUtils.isEmpty(apiSecret)) {
-            return new ValidationInfo("Api Secret can not be empty");
+            return new ValidationInfo("API Secret can not be empty");
         }
         return null;
     }
@@ -355,17 +355,17 @@ public class ApiKeySettingsDialog extends DialogWrapper implements Disposable {
             } else {
                 String apiSecret = new String(apiSecretField.getPassword());
                 if (!getTestResult(apiKeyField.getText(),apiSecret)){
-                    ErrorDialog.show("connect Api failed");
+                    ErrorDialog.show("connect API failed");
                     return;
                 }
                 // 保存或修改Api setting
                 String connectionInfoId = UUID.randomUUID().toString();
                 ApiInfo apiInfoNew = ApiInfo.builder()
-                        .id(editFlag ? apiInfo.getId():connectionInfoId)
+                        .id(editFlag ? apiInfo.getId() : connectionInfoId)
                         .name(nameTextField.getText())
                         .type(type)
                         .apiKey(apiKeyField.getText())
-                        .global(globalCheckBox.isSelected())
+                        .defaultFlag(defaultCheckBox.isSelected())
                         .apiSecret(apiSecret)
                         .build();
                 apiSettingManager.saveOrEditConnectionInfo(apiInfoNew);

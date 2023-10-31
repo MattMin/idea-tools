@@ -126,7 +126,7 @@ public class OcrDialog extends DialogWrapper implements Disposable {
         urlRowPanel.add(urlTextField, BorderLayout.CENTER);
 
         //连接选择下拉框
-        JLabel connectionLabel = new JLabel("Api Server:");
+        JLabel connectionLabel = new JLabel("API Server:");
         connectionLabel.setBorder(JBUI.Borders.emptyLeft(10));
         connectionLabel.setPreferredSize(new Dimension(130, 12));
 

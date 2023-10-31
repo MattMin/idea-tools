@@ -107,7 +107,7 @@ public class ApiSettingManager {
             ConfirmDialog removeConnectionDialog = new ConfirmDialog(
                     project,
                     "Confirm",
-                    "Are you sure you want to delete these Api settings?",
+                    "Are you sure you want to delete these API settings?",
                     actionEvent -> {
                         if (this.apiInfo != null) {
                             // connection列表中移除
@@ -158,16 +158,9 @@ public class ApiSettingManager {
     }
 
     public void register(CustomAction action, KeyboardShortcut keyboardShortcut) {
-//        KeyStroke firstKeyStroke = KeyStroke.getKeyStroke("control alt A");
-//        KeyStroke secondKeyStroke = KeyStroke.getKeyStroke("C");
-//        keyboardShortcut = new KeyboardShortcut(firstKeyStroke, secondKeyStroke);
-//        keyboardShortcut.getSecondKeyStroke()
-//        String shortcut = KeymapUtil.getShortcutText(keyboardShortcut);
-//        shortcutSets = {new CustomShortcutSet(KeyEvent.VK_ALT), new CustomShortcutSet(KeyEvent.VK_M)};
         ShortcutSet[] shortcutSets = {new CustomShortcutSet(keyboardShortcut)};
         ShortcutSet shortcutSet = new CompositeShortcutSet(shortcutSets);
         action.registerCustomShortcutSet(shortcutSet, container);
-
         // 获取Keymap的实例
         Keymap keymap = KeymapManager.getInstance().getActiveKeymap();
         // 为Action添加快捷键
@@ -191,13 +184,13 @@ public class ApiSettingManager {
      * @param apiInfo
      */
     public void saveOrEditConnectionInfo(ApiInfo apiInfo) {
-        Boolean global = apiInfo.getGlobal();
+        Boolean global = apiInfo.getDefaultFlag();
         Map<String, ApiInfo> connectionMap = this.getConnectionMap();
         ApiInfo globalConnection = propertyUtil.getGlobalConnection();
         //没有全局配置的连接或者是没有连接
         if (global && (globalConnection != null || connectionMap == null)) {
             //如果是配置了全局,将其它所有全局都清除
-            globalConnection.setGlobal(Boolean.FALSE);
+            globalConnection.setDefaultFlag(Boolean.FALSE);
             propertyUtil.saveConnection(globalConnection);
         }
         propertyUtil.saveConnection(apiInfo);

@@ -184,6 +184,8 @@ public class SimpleCode {
 
 
     public JPanel getSimpleCodeContainer(Project project, String searchStr) {
+        container.setLayout(new BoxLayout(container, BoxLayout.Y_AXIS));
+
         //添加搜索框
         JPanel searchBox = this.createSearchBox(project, searchStr);
         searchPanel.add(searchBox);
@@ -210,6 +212,7 @@ public class SimpleCode {
         if (contentPanel == null) {
             contentPanel = new JBScrollPane();
         }
+        contentPanel.setBorder(null);
         contentPanel.setViewportView(browser.getComponent());
         //设置显示数量
         titleJList.setVisibleRowCount(5);
@@ -217,8 +220,13 @@ public class SimpleCode {
         if (titleListPanel == null) {
             titleListPanel = new JBScrollPane();
         }
+        titleListPanel.setBorder(null);
         titleListPanel.setViewportView(titleJList);
-        return this.getContainer();
+
+        container.add(searchPanel);
+        container.add(titleListPanel);
+        container.add(contentPanel);
+        return container;
     }
 
 

@@ -28,7 +28,7 @@ public class PropertyUtil {
     /**
      * connection id集合的key
      */
-    private static final String CONNECTION_ID_LIST_KEY = "connectionIds";
+    private static final String API_SETTING_ID_LIST_KEY = "apiSettingIds";
 
     private static final String RELOAD_AFTER_ADDING_THE_KEY = "reloadAfterAddingTheKey";
 
@@ -51,16 +51,16 @@ public class PropertyUtil {
             propertyUtil.properties.unsetValue(RELOAD_AFTER_ADDING_THE_KEY);
         }
 
-        // 迁移CONNECTION_ID_LIST_KEY
+        // 迁移API_SETTING_ID_LIST_KEY
         final List<ApiInfo> connections = propertyUtil.getConnectionsOld();
         if (!connections.isEmpty()) {
             final List<ApiInfo> newConnections = propertyUtil.apiInfosService.getApiInfos();
             for (ApiInfo connection : connections) {
-                connection.setGlobal(false);
+                connection.setDefaultFlag(false);
                 propertyUtil.removeConnectionOld(connection.getId());
                 newConnections.add(connection);
             }
-            propertyUtil.properties.unsetValue(CONNECTION_ID_LIST_KEY);
+            propertyUtil.properties.unsetValue(API_SETTING_ID_LIST_KEY);
         }
         return propertyUtil;
     }
@@ -71,7 +71,7 @@ public class PropertyUtil {
      * @return 连接列表元素
      */
     public List<ApiInfo> getConnectionsOld() {
-        List<String> ids = properties.getList(CONNECTION_ID_LIST_KEY);
+        List<String> ids = properties.getList(API_SETTING_ID_LIST_KEY);
         if (CollectionUtils.isEmpty(ids)) {
             return Lists.newArrayList();
         }
@@ -113,7 +113,8 @@ public class PropertyUtil {
 
         ApiInfo apiInfo = null;
         for (ApiInfo connection : connections) {
-            if (connection.getGlobal()) {
+            Boolean defaultFlag = connection.getDefaultFlag();
+            if (defaultFlag) {
                 apiInfo = connection;
             }
         }
@@ -161,7 +162,7 @@ public class PropertyUtil {
      * @param id 连接ID
      */
     public void removeConnectionOld(String id) {
-        List<String> ids = properties.getList(CONNECTION_ID_LIST_KEY);
+        List<String> ids = properties.getList(API_SETTING_ID_LIST_KEY);
         if (CollectionUtils.isEmpty(ids)) {
             return;
         }
@@ -171,7 +172,7 @@ public class PropertyUtil {
         }
 
         ids.remove(id);
-        properties.setList(CONNECTION_ID_LIST_KEY, ids);
+        properties.setList(API_SETTING_ID_LIST_KEY, ids);
         properties.unsetValue(id);
     }
 
