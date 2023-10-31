@@ -13,7 +13,7 @@ public class TimeMenuItem implements MenuAction {
     //当前菜单名称
     @Override
     public @NotNull String getName() {
-        return "timestamp";
+        return "Timestamp";
     }
     // 一级菜单名称
     @Override

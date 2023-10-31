@@ -12,7 +12,7 @@ public class TimingMenuItem implements MenuAction {
     // 当前菜单名称
     @Override
     public @NotNull String getName() {
-        return "timing clock";
+        return "Timing clock";
     }
 
     // 一级菜单名称

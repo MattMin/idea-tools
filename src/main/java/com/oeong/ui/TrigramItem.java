@@ -10,7 +10,7 @@ import java.awt.event.ActionEvent;
 public class TrigramItem implements MenuAction{
     @Override
     public @NotNull String getName() {
-        return "trigram";
+        return "Trigram";
     }
 
     @Override

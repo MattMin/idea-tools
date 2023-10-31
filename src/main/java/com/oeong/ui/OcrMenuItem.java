@@ -20,7 +20,7 @@ public class OcrMenuItem implements MenuAction {
      */
     @Override
     public @NotNull String getName() {
-        return "ocr";
+        return "OCR";
     }
 
     /**

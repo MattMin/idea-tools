@@ -11,7 +11,7 @@ import java.awt.event.ActionEvent;
 public class PwdMenuItem implements MenuAction {
     @Override
     public @NotNull String getName() {
-        return "password";
+        return "Password";
     }
 
     @Override
