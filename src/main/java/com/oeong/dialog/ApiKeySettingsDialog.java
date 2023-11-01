@@ -79,10 +79,13 @@ public class ApiKeySettingsDialog extends DialogWrapper implements Disposable {
         int typeSelect = newApiInfo ? type :apiInfo.getType();
         if (typeSelect == ApiServerTypeEnum.baidu.getType()){
             baiduRadio.setSelected(true);
+            aliRadio.setEnabled(false);
         } else if (typeSelect == ApiServerTypeEnum.aliyun.getType()){
             aliRadio.setSelected(true);
+            baiduRadio.setEnabled(false);
         } else {
             baiduRadio.setSelected(true);
+            aliRadio.setEnabled(false);
         }
 
         ButtonGroup group = new ButtonGroup();
@@ -110,7 +113,7 @@ public class ApiKeySettingsDialog extends DialogWrapper implements Disposable {
         });
 
         // 设为默认的api设置
-        defaultCheckBox = new JCheckBox("As Default API Setting");
+        defaultCheckBox = new JCheckBox("As Default");
         defaultCheckBox.setSelected(!newApiInfo && apiInfo.getDefaultFlag());
         defaultCheckBox.setBorder(JBUI.Borders.emptyRight(10));
         defaultCheckBox.setPreferredSize(new Dimension(160, 12));

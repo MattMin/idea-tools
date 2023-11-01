@@ -86,13 +86,20 @@ public class OcrDialog extends DialogWrapper implements Disposable {
         connectionComboBox = new JComboBox();
         final DefaultComboBoxModel defaultComboBoxModel = new DefaultComboBoxModel();
         Map<String, ApiInfo> connectionMap = apiSettingManager.getConnectionMap();
+        int selectedIndex = -1;
         if (connectionMap != null) {
             for (String id : connectionMap.keySet()) {
-                defaultComboBoxModel.addElement(connectionMap.get(id));
+                ApiInfo apiInfo = connectionMap.get(id);
+                defaultComboBoxModel.addElement(apiInfo);
+                if (apiInfo.getDefaultFlag()) {
+                    selectedIndex = defaultComboBoxModel.getIndexOf(apiInfo);
+                }
             }
         }
         connectionComboBox.setModel(defaultComboBoxModel);
-
+        if (selectedIndex != -1) {
+            connectionComboBox.setSelectedIndex(selectedIndex);
+        }
         // ocr结果
         JTextArea resultArea = new JTextArea();
         resultArea.setLineWrap(true);

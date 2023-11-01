@@ -37,6 +37,8 @@ public class ApiSettingManager {
     private JPanel container;
     private PropertyUtil propertyUtil;
     private ApiInfo apiInfo;
+    private boolean ocrRegisterFlag = true;
+    private boolean screenshotRegisterFlag = true;
 
     /**
      * 插件初始化时会调用
@@ -107,7 +109,7 @@ public class ApiSettingManager {
             ConfirmDialog removeConnectionDialog = new ConfirmDialog(
                     project,
                     "Confirm",
-                    "Are you sure you want to delete these API settings?",
+                    "Are you sure you want to delete this API setting?",
                     actionEvent -> {
                         if (this.apiInfo != null) {
                             // connection列表中移除
@@ -131,10 +133,15 @@ public class ApiSettingManager {
         screenshotAction.setAction(e -> {
             startScreenshot();
         });
-
         KeyStroke firstKeyStroke = KeyStroke.getKeyStroke("alt A");
         KeyboardShortcut keyboardShortcut = new KeyboardShortcut(firstKeyStroke, null);
-        this.register(screenshotAction, keyboardShortcut);
+        screenshotAction.addTextOverride(ActionPlaces.TOOLWINDOW_TOOLBAR_BAR, "Screenshot(drag the mouse to select the screenshot area, ESC key to exit, " +
+                "enter key to confirm the screenshot area, after the screenshot is completed, " +
+                "it will be saved to the clipboard)");
+        if (screenshotRegisterFlag) {
+            this.register(screenshotAction, keyboardShortcut);
+            screenshotRegisterFlag = false;
+        }
         return screenshotAction;
     }
 
@@ -153,7 +160,10 @@ public class ApiSettingManager {
         KeyStroke firstKeyStroke = KeyStroke.getKeyStroke("control alt A");
         KeyStroke secondKeyStroke = KeyStroke.getKeyStroke("C");
         KeyboardShortcut keyboardShortcut = new KeyboardShortcut(firstKeyStroke, secondKeyStroke);
-        this.register(ocrAction, keyboardShortcut);
+        if (ocrRegisterFlag) {
+            this.register(ocrAction, keyboardShortcut);
+            ocrRegisterFlag = false;
+        }
         return ocrAction;
     }
 
