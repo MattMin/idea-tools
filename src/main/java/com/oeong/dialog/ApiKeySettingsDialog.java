@@ -282,7 +282,7 @@ public class ApiKeySettingsDialog extends DialogWrapper implements Disposable {
             } else {
                 boolean b = apiSettingManager.checkApiName(text,apiInfo);
                 if (!b){
-                    return new ValidationInfo("API Name is exist");
+                    return new ValidationInfo("API name already exists ");
                 }
             }
         }
