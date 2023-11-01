@@ -77,15 +77,14 @@ public class ApiKeySettingsDialog extends DialogWrapper implements Disposable {
         JBRadioButton baiduRadio = new JBRadioButton(ApiServerTypeEnum.baidu.getDescription());
         //设置选中
         int typeSelect = newApiInfo ? type :apiInfo.getType();
-        if (typeSelect == ApiServerTypeEnum.baidu.getType()){
+        if (!newApiInfo && typeSelect == ApiServerTypeEnum.baidu.getType()) {
             baiduRadio.setSelected(true);
             aliRadio.setEnabled(false);
-        } else if (typeSelect == ApiServerTypeEnum.aliyun.getType()){
+        } else if (!newApiInfo && typeSelect == ApiServerTypeEnum.aliyun.getType()) {
             aliRadio.setSelected(true);
             baiduRadio.setEnabled(false);
         } else {
             baiduRadio.setSelected(true);
-            aliRadio.setEnabled(false);
         }
 
         ButtonGroup group = new ButtonGroup();

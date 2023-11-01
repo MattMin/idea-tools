@@ -37,8 +37,8 @@ public class Ocr {
         ocrPanel.setLayout(new BorderLayout());
         //添加工具栏
         apiSettingManager = ApiSettingManager.getInstance(project);
-        ApiInfo conConnectionDefault = apiSettingManager.getConConnectionDefault();
-        ActionToolbar ocrToolbar = apiSettingManager.createOcrToolbar(conConnectionDefault,container);
+//        ApiInfo conConnectionDefault = apiSettingManager.getConConnectionDefault();
+        ActionToolbar ocrToolbar = apiSettingManager.createOcrToolbar(null, container);
         container.add(ocrToolbar.getComponent(), BorderLayout.NORTH);
         //初始化连接
         apiSettingManager.createListPanel();
