@@ -18,6 +18,7 @@ import org.intellij.plugins.markdown.ui.preview.html.MarkdownUtil;
 import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
+import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.io.BufferedReader;
@@ -184,7 +185,7 @@ public class SimpleCode {
 
 
     public JPanel getSimpleCodeContainer(Project project, String searchStr) {
-        container.setLayout(new BoxLayout(container, BoxLayout.Y_AXIS));
+        container.setLayout(new BorderLayout());
 
         //添加搜索框
         JPanel searchBox = this.createSearchBox(project, searchStr);
@@ -223,9 +224,9 @@ public class SimpleCode {
         titleListPanel.setBorder(null);
         titleListPanel.setViewportView(titleJList);
 
-        container.add(searchPanel);
-        container.add(titleListPanel);
-        container.add(contentPanel);
+        container.add(searchPanel, BorderLayout.NORTH);
+        container.add(titleListPanel, BorderLayout.CENTER);
+        container.add(contentPanel, BorderLayout.SOUTH);
         return container;
     }
 
