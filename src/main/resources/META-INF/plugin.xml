@@ -8,15 +8,14 @@
     <name>Mulan</name>
 
     <!-- A displayed Vendor name or Organization ID displayed on the Plugins Page. -->
-    <vendor email="abc@abc.com" url="https://www.yourcompany.com">l</vendor>
+    <vendor email="oeong@foxmail.com" url="https://github.com/MattMin/idea-tools">l</vendor>
 
     <!-- Description of the plugin displayed on the Plugin Page and IDE Plugin Manager.
          Simple HTML elements (text formatting, paragraphs, and lists) can be added inside of <![CDATA[ ]]> tag.
          Guidelines: https://plugins.jetbrains.com/docs/marketplace/plugin-overview-page.html#plugin-description -->
-    <description><![CDATA[
-    Description of the plugin displayed on the Plugin Page and IDE Plugin Manager.<br>
-    <em>Description of the plugin displayed on the Plugin Page and IDE Plugin Manager</em>
-  ]]></description>
+    <description>
+        This is a JetBrains tool extension with four main functions: development, development tool, effective tool, and fun tool.
+    </description>
 
     <!-- Product and plugin compatibility requirements.
          Read more: https://plugins.jetbrains.com/docs/intellij/plugin-compatibility.html -->
