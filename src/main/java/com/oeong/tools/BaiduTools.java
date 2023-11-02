@@ -84,8 +84,7 @@ public class BaiduTools {
 
 
         } catch (Exception e) {
-            System.err.printf("获取token失败！");
-            e.printStackTrace(System.err);
+            e.printStackTrace();
         }
         return null;
     }

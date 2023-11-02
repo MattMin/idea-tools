@@ -169,7 +169,7 @@ public class ScreenshotTools extends JFrame {
             Image im = (Image) bi;
             setClipboardImage(im);
         } catch (Exception e) {
-
+            e.printStackTrace();
         }
     }
 

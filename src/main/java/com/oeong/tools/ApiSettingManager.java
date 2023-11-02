@@ -1,12 +1,13 @@
 package com.oeong.tools;
 
 import com.intellij.openapi.actionSystem.*;
-import com.intellij.openapi.keymap.Keymap;
-import com.intellij.openapi.keymap.KeymapManager;
 import com.intellij.openapi.project.Project;
 import com.intellij.ui.components.JBList;
 import com.intellij.ui.components.JBScrollPane;
-import com.oeong.action.*;
+import com.oeong.action.AddAction;
+import com.oeong.action.DeleteAction;
+import com.oeong.action.OcrAction;
+import com.oeong.action.ScreenshotAction;
 import com.oeong.dialog.ApiKeySettingsDialog;
 import com.oeong.dialog.ConfirmDialog;
 import com.oeong.dialog.OcrDialog;
@@ -129,19 +130,19 @@ public class ApiSettingManager {
      * @return
      */
     public ScreenshotAction createScreenshotAction() {
-        ScreenshotAction screenshotAction = new ScreenshotAction();
+        ScreenshotAction screenshotAction = (ScreenshotAction) ActionManager.getInstance().getAction("com.oeong.action.ScreenshotAction");
         screenshotAction.setAction(e -> {
             startScreenshot();
         });
-        KeyStroke firstKeyStroke = KeyStroke.getKeyStroke("alt A");
-        KeyboardShortcut keyboardShortcut = new KeyboardShortcut(firstKeyStroke, null);
         screenshotAction.addTextOverride(ActionPlaces.TOOLWINDOW_TOOLBAR_BAR, "Screenshot(drag the mouse to select the screenshot area, ESC key to exit, " +
                 "enter key to confirm the screenshot area, after the screenshot is completed, " +
                 "it will be saved to the clipboard)");
-        if (screenshotRegisterFlag) {
-            this.register(screenshotAction, keyboardShortcut);
-            screenshotRegisterFlag = false;
-        }
+//        KeyStroke firstKeyStroke = KeyStroke.getKeyStroke("alt A");
+//        KeyboardShortcut keyboardShortcut = new KeyboardShortcut(firstKeyStroke, null);
+//        if (screenshotRegisterFlag) {
+//            this.register(screenshotAction, keyboardShortcut);
+//            screenshotRegisterFlag = false;
+//        }
         return screenshotAction;
     }
 
@@ -151,33 +152,34 @@ public class ApiSettingManager {
      * @return
      */
     public OcrAction createOcrAction() {
-        OcrAction ocrAction = new OcrAction();
+
+        OcrAction ocrAction = (OcrAction) ActionManager.getInstance().getAction("com.oeong.action.OcrAction");
         ocrAction.setAction(e -> {
             // 弹出Ocr窗口
             OcrDialog ocrDialog = new OcrDialog(project, this);
             ocrDialog.show();
         });
-        KeyStroke firstKeyStroke = KeyStroke.getKeyStroke("control alt A");
-        KeyStroke secondKeyStroke = KeyStroke.getKeyStroke("C");
-        KeyboardShortcut keyboardShortcut = new KeyboardShortcut(firstKeyStroke, secondKeyStroke);
-        if (ocrRegisterFlag) {
-            this.register(ocrAction, keyboardShortcut);
-            ocrRegisterFlag = false;
-        }
+//        KeyStroke firstKeyStroke = KeyStroke.getKeyStroke("control alt A");
+//        KeyStroke secondKeyStroke = KeyStroke.getKeyStroke("C");
+//        KeyboardShortcut keyboardShortcut = new KeyboardShortcut(firstKeyStroke, secondKeyStroke);
+//        if (ocrRegisterFlag) {
+//            this.register(ocrAction, keyboardShortcut);
+//            ocrRegisterFlag = false;
+//        }
         return ocrAction;
     }
 
-    public void register(CustomAction action, KeyboardShortcut keyboardShortcut) {
-        ShortcutSet[] shortcutSets = {new CustomShortcutSet(keyboardShortcut)};
-        ShortcutSet shortcutSet = new CompositeShortcutSet(shortcutSets);
-        action.registerCustomShortcutSet(shortcutSet, container);
-        // 获取Keymap的实例
-        Keymap keymap = KeymapManager.getInstance().getActiveKeymap();
-        // 为Action添加快捷键
-        ActionManager actionManager = ActionManager.getInstance();
-        actionManager.getAction(action.getActionId());
-        keymap.addShortcut(action.getActionId(), keyboardShortcut);
-    }
+//    public void register(CustomAction action, KeyboardShortcut keyboardShortcut) {
+//        ShortcutSet[] shortcutSets = {new CustomShortcutSet(keyboardShortcut)};
+//        ShortcutSet shortcutSet = new CompositeShortcutSet(shortcutSets);
+//        action.registerCustomShortcutSet(shortcutSet, container);
+//        // 获取Keymap的实例
+//        Keymap keymap = KeymapManager.getInstance().getActiveKeymap();
+//        // 为Action添加快捷键
+//        ActionManager actionManager = ActionManager.getInstance();
+//        actionManager.getAction(action.getActionId());
+//        keymap.addShortcut(action.getActionId(), keyboardShortcut);
+//    }
 
     public Map<String, ApiInfo> getConnectionMap() {
         Map<String, ApiInfo> stringConnectionInfoMap = new HashMap<>();
