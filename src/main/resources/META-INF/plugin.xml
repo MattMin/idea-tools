@@ -5,18 +5,17 @@
 
     <!-- Public plugin name should be written in Title Case.
          Guidelines: https://plugins.jetbrains.com/docs/marketplace/plugin-overview-page.html#plugin-name -->
-    <name>Idea-tools</name>
+    <name>Mulan</name>
 
     <!-- A displayed Vendor name or Organization ID displayed on the Plugins Page. -->
-    <vendor email="support@yourcompany.com" url="https://www.yourcompany.com">YourCompany</vendor>
+    <vendor email="oeong@foxmail.com" url="https://github.com/MattMin/idea-tools">l</vendor>
 
     <!-- Description of the plugin displayed on the Plugin Page and IDE Plugin Manager.
          Simple HTML elements (text formatting, paragraphs, and lists) can be added inside of <![CDATA[ ]]> tag.
          Guidelines: https://plugins.jetbrains.com/docs/marketplace/plugin-overview-page.html#plugin-description -->
-    <description><![CDATA[
-    Enter short description for your plugin here.<br>
-    <em>most HTML tags may be used</em>
-  ]]></description>
+    <description>
+        This is a JetBrains tool extension with four main functions: development, development tool, effective tool, and fun tool.
+    </description>
 
     <!-- Product and plugin compatibility requirements.
          Read more: https://plugins.jetbrains.com/docs/intellij/plugin-compatibility.html -->
@@ -25,6 +24,27 @@
     <!-- Extension points defined by the plugin.
          Read more: https://plugins.jetbrains.com/docs/intellij/plugin-extension-points.html -->
     <extensions defaultExtensionNs="com.intellij">
+        <toolWindow id="Mulan" factoryClass="com.oeong.ui.HomeUi" secondary="false"
+                    icon="AllIcons.Toolwindows.WebToolWindow" anchor="right"/>
+        <notificationGroup id="Custom Notification Group" displayType="BALLOON"/>
 
+        <projectService serviceImplementation="com.oeong.service.ApiInfosService"/>
+        <projectService serviceImplementation="com.oeong.tools.ApiSettingManager"/>
     </extensions>
+
+    <depends>org.intellij.plugins.markdown</depends>
+    <!--    <depends>com.aspose.ocr.java.intellij.maven</depends>-->
+
+    <actions>
+        <action id="com.oeong.action.OcrAction" class="com.oeong.action.OcrAction" text="OCR">
+            <keyboard-shortcut first-keystroke="control alt A"
+                               second-keystroke="C"
+                               keymap="$default"/>
+        </action>
+        <action id="com.oeong.action.ScreenshotAction" class="com.oeong.action.ScreenshotAction" text="Screenshot">
+            <keyboard-shortcut
+                    first-keystroke="alt A"
+                    keymap="$default"/>
+        </action>
+    </actions>
 </idea-plugin>
