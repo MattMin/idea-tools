@@ -14,7 +14,10 @@
          Simple HTML elements (text formatting, paragraphs, and lists) can be added inside of <![CDATA[ ]]> tag.
          Guidelines: https://plugins.jetbrains.com/docs/marketplace/plugin-overview-page.html#plugin-description -->
     <description>
-        This is a JetBrains tool extension with four main functions: development, development tool, effective tool, and fun tool.
+        This is an IntelliJ-based tool with four primary functions: development tools, efficiency tools, and entertainment features.
+        It offers a wide array of functions, including code snippet examples, timestamp conversion, data format formatting, and encryption.
+        Additionally, it provides some entertaining features like what to eat and trigram.
+        This versatile plugin combines practical development tools with fun and practical lifestyle features, making it a valuable addition to any developer's toolkit.
     </description>
 
     <!-- Product and plugin compatibility requirements.
