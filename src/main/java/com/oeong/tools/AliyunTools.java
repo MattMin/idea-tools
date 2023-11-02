@@ -48,7 +48,7 @@ public class AliyunTools {
             response = client.execute(post);
             return EntityUtils.toString(response.getEntity(), StandardCharsets.UTF_8);
         } catch (Exception e) {
-            e.printStackTrace();
+
         }
         return null;
     }

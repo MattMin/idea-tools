@@ -176,10 +176,8 @@ public class SimpleCode {
                 initContentList = contentList;
                 initTitleList = titleList;
             } catch (Exception e) {
-                e.printStackTrace();
             }
         } catch (Exception ex) {
-            ex.printStackTrace();
         }
     }
 

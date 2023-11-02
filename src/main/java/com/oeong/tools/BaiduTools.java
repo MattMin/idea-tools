@@ -66,9 +66,9 @@ public class BaiduTools {
                     .setConnectTimeout(5000)
                     .setConnectionRequestTimeout(5000);
             JSONObject postData = new JSONObject();
-            postData.put("client_id", ak);
-            postData.put("client_secret", sk);
-            postData.put("grant_type", "client_credentials");
+            postData.set("client_id", ak);
+            postData.set("client_secret", sk);
+            postData.set("grant_type", "client_credentials");
 
             StringEntity stringEntity = new StringEntity(postData.toString(), StandardCharsets.UTF_8);
             post.setConfig(requestConfigBuilder.build());
@@ -79,12 +79,9 @@ public class BaiduTools {
             String bodys = EntityUtils.toString(response.getEntity(), StandardCharsets.UTF_8);
 
             JSONObject jsonObject = JSONUtil.parseObj(bodys);
-            String access_token = jsonObject.getStr("access_token");
-            return access_token;
-
-
+            return jsonObject.getStr("access_token");
         } catch (Exception e) {
-            e.printStackTrace();
+
         }
         return null;
     }
@@ -118,7 +115,7 @@ public class BaiduTools {
             response = client.execute(post);
             return EntityUtils.toString(response.getEntity(), StandardCharsets.UTF_8);
         } catch (Exception e) {
-            e.printStackTrace();
+
         }
         return null;
     }
