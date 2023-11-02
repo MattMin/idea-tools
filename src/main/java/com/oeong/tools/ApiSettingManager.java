@@ -1,6 +1,7 @@
 package com.oeong.tools;
 
 import com.intellij.openapi.actionSystem.*;
+import com.intellij.openapi.extensions.PluginId;
 import com.intellij.openapi.project.Project;
 import com.intellij.ui.components.JBList;
 import com.intellij.ui.components.JBScrollPane;
@@ -130,7 +131,12 @@ public class ApiSettingManager {
      * @return
      */
     public ScreenshotAction createScreenshotAction() {
-        ScreenshotAction screenshotAction = (ScreenshotAction) ActionManager.getInstance().getAction("com.oeong.action.ScreenshotAction");
+        ActionManager actionManager = ActionManager.getInstance();
+        AnAction action = actionManager.getAction("com.oeong.action.ScreenshotAction");
+        if (action == null) {
+            actionManager.registerAction("com.oeong.action.ScreenshotAction", action, PluginId.findId("com.oeong.idea-tools"));
+        }
+        ScreenshotAction screenshotAction = (ScreenshotAction) action;
         screenshotAction.setAction(e -> {
             startScreenshot();
         });
@@ -152,8 +158,12 @@ public class ApiSettingManager {
      * @return
      */
     public OcrAction createOcrAction() {
-
-        OcrAction ocrAction = (OcrAction) ActionManager.getInstance().getAction("com.oeong.action.OcrAction");
+        ActionManager actionManager = ActionManager.getInstance();
+        AnAction action = actionManager.getAction("com.oeong.action.OcrAction");
+        if (action == null) {
+            actionManager.registerAction("com.oeong.action.OcrAction", action, PluginId.findId("com.oeong.idea-tools"));
+        }
+        OcrAction ocrAction = (OcrAction) action;
         ocrAction.setAction(e -> {
             // 弹出Ocr窗口
             OcrDialog ocrDialog = new OcrDialog(project, this);
@@ -214,13 +224,13 @@ public class ApiSettingManager {
      * @param connectionName
      * @return true 没有重复 ; false 重复
      */
-    public boolean checkApiName(String connectionName,ApiInfo apiInfo) {
+    public boolean checkApiName(String connectionName, ApiInfo apiInfo) {
         boolean flag = true;
         List<ApiInfo> connections = propertyUtil.getConnections();
         for (ApiInfo connection : connections) {
             String name = connection.getName();
             if (connectionName.equals(name)) {
-                if (apiInfo == null || !connection.getId().equals(apiInfo.getId())){
+                if (apiInfo == null || !connection.getId().equals(apiInfo.getId())) {
                     flag = false;
                 }
             }

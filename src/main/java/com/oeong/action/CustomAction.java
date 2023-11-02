@@ -1,9 +1,7 @@
 package com.oeong.action;
 
-import com.intellij.openapi.actionSystem.ActionManager;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
-import com.intellij.openapi.extensions.PluginId;
 import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
@@ -18,11 +16,6 @@ public abstract class CustomAction extends AnAction {
 
     public CustomAction(String actionId,String text, String description, Icon icon) {
         super(text, description, icon);
-        ActionManager actionManager = ActionManager.getInstance();
-        AnAction findAction = actionManager.getAction(actionId);
-        if (findAction == null) {
-            actionManager.registerAction(actionId, this, PluginId.findId("com.oeong.idea-tools"));
-        }
         this.actionId = actionId;
     }
 
