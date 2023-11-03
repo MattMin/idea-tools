@@ -1,12 +1,14 @@
 package com.oeong.tools;
 
 import com.intellij.openapi.actionSystem.*;
-import com.intellij.openapi.keymap.Keymap;
-import com.intellij.openapi.keymap.KeymapManager;
+import com.intellij.openapi.extensions.PluginId;
 import com.intellij.openapi.project.Project;
 import com.intellij.ui.components.JBList;
 import com.intellij.ui.components.JBScrollPane;
-import com.oeong.action.*;
+import com.oeong.action.AddAction;
+import com.oeong.action.DeleteAction;
+import com.oeong.action.OcrAction;
+import com.oeong.action.ScreenshotAction;
 import com.oeong.dialog.ApiKeySettingsDialog;
 import com.oeong.dialog.ConfirmDialog;
 import com.oeong.dialog.OcrDialog;
@@ -37,6 +39,8 @@ public class ApiSettingManager {
     private JPanel container;
     private PropertyUtil propertyUtil;
     private ApiInfo apiInfo;
+    private boolean ocrRegisterFlag = true;
+    private boolean screenshotRegisterFlag = true;
 
     /**
      * 插件初始化时会调用
@@ -107,7 +111,7 @@ public class ApiSettingManager {
             ConfirmDialog removeConnectionDialog = new ConfirmDialog(
                     project,
                     "Confirm",
-                    "Are you sure you want to delete these Api settings?",
+                    "Are you sure you want to delete this API setting?",
                     actionEvent -> {
                         if (this.apiInfo != null) {
                             // connection列表中移除
@@ -127,14 +131,24 @@ public class ApiSettingManager {
      * @return
      */
     public ScreenshotAction createScreenshotAction() {
-        ScreenshotAction screenshotAction = new ScreenshotAction();
+        ActionManager actionManager = ActionManager.getInstance();
+        AnAction action = actionManager.getAction("com.oeong.action.ScreenshotAction");
+        if (action == null) {
+            actionManager.registerAction("com.oeong.action.ScreenshotAction", action, PluginId.findId("com.oeong.idea-tools"));
+        }
+        ScreenshotAction screenshotAction = (ScreenshotAction) action;
         screenshotAction.setAction(e -> {
             startScreenshot();
         });
-
-        KeyStroke firstKeyStroke = KeyStroke.getKeyStroke("alt A");
-        KeyboardShortcut keyboardShortcut = new KeyboardShortcut(firstKeyStroke, null);
-        this.register(screenshotAction, keyboardShortcut);
+        screenshotAction.addTextOverride(ActionPlaces.TOOLWINDOW_TOOLBAR_BAR, "Screenshot(drag the mouse to select the screenshot area, ESC key to exit, " +
+                "enter key to confirm the screenshot area, after the screenshot is completed, " +
+                "it will be saved to the clipboard)");
+//        KeyStroke firstKeyStroke = KeyStroke.getKeyStroke("alt A");
+//        KeyboardShortcut keyboardShortcut = new KeyboardShortcut(firstKeyStroke, null);
+//        if (screenshotRegisterFlag) {
+//            this.register(screenshotAction, keyboardShortcut);
+//            screenshotRegisterFlag = false;
+//        }
         return screenshotAction;
     }
 
@@ -144,37 +158,38 @@ public class ApiSettingManager {
      * @return
      */
     public OcrAction createOcrAction() {
-        OcrAction ocrAction = new OcrAction();
+        ActionManager actionManager = ActionManager.getInstance();
+        AnAction action = actionManager.getAction("com.oeong.action.OcrAction");
+        if (action == null) {
+            actionManager.registerAction("com.oeong.action.OcrAction", action, PluginId.findId("com.oeong.idea-tools"));
+        }
+        OcrAction ocrAction = (OcrAction) action;
         ocrAction.setAction(e -> {
             // 弹出Ocr窗口
             OcrDialog ocrDialog = new OcrDialog(project, this);
             ocrDialog.show();
         });
-        KeyStroke firstKeyStroke = KeyStroke.getKeyStroke("control alt A");
-        KeyStroke secondKeyStroke = KeyStroke.getKeyStroke("C");
-        KeyboardShortcut keyboardShortcut = new KeyboardShortcut(firstKeyStroke, secondKeyStroke);
-        this.register(ocrAction, keyboardShortcut);
+//        KeyStroke firstKeyStroke = KeyStroke.getKeyStroke("control alt A");
+//        KeyStroke secondKeyStroke = KeyStroke.getKeyStroke("C");
+//        KeyboardShortcut keyboardShortcut = new KeyboardShortcut(firstKeyStroke, secondKeyStroke);
+//        if (ocrRegisterFlag) {
+//            this.register(ocrAction, keyboardShortcut);
+//            ocrRegisterFlag = false;
+//        }
         return ocrAction;
     }
 
-    public void register(CustomAction action, KeyboardShortcut keyboardShortcut) {
-//        KeyStroke firstKeyStroke = KeyStroke.getKeyStroke("control alt A");
-//        KeyStroke secondKeyStroke = KeyStroke.getKeyStroke("C");
-//        keyboardShortcut = new KeyboardShortcut(firstKeyStroke, secondKeyStroke);
-//        keyboardShortcut.getSecondKeyStroke()
-//        String shortcut = KeymapUtil.getShortcutText(keyboardShortcut);
-//        shortcutSets = {new CustomShortcutSet(KeyEvent.VK_ALT), new CustomShortcutSet(KeyEvent.VK_M)};
-        ShortcutSet[] shortcutSets = {new CustomShortcutSet(keyboardShortcut)};
-        ShortcutSet shortcutSet = new CompositeShortcutSet(shortcutSets);
-        action.registerCustomShortcutSet(shortcutSet, container);
-
-        // 获取Keymap的实例
-        Keymap keymap = KeymapManager.getInstance().getActiveKeymap();
-        // 为Action添加快捷键
-        ActionManager actionManager = ActionManager.getInstance();
-        actionManager.getAction(action.getActionId());
-        keymap.addShortcut(action.getActionId(), keyboardShortcut);
-    }
+//    public void register(CustomAction action, KeyboardShortcut keyboardShortcut) {
+//        ShortcutSet[] shortcutSets = {new CustomShortcutSet(keyboardShortcut)};
+//        ShortcutSet shortcutSet = new CompositeShortcutSet(shortcutSets);
+//        action.registerCustomShortcutSet(shortcutSet, container);
+//        // 获取Keymap的实例
+//        Keymap keymap = KeymapManager.getInstance().getActiveKeymap();
+//        // 为Action添加快捷键
+//        ActionManager actionManager = ActionManager.getInstance();
+//        actionManager.getAction(action.getActionId());
+//        keymap.addShortcut(action.getActionId(), keyboardShortcut);
+//    }
 
     public Map<String, ApiInfo> getConnectionMap() {
         Map<String, ApiInfo> stringConnectionInfoMap = new HashMap<>();
@@ -191,13 +206,13 @@ public class ApiSettingManager {
      * @param apiInfo
      */
     public void saveOrEditConnectionInfo(ApiInfo apiInfo) {
-        Boolean global = apiInfo.getGlobal();
+        Boolean global = apiInfo.getDefaultFlag();
         Map<String, ApiInfo> connectionMap = this.getConnectionMap();
         ApiInfo globalConnection = propertyUtil.getGlobalConnection();
         //没有全局配置的连接或者是没有连接
         if (global && (globalConnection != null || connectionMap == null)) {
             //如果是配置了全局,将其它所有全局都清除
-            globalConnection.setGlobal(Boolean.FALSE);
+            globalConnection.setDefaultFlag(Boolean.FALSE);
             propertyUtil.saveConnection(globalConnection);
         }
         propertyUtil.saveConnection(apiInfo);
@@ -209,13 +224,13 @@ public class ApiSettingManager {
      * @param connectionName
      * @return true 没有重复 ; false 重复
      */
-    public boolean checkApiName(String connectionName,ApiInfo apiInfo) {
+    public boolean checkApiName(String connectionName, ApiInfo apiInfo) {
         boolean flag = true;
         List<ApiInfo> connections = propertyUtil.getConnections();
         for (ApiInfo connection : connections) {
             String name = connection.getName();
             if (connectionName.equals(name)) {
-                if (apiInfo == null || !connection.getId().equals(apiInfo.getId())){
+                if (apiInfo == null || !connection.getId().equals(apiInfo.getId())) {
                     flag = false;
                 }
             }
@@ -243,6 +258,8 @@ public class ApiSettingManager {
         Map<String, ApiInfo> connectionMap = this.getConnectionMap();
         DefaultListModel<ApiInfo> connectionModel = this.listToModel(connectionMap);
         connectionJList = new JBList<>();
+        // 禁止多选
+        connectionJList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         connectionJList.setModel(connectionModel);
 
         connectionJList.addMouseListener(new MouseAdapter() {

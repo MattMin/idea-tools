@@ -31,7 +31,7 @@ public class ApiInfo {
     /**
      * 是否全局配置
      */
-    private Boolean global;
+    private Boolean defaultFlag;
 
     @Override
     public String toString() {
@@ -63,8 +63,11 @@ public class ApiInfo {
         return name;
     }
 
-    public Boolean getGlobal() {
-        return global;
+    public Boolean getDefaultFlag() {
+        if (defaultFlag == null) {
+            defaultFlag = Boolean.FALSE;
+        }
+        return defaultFlag;
     }
 
 
@@ -93,8 +96,8 @@ public class ApiInfo {
         this.apiSecret = apiSecret;
     }
 
-    public void setGlobal(Boolean global) {
-        this.global = global;
+    public void setDefaultFlag(Boolean defaultFlag) {
+        this.defaultFlag = defaultFlag;
     }
 
     public int getType() {

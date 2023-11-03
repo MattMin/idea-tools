@@ -12,7 +12,7 @@ public class EatMenuItem implements MenuAction {
     // 当前菜单名称
     @Override
     public @NotNull String getName() {
-        return "what to eat";
+        return "What to eat";
     }
 
     // 一级菜单名称

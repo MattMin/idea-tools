@@ -20,7 +20,7 @@ public class SimpleCodeMenuItem implements MenuAction {
      */
     @Override
     public @NotNull String getName() {
-        return "simple code";
+        return "Simple code";
     }
 
     /**

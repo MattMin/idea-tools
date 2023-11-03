@@ -138,7 +138,7 @@ public class ScreenshotTools extends JFrame {
         try {
             setClipboardImage(saveImage);
         } catch (Exception e) {
-            e.printStackTrace();
+
         }
     }
 
@@ -149,7 +149,7 @@ public class ScreenshotTools extends JFrame {
             Dimension d = Toolkit.getDefaultToolkit().getScreenSize();
             image = robot.createScreenCapture(new Rectangle(0, 0, d.width, d.height));
         } catch (AWTException e) {
-            e.printStackTrace();
+
         }
     }
 
@@ -169,7 +169,6 @@ public class ScreenshotTools extends JFrame {
             Image im = (Image) bi;
             setClipboardImage(im);
         } catch (Exception e) {
-
         }
     }
 

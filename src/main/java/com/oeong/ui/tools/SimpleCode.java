@@ -18,6 +18,7 @@ import org.intellij.plugins.markdown.ui.preview.html.MarkdownUtil;
 import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
+import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.io.BufferedReader;
@@ -175,15 +176,15 @@ public class SimpleCode {
                 initContentList = contentList;
                 initTitleList = titleList;
             } catch (Exception e) {
-                throw new RuntimeException(e);
             }
         } catch (Exception ex) {
-            throw new RuntimeException(ex);
         }
     }
 
 
     public JPanel getSimpleCodeContainer(Project project, String searchStr) {
+        container.setLayout(new BorderLayout());
+
         //添加搜索框
         JPanel searchBox = this.createSearchBox(project, searchStr);
         searchPanel.add(searchBox);
@@ -210,6 +211,7 @@ public class SimpleCode {
         if (contentPanel == null) {
             contentPanel = new JBScrollPane();
         }
+        contentPanel.setBorder(null);
         contentPanel.setViewportView(browser.getComponent());
         //设置显示数量
         titleJList.setVisibleRowCount(5);
@@ -217,8 +219,13 @@ public class SimpleCode {
         if (titleListPanel == null) {
             titleListPanel = new JBScrollPane();
         }
+        titleListPanel.setBorder(null);
         titleListPanel.setViewportView(titleJList);
-        return this.getContainer();
+
+        container.add(searchPanel, BorderLayout.NORTH);
+        container.add(titleListPanel, BorderLayout.CENTER);
+        container.add(contentPanel, BorderLayout.SOUTH);
+        return container;
     }
 
 
