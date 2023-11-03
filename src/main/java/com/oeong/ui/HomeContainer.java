@@ -113,7 +113,7 @@ public class HomeContainer {
             list.forEach(ma->{
                 var item = menu.add(ma.getName());
                 item.setFont(new Font("Default", Font.PLAIN,13));
-                item.setPreferredSize(new Dimension(90,35));
+                item.setPreferredSize(new Dimension(100,35));
                 item.addActionListener(e->{
                     hide(parent);
                     JPanel panel = subJPanels.get(ma.getName());
