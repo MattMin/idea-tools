@@ -47,7 +47,6 @@ tasks {
 
     dependencies {
         implementation("cn.hutool:hutool-json:5.8.18")
-        implementation("com.cronutils:cron-utils:9.2.1")
         compileOnly("org.projectlombok:lombok:1.18.22")
         annotationProcessor("org.projectlombok:lombok:1.18.22")
         testCompileOnly("org.projectlombok:lombok:1.18.22")

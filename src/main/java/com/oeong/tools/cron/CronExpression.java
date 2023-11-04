@@ -207,8 +207,8 @@ public class CronExpression implements Serializable, Cloneable {
     protected static final Integer ALL_SPEC = ALL_SPEC_INT;
     protected static final Integer NO_SPEC = NO_SPEC_INT;
     
-    protected static final Map<String, Integer> monthMap = new HashMap<String, Integer>(20);
-    protected static final Map<String, Integer> dayMap = new HashMap<String, Integer>(60);
+    public static final Map<String, Integer> monthMap = new HashMap<String, Integer>(20);
+    public static final Map<String, Integer> dayMap = new HashMap<String, Integer>(60);
     static {
         monthMap.put("JAN", 0);
         monthMap.put("FEB", 1);
