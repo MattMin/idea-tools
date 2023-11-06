@@ -210,8 +210,8 @@ public class CronExpression implements Serializable, Cloneable {
     protected static final Integer ALL_SPEC = ALL_SPEC_INT;
     protected static final Integer NO_SPEC = NO_SPEC_INT;
     
-    public static final Map<String, Integer> monthMap = new HashMap<String, Integer>(20);
-    public static final Map<String, Integer> dayMap = new HashMap<String, Integer>(60);
+    public static final Map<String, Integer> monthMap = new HashMap<>(20);
+    public static final Map<String, Integer> dayMap = new HashMap<>(60);
     static {
         monthMap.put("JAN", 0);
         monthMap.put("FEB", 1);
@@ -354,25 +354,25 @@ public class CronExpression implements Serializable, Cloneable {
         try {
 
             if (seconds == null) {
-                seconds = new TreeSet<Integer>();
+                seconds = new TreeSet<>();
             }
             if (minutes == null) {
-                minutes = new TreeSet<Integer>();
+                minutes = new TreeSet<>();
             }
             if (hours == null) {
-                hours = new TreeSet<Integer>();
+                hours = new TreeSet<>();
             }
             if (daysOfMonth == null) {
-                daysOfMonth = new TreeSet<Integer>();
+                daysOfMonth = new TreeSet<>();
             }
             if (months == null) {
-                months = new TreeSet<Integer>();
+                months = new TreeSet<>();
             }
             if (daysOfWeek == null) {
-                daysOfWeek = new TreeSet<Integer>();
+                daysOfWeek = new TreeSet<>();
             }
             if (years == null) {
-                years = new TreeSet<Integer>();
+                years = new TreeSet<>();
             }
 
             int exprOn = SECOND;
@@ -430,7 +430,7 @@ public class CronExpression implements Serializable, Cloneable {
             throw pe;
         } catch (Exception e) {
             throw new ParseException("Illegal cron expression format ("
-                    + e.toString() + ")", 0);
+                    + e + ")", 0);
         }
     }
 

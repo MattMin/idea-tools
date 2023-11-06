@@ -66,7 +66,6 @@ public class Cron {
         }
         if(arr[4].equals("*")){
             expStr = expStr.substring(0,expStr.lastIndexOf('*'))+"?";
-            return "";
         }
         try {
             CronExpressionEx exp = new CronExpressionEx("0 "+expStr);
@@ -107,7 +106,6 @@ public class Cron {
         }
         if(arr[5].equals("*")){
             expStr = expStr.substring(0,expStr.lastIndexOf('*'))+"?";
-            return "";
         }
         try {
             CronExpressionEx exp = new CronExpressionEx(expStr);
