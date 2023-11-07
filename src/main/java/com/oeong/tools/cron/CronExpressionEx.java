@@ -6,7 +6,6 @@ import java.util.StringTokenizer;
 
 /**
  * 
- * @author Administrator
  */
 public class CronExpressionEx extends CronExpression {
   private static final long serialVersionUID = 1L;
