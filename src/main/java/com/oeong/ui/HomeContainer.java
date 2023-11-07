@@ -3,13 +3,13 @@ package com.oeong.ui;
 import com.intellij.openapi.wm.ToolWindow;
 import com.intellij.ui.components.JBMenu;
 import com.intellij.ui.plaf.beg.IdeaMenuUI;
+import com.oeong.notice.Notifier;
 import groovy.util.logging.Slf4j;
 
 import javax.swing.*;
 import java.awt.*;
 import java.net.URL;
 import java.net.URLDecoder;
-import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.*;
 import java.util.jar.JarEntry;
@@ -17,6 +17,7 @@ import java.util.jar.JarFile;
 import java.util.stream.Collectors;
 
 import static com.oeong.ui.MenuAction.*;
+import static java.nio.charset.StandardCharsets.UTF_8;
 
 @Slf4j
 public class HomeContainer {
@@ -54,16 +55,16 @@ public class HomeContainer {
         menus.add(dev);
         menuBar.add(dev);
         var items = new ArrayList<MenuAction>();
-        try {
-            URL url = getClass().getResource("/com");
-            if(url==null){
-                throw new Exception("加载自定义菜单类异常");
-            }
-            String path = url.getPath();
-            if(path.startsWith("file:")){
-                path=path.substring(5);
-            }
-            JarFile jarFile = new JarFile(URLDecoder.decode(path.substring(0,path.lastIndexOf("/com")-1), StandardCharsets.UTF_8));
+        URL url = getClass().getResource("/com");
+        if(url==null){
+            Notifier.notifyError("加载自定义菜单类异常");
+            return;
+        }
+        String path = url.getPath();
+        if(path.startsWith("file:")){
+            path=path.substring(5);
+        }
+        try(JarFile jarFile = new JarFile(URLDecoder.decode(path.substring(0,path.lastIndexOf("/com")-1),UTF_8))){
             var enu = jarFile.entries();
             while (enu.hasMoreElements()) {
                 JarEntry jarEntry = enu.nextElement();
