@@ -33,6 +33,7 @@
 
         <projectService serviceImplementation="com.oeong.service.ApiInfosService"/>
         <projectService serviceImplementation="com.oeong.tools.ApiSettingManager"/>
+        <projectService serviceImplementation="com.oeong.gpt.GPTSettingManager"/>
     </extensions>
 
     <depends>org.intellij.plugins.markdown</depends>
@@ -49,5 +50,21 @@
                     first-keystroke="alt A"
                     keymap="$default"/>
         </action>
+
+        <group id="ChatGPTFindBug">
+            <action id="FindBug" icon="AllIcons.Toolwindows.WebToolWindow"
+                    class="com.oeong.gpt.FindBugAction"/>
+            <separator/>
+            <add-to-group group-id="EditorPopupMenu" anchor="first"/>
+            <separator/>
+        </group>
+
+        <group id="ChatGPTExplainException">
+            <action id="ExplainException" icon="AllIcons.Toolwindows.WebToolWindow"
+                    class="com.oeong.gpt.ExplainExceptionAction"/>
+            <separator/>
+            <add-to-group group-id="ConsoleEditorPopupMenu" anchor="first"/>
+            <separator/>
+        </group>
     </actions>
 </idea-plugin>
