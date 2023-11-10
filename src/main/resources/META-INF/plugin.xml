@@ -52,7 +52,7 @@
         </action>
 
         <group id="ChatGPTFindBug">
-            <action id="FindBug" icon="AllIcons.Toolwindows.WebToolWindow"
+            <action id="FindBug" icon="AllIcons.Debugger.AttachToProcess"
                     class="com.oeong.gpt.FindBugAction"/>
             <separator/>
             <add-to-group group-id="EditorPopupMenu" anchor="first"/>
@@ -60,7 +60,7 @@
         </group>
 
         <group id="ChatGPTExplainException">
-            <action id="ExplainException" icon="AllIcons.Toolwindows.WebToolWindow"
+            <action id="ExplainException" icon="AllIcons.Debugger.Db_disabled_exception_breakpoint"
                     class="com.oeong.gpt.ExplainExceptionAction"/>
             <separator/>
             <add-to-group group-id="ConsoleEditorPopupMenu" anchor="first"/>

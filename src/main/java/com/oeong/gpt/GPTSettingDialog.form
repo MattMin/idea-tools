@@ -3,7 +3,7 @@
   <grid id="27dc6" binding="contentPane" layout-manager="GridLayoutManager" row-count="3" column-count="1" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
     <margin top="10" left="10" bottom="10" right="10"/>
     <constraints>
-      <xy x="20" y="20" width="259" height="136"/>
+      <xy x="20" y="20" width="269" height="136"/>
     </constraints>
     <properties/>
     <border type="none"/>
@@ -54,6 +54,11 @@
             <properties>
               <model>
                 <item value="gpt-3.5-turbo"/>
+                <item value="gpt-3.5-turbo-1106"/>
+                <item value="text-davinci-003"/>
+                <item value="code-davinci-002"/>
+                <item value="gpt-4"/>
+                <item value="gpt-4-32k-0613"/>
               </model>
             </properties>
           </component>

@@ -1,17 +1,12 @@
 package com.oeong.gpt;
 
 import com.intellij.ide.util.PropertiesComponent;
-import com.intellij.openapi.actionSystem.AnActionEvent;
-import com.intellij.openapi.project.Project;
-import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
-import java.util.function.Consumer;
 
 public class GPTSettingDialog extends JDialog {
 
-    protected Consumer<AnActionEvent> action;
-
+    // https://platform.openai.com/docs/models/gpt-3-5
     private JComboBox modelBox;
     private JTextField keyField;
     private JButton okButton;
@@ -19,7 +14,7 @@ public class GPTSettingDialog extends JDialog {
     private JPanel contentPane;
     PropertiesComponent propertiesComponent = PropertiesComponent.getInstance();
 
-    public GPTSettingDialog(@Nullable Project project, GPTSettingManager gptSettingManager) {
+    public GPTSettingDialog() {
         setContentPane(contentPane);
         setModal(true);
         setTitle("openAI Setting");
@@ -34,10 +29,10 @@ public class GPTSettingDialog extends JDialog {
         modelBox.setSelectedItem(openaiModel != null ? openaiModel : "gpt-3.5-turbo");
 
         cancelButton.addActionListener(e -> onCancel());
-        okButton.addActionListener(e -> onOK(project, gptSettingManager));
+        okButton.addActionListener(e -> onOK());
     }
 
-    private void onOK(Project project, GPTSettingManager gptSettingManager) {
+    private void onOK() {
         String apiKey = keyField.getText();
         Object selectedItem = modelBox.getSelectedItem();
         assert selectedItem != null;

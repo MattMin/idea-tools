@@ -9,11 +9,7 @@ import javax.swing.*;
 
 public class GPTSettingManager {
 
-    private Project project;
-    private JPanel container;
-
-    protected GPTSettingManager(Project project) {
-        this.project = project;
+    protected GPTSettingManager() {
     }
 
     public static GPTSettingManager getInstance(Project project) {
@@ -21,7 +17,6 @@ public class GPTSettingManager {
     }
 
     public ActionToolbar createGPTToolbar(JPanel container) {
-        this.container = container;
 
         // 工具栏
         DefaultActionGroup actions = new DefaultActionGroup();
@@ -39,7 +34,7 @@ public class GPTSettingManager {
         GPTSettingAction settingAction = new GPTSettingAction();
         settingAction.setAction(e -> {
             // 弹出连接配置窗口
-            GPTSettingDialog apiKeySettingsDialog = new GPTSettingDialog(project, this);
+            GPTSettingDialog apiKeySettingsDialog = new GPTSettingDialog();
             apiKeySettingsDialog.show();
         });
         return settingAction;
