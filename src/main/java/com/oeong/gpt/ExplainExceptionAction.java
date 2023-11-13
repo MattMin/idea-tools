@@ -10,9 +10,9 @@ import com.oeong.gpt.core.SendAction;
 import com.oeong.gpt.ui.MainPanel;
 import org.jetbrains.annotations.NotNull;
 
-import static com.oeong.gpt.GPT.ACTIVE_COMPONENT;
-import static com.oeong.gpt.core.GPTCoreAction.EXCEPTION_PROMPT;
-import static com.oeong.gpt.core.GPTCoreAction.EXPLAIN;
+import static com.oeong.gpt.GPT.ACTIVE_CONTENT;
+import static com.oeong.gpt.OpenAISettingsState.EXCEPTION_PROMPT;
+import static com.oeong.gpt.OpenAISettingsState.EXPLAIN;
 
 public class ExplainExceptionAction extends AnAction {
 
@@ -23,7 +23,7 @@ public class ExplainExceptionAction extends AnAction {
     @Override
     public void actionPerformed(@NotNull AnActionEvent e) {
         Project project = e.getProject();
-        MainPanel mainPanel = (MainPanel)project.getUserData(ACTIVE_COMPONENT);
+        MainPanel mainPanel = (MainPanel) project.getUserData(ACTIVE_CONTENT);
 
         Editor editor = e.getData(CommonDataKeys.EDITOR);
         assert editor != null;

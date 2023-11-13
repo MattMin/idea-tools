@@ -35,14 +35,11 @@
         <applicationService serviceImplementation="com.oeong.gpt.TokenManager"/>
         <projectService serviceImplementation="com.oeong.service.ApiInfosService"/>
         <projectService serviceImplementation="com.oeong.tools.ApiSettingManager"/>
-        <projectService serviceImplementation="com.oeong.gpt.GPTSettingManager"/>
         <projectService serviceImplementation="com.oeong.gpt.core.SendAction"/>
         <projectService serviceImplementation="com.oeong.gpt.GPT35TurboHandler"/>
-        <projectService serviceImplementation="com.oeong.gpt.ConversationManager"/>
     </extensions>
 
     <depends>org.intellij.plugins.markdown</depends>
-    <!--    <depends>com.aspose.ocr.java.intellij.maven</depends>-->
 
     <actions>
         <action id="com.oeong.action.OcrAction" class="com.oeong.action.OcrAction" text="OCR">

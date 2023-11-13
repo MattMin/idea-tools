@@ -29,30 +29,25 @@ public class GPT35TurboHandler extends AbstractHandler {
         Call call = null;
         RequestProvider provider = new RequestProvider().create(mainPanel, question);
         try {
-            LOG.info("GPT 3.5 Turbo Request: question={}",question);
+            LOG.info("GPT 3.5 Turbo Request: question={}", question);
             Request request = new Request.Builder()
                     .url(provider.getUrl())
                     .headers(Headers.of(provider.getHeader()))
                     .post(RequestBody.create(provider.getData().getBytes(StandardCharsets.UTF_8),
-                                    MediaType.parse("application/json")))
+                            MediaType.parse("application/json")))
                     .build();
             OpenAISettingsState instance = OpenAISettingsState.getInstance();
             OkHttpClient.Builder builder = new OkHttpClient.Builder()
                     .connectTimeout(Integer.parseInt(instance.connectionTimeout), TimeUnit.MILLISECONDS)
                     .readTimeout(Integer.parseInt(instance.readTimeout), TimeUnit.MILLISECONDS);
-//            builder.hostnameVerifier(getHostNameVerifier());
             builder.sslSocketFactory(getSslContext().getSocketFactory(), (X509TrustManager) getTrustAllManager());
-//            if (instance.enableProxy) {
-//                Proxy proxy = getProxy();
-//                builder.proxy(proxy);
-//            }
 
             OkHttpClient httpClient = builder.build();
             call = httpClient.newCall(request);
             call.enqueue(new Callback() {
                 @Override
                 public void onFailure(@NotNull Call call, @NotNull IOException e) {
-                    String errorMessage = StringUtil.isEmpty(e.getMessage())? "None" : e.getMessage();
+                    String errorMessage = StringUtil.isEmpty(e.getMessage()) ? "None" : e.getMessage();
                     if (e instanceof SocketException) {
                         LOG.info("GPT 3.5 Turbo: Stop generating");
                         component.setContent("Stop generating");
@@ -73,9 +68,9 @@ public class GPT35TurboHandler extends AbstractHandler {
                 @Override
                 public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
                     String responseMessage = response.body().string();
-                    LOG.info("GPT 3.5 Turbo Response: answer={}",responseMessage);
+                    LOG.info("GPT 3.5 Turbo Response: answer={}", responseMessage);
                     if (response.code() != 200) {
-                        LOG.info("GPT 3.5 Turbo: Request failure. Url={}, response={}",provider.getUrl(), responseMessage);
+                        LOG.info("GPT 3.5 Turbo: Request failure. Url={}, response={}", provider.getUrl(), responseMessage);
                         component.setContent("Response failure, please try again. Error message: " + responseMessage);
                         mainPanel.aroundRequest(false);
                         return;

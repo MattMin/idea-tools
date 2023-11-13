@@ -27,7 +27,7 @@ public class MessageGroupComponent extends JBPanel<MessageGroupComponent> implem
             ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
     private int myScrollValue = 0;
     private final MessageComponent tips =
-            new MessageComponent("Use 'Find Bug' in the Editor or 'Explain Exception' in the Console.",false);
+            new MessageComponent("Use 'Find Bug' in the Editor or 'Explain Exception' in the Console.", false);
 
     private final MyAdjustmentListener scrollListener = new MyAdjustmentListener();
     private JsonArray messages = new JsonArray();
@@ -51,7 +51,7 @@ public class MessageGroupComponent extends JBPanel<MessageGroupComponent> implem
 
         JPanel panel = new JPanel(new BorderLayout());
         panel.setOpaque(false);
-        panel.setBorder(JBUI.Borders.empty(0,10,10,0));
+        panel.setBorder(JBUI.Borders.empty(0, 10, 10, 0));
 
         panel.add(myTitle, BorderLayout.WEST);
 
@@ -105,8 +105,7 @@ public class MessageGroupComponent extends JBPanel<MessageGroupComponent> implem
             if (myScrollValue == 0 && value > 0 || myScrollValue > 0 && value == 0) {
                 myScrollValue = value;
                 repaint();
-            }
-            else {
+            } else {
                 myScrollValue = value;
             }
         });
@@ -130,9 +129,9 @@ public class MessageGroupComponent extends JBPanel<MessageGroupComponent> implem
     public void updateLayout() {
         LayoutManager layout = myList.getLayout();
         int componentCount = myList.getComponentCount();
-        for (int i = 0 ; i< componentCount ; i++) {
+        for (int i = 0; i < componentCount; i++) {
             layout.removeLayoutComponent(myList.getComponent(i));
-            layout.addLayoutComponent(null,myList.getComponent(i));
+            layout.addLayoutComponent(null, myList.getComponent(i));
         }
     }
 
@@ -150,7 +149,7 @@ public class MessageGroupComponent extends JBPanel<MessageGroupComponent> implem
     public boolean isVisible() {
         if (super.isVisible()) {
             int count = myList.getComponentCount();
-            for (int i = 0 ; i < count ; i++) {
+            for (int i = 0; i < count; i++) {
                 if (myList.getComponent(i).isVisible()) {
                     return true;
                 }
@@ -188,5 +187,4 @@ public class MessageGroupComponent extends JBPanel<MessageGroupComponent> implem
     public JsonArray getMessages() {
         return messages;
     }
-
 }

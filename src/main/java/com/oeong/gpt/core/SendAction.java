@@ -52,8 +52,8 @@ public class SendAction extends AnAction {
         MessageGroupComponent contentPanel = mainPanel.getContentPanel();
 
         // Add the message component to container
-        MessageComponent question = new MessageComponent(data,true);
-        MessageComponent answer = new MessageComponent("Waiting for response...",false);
+        MessageComponent question = new MessageComponent(data, true);
+        MessageComponent answer = new MessageComponent("Waiting for response...", false);
         contentPanel.add(question);
         contentPanel.add(answer);
 

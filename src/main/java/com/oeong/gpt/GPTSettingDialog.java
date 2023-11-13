@@ -12,6 +12,7 @@ public class GPTSettingDialog extends JDialog {
     private JButton okButton;
     private JButton cancelButton;
     private JPanel contentPane;
+    OpenAISettingsState state = OpenAISettingsState.getInstance();
     PropertiesComponent propertiesComponent = PropertiesComponent.getInstance();
 
     public GPTSettingDialog() {
@@ -22,8 +23,12 @@ public class GPTSettingDialog extends JDialog {
         SwingUtilities.invokeLater(() -> setLocationRelativeTo(null)); // 居中
         getRootPane().setDefaultButton(okButton);
 
-        String openaiKey = propertiesComponent.getValue("openaiKey");
-        String openaiModel = propertiesComponent.getValue("openaiModel");
+        String openaiKey = state.apiKey;
+        String openaiModel = state.gpt35Model;
+
+
+//        String openaiKey = propertiesComponent.getValue("openaiKey");
+//        String openaiModel = propertiesComponent.getValue("openaiModel");
 
         keyField.setText(openaiKey != null ? openaiKey : "");
         modelBox.setSelectedItem(openaiModel != null ? openaiModel : "gpt-3.5-turbo");
@@ -37,8 +42,11 @@ public class GPTSettingDialog extends JDialog {
         Object selectedItem = modelBox.getSelectedItem();
         assert selectedItem != null;
 
-        propertiesComponent.setValue("openaiKey", apiKey);
-        propertiesComponent.setValue("openaiModel", selectedItem.toString());
+        state.apiKey = apiKey;
+        state.gpt35Model = selectedItem.toString();
+
+//        propertiesComponent.setValue("openaiKey", apiKey);
+//        propertiesComponent.setValue("openaiModel", selectedItem.toString());
 
         dispose();
     }

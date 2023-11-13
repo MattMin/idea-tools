@@ -31,22 +31,17 @@ public class MainPanel {
     private ExecutorService executorService;
     private Object requestHolder;
 
-    private boolean myIsChatGPTModel;
-
-    public MainPanel(@NotNull Project project, boolean isChatGPTModel) {
-        myIsChatGPTModel = isChatGPTModel;
+    public MainPanel(@NotNull Project project) {
         myProject = project;
         SendListener listener = new SendListener(this);
 
-        splitter = new OnePixelSplitter(true,.98f);
+        splitter = new OnePixelSplitter(true, .98f);
         splitter.setDividerWidth(2);
 
-        searchTextArea = new SearchTextArea(new JBTextArea(),true);
+        searchTextArea = new SearchTextArea(new JBTextArea(), true);
         searchTextArea.getTextArea().addKeyListener(listener);
         searchTextArea.setMinimumSize(new Dimension(searchTextArea.getWidth(), 500));
-//        searchTextArea.setMultilineEnabled(OpenAISettingsState.getInstance().enableLineWarp);
-//        searchTextArea.setMultilineEnabled(true);
-        button = new JButton("send", IconLoader.getIcon("/icons/send.svg",MainPanel.class));
+        button = new JButton("send", IconLoader.getIcon("/icons/send.svg", MainPanel.class));
         button.addActionListener(listener);
         button.setUI(new DarculaButtonUI());
 
@@ -55,7 +50,7 @@ public class MainPanel {
             executorService.shutdownNow();
             aroundRequest(false);
             if (requestHolder instanceof EventSource) {
-                ((EventSource)requestHolder).cancel();
+                ((EventSource) requestHolder).cancel();
             } else if (requestHolder instanceof Call) {
                 ((Call) requestHolder).cancel();
             }
@@ -106,11 +101,11 @@ public class MainPanel {
         if (status) {
             contentPanel.addScrollListener();
             actionPanel.remove(button);
-            actionPanel.add(stopGenerating,BorderLayout.EAST);
+            actionPanel.add(stopGenerating, BorderLayout.EAST);
         } else {
             contentPanel.removeScrollListener();
             actionPanel.remove(stopGenerating);
-            actionPanel.add(button,BorderLayout.EAST);
+            actionPanel.add(button, BorderLayout.EAST);
         }
         actionPanel.updateUI();
     }

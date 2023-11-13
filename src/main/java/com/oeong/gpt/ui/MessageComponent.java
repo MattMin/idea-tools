@@ -13,22 +13,13 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.util.ArrayList;
-import java.util.List;
 
 public class MessageComponent extends JBPanel<MessageComponent> {
 
     private final MessagePanel component = new MessagePanel();
-
-    private final String question;
-
     private String answer;
 
-    private final List<String> answers = new ArrayList<>();
-
-
     public MessageComponent(String content, boolean me) {
-        question = content;
         setDoubleBuffered(true);
         setOpaque(true);
         setBackground(me ? new JBColor(0xEAEEF7, 0x45494A) : new JBColor(0xE0EEF7, 0x2d2f30 /*2d2f30*/));
@@ -120,17 +111,4 @@ public class MessageComponent extends JBPanel<MessageComponent> {
             scrollRectToVisible(bounds);
         });
     }
-
-    public List<String> getAnswers() {
-        return answers;
-    }
-
-    public String prevAnswers() {
-        StringBuilder result = new StringBuilder();
-        for (String s : answers){
-            result.append(s);
-        }
-        return result.toString();
-    }
-
 }
