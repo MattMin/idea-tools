@@ -22,15 +22,16 @@ public class FindBugAction extends AnAction {
 
     @Override
     public void actionPerformed(@NotNull AnActionEvent e) {
-        Project project = e.getProject();
-        MainPanel mainPanel = (MainPanel) project.getUserData(ACTIVE_CONTENT);
-
+        // get selected text
         Editor editor = e.getData(CommonDataKeys.EDITOR);
         assert editor != null;
         String selectedText = editor.getSelectionModel().getSelectedText();
-        String question = BUG_PROMPT + selectedText;
+
+        // get main panel
+        Project project = e.getProject();
+        MainPanel mainPanel = (MainPanel) project.getUserData(ACTIVE_CONTENT);
 
         SendAction sendAction = mainPanel.getProject().getService(SendAction.class);
-        sendAction.doActionPerformed(mainPanel, question);
+        sendAction.doPromptActionPerformed(mainPanel, BUG_PROMPT, "```" + selectedText + "```");
     }
 }

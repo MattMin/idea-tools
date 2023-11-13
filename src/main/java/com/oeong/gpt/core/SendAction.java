@@ -1,47 +1,25 @@
 package com.oeong.gpt.core;
 
-import com.intellij.openapi.actionSystem.AnAction;
-import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.project.Project;
 import com.oeong.gpt.GPT35TurboHandler;
 import com.oeong.gpt.ui.MainPanel;
 import com.oeong.gpt.ui.MessageComponent;
 import com.oeong.gpt.ui.MessageGroupComponent;
+import com.oeong.notice.Notifier;
 import okhttp3.Call;
 import org.apache.commons.lang3.StringUtils;
-import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.concurrent.ExecutorService;
 
-import static com.oeong.gpt.GPT.ACTIVE_CONTENT;
-
-public class SendAction extends AnAction {
+public class SendAction {
 
     private static final Logger LOG = LoggerFactory.getLogger(SendAction.class);
-
-    private String data;
-
-    @Override
-    public void actionPerformed(@NotNull AnActionEvent e) {
-        Project project = e.getProject();
-        Object mainPanel = project.getUserData(ACTIVE_CONTENT);
-        doActionPerformed((MainPanel) mainPanel, data);
-    }
-
-    private boolean presetCheck() {
-        return true;
-    }
 
     public void doActionPerformed(MainPanel mainPanel, String data) {
         // Filter the empty text
         if (StringUtils.isEmpty(data)) {
-            return;
-        }
-
-        // Check the configuration first
-        if (!presetCheck()) {
             return;
         }
 
@@ -73,5 +51,19 @@ public class SendAction extends AnAction {
             mainPanel.aroundRequest(false);
             LOG.error("ChatGPT: Request failed, error={}", e.getMessage());
         }
+    }
+
+    public void doPromptActionPerformed(MainPanel mainPanel, String prompt, String data) {
+        if (mainPanel == null) {
+            Notifier.notifyWarn("Please open the GPT window first.");
+            return;
+        }
+
+        if (StringUtils.isEmpty(data)) {
+            Notifier.notifyWarn("Please select the text first.");
+            return;
+        }
+
+        doActionPerformed(mainPanel, prompt + data);
     }
 }

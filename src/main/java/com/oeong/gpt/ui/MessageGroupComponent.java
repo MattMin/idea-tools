@@ -12,6 +12,7 @@ import com.intellij.util.ui.JBFont;
 import com.intellij.util.ui.JBUI;
 import com.intellij.util.ui.UIUtil;
 import com.oeong.gpt.GPTSettingDialog;
+import lombok.Getter;
 
 import javax.swing.*;
 import java.awt.*;
@@ -27,11 +28,11 @@ public class MessageGroupComponent extends JBPanel<MessageGroupComponent> implem
             ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
     private int myScrollValue = 0;
     private final MessageComponent tips =
-            new MessageComponent("Use 'Find Bug' in the Editor or 'Explain Exception' in the Console.", false);
+            new MessageComponent("You need to set the 'Configuration' firstly. And you can use 'Find Bug' in the Editor or 'Explain Exception' in the Console.", false);
 
     private final MyAdjustmentListener scrollListener = new MyAdjustmentListener();
+    @Getter
     private JsonArray messages = new JsonArray();
-
 
     public MessageGroupComponent() {
         setBorder(JBUI.Borders.empty(10, 10, 10, 0));
@@ -77,7 +78,7 @@ public class MessageGroupComponent extends JBPanel<MessageGroupComponent> implem
             public void mouseClicked(MouseEvent e) {
                 super.mouseClicked(e);
                 GPTSettingDialog apiKeySettingsDialog = new GPTSettingDialog();
-                apiKeySettingsDialog.show();
+                apiKeySettingsDialog.setVisible(true);
             }
         });
         config.setFont(JBFont.label());
@@ -182,9 +183,5 @@ public class MessageGroupComponent extends JBPanel<MessageGroupComponent> implem
                 source.setValue(source.getMaximum());
             }
         }
-    }
-
-    public JsonArray getMessages() {
-        return messages;
     }
 }

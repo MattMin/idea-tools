@@ -15,7 +15,7 @@ public class GPT {
 
     @Getter
     private JPanel container;
-    public static final Key ACTIVE_CONTENT = Key.create("ActiveContent");
+    public static final Key<Object> ACTIVE_CONTENT = Key.create("ActiveContent");
 
     public GPT(Project project) {
         this.project = project;

@@ -8,7 +8,7 @@ import java.util.Map;
 
 public class TokenManager {
     private final Map<String, String> headers = new HashMap<>();
-    private OpenAISettingsState settings = OpenAISettingsState.getInstance();
+    private final OpenAISettingsState settings = OpenAISettingsState.getInstance();
 
     public static TokenManager getInstance() {
         return ApplicationManager.getApplication().getService(TokenManager.class);

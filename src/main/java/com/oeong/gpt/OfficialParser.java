@@ -4,6 +4,7 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import lombok.Getter;
 
 public class OfficialParser {
 
@@ -35,17 +36,10 @@ public class OfficialParser {
         return parseResult;
     }
 
+    @Getter
     public static class ParseResult {
         private String source;
         private String html;
-
-        public String getSource() {
-            return source;
-        }
-
-        public String getHtml() {
-            return html;
-        }
     }
 
 }

@@ -23,9 +23,10 @@ public class OpenAISettingsState implements PersistentStateComponent<OpenAISetti
     public Boolean enableContext = false;
     public Boolean enableTokenConsumption = false;
     public Boolean enableGPT35StreamResponse = false;
+    public Boolean enableLineWarp = true;
     public static final String BUG = "Find Bug";
     public static final String EXPLAIN = "Explain Exception";
-    public static final String BUG_PROMPT = "find bugs in this code: ";
+    public static final String BUG_PROMPT = "Find bug from the following code: ";
     public static final String EXCEPTION_PROMPT = "explain this exception: ";
 
     public static OpenAISettingsState getInstance() {

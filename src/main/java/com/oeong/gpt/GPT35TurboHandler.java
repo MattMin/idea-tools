@@ -29,7 +29,7 @@ public class GPT35TurboHandler extends AbstractHandler {
         Call call = null;
         RequestProvider provider = new RequestProvider().create(mainPanel, question);
         try {
-            LOG.info("GPT 3.5 Turbo Request: question={}", question);
+            LOG.info("ChatGPT Request: question={}", question);
             Request request = new Request.Builder()
                     .url(provider.getUrl())
                     .headers(Headers.of(provider.getHeader()))
@@ -49,15 +49,14 @@ public class GPT35TurboHandler extends AbstractHandler {
                 public void onFailure(@NotNull Call call, @NotNull IOException e) {
                     String errorMessage = StringUtil.isEmpty(e.getMessage()) ? "None" : e.getMessage();
                     if (e instanceof SocketException) {
-                        LOG.info("GPT 3.5 Turbo: Stop generating");
+                        LOG.info("ChatGPT: Stop generating");
                         component.setContent("Stop generating");
-                        e.printStackTrace();
                         return;
                     }
-                    LOG.error("GPT 3.5 Turbo Request failure. Url={}, error={}",
+                    LOG.error("ChatGPT Request failure. Url={}, error={}",
                             call.request().url(),
                             errorMessage);
-                    errorMessage = "GPT 3.5 Turbo Request failure, cause: " + errorMessage;
+                    errorMessage = "ChatGPT Request failure, cause: " + errorMessage;
                     component.setSourceContent(errorMessage);
                     component.setContent(errorMessage);
                     mainPanel.aroundRequest(false);
@@ -67,10 +66,11 @@ public class GPT35TurboHandler extends AbstractHandler {
 
                 @Override
                 public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
+                    assert response.body() != null;
                     String responseMessage = response.body().string();
-                    LOG.info("GPT 3.5 Turbo Response: answer={}", responseMessage);
+                    LOG.info("ChatGPT Response: answer={}", responseMessage);
                     if (response.code() != 200) {
-                        LOG.info("GPT 3.5 Turbo: Request failure. Url={}, response={}", provider.getUrl(), responseMessage);
+                        LOG.info("ChatGPT: Request failure. Url={}, response={}", provider.getUrl(), responseMessage);
                         component.setContent("Response failure, please try again. Error message: " + responseMessage);
                         mainPanel.aroundRequest(false);
                         return;
