@@ -13,6 +13,8 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.util.ArrayList;
+import java.util.List;
 
 public class MessageComponent extends JBPanel<MessageComponent> {
 
@@ -21,6 +23,9 @@ public class MessageComponent extends JBPanel<MessageComponent> {
     private final String question;
 
     private String answer;
+
+    private final List<String> answers = new ArrayList<>();
+
 
     public MessageComponent(String content, boolean me) {
         question = content;
@@ -74,4 +79,58 @@ public class MessageComponent extends JBPanel<MessageComponent> {
 
         return component;
     }
+
+    public void setSourceContent(String source) {
+        answer = source;
+    }
+
+    public void setContent(String content) {
+        new MessageWorker(content).execute();
+    }
+
+    class MessageWorker extends SwingWorker<Void, String> {
+        private final String message;
+
+        public MessageWorker(String message) {
+            this.message = message;
+        }
+
+        @Override
+        protected Void doInBackground() {
+            return null;
+        }
+
+        @Override
+        protected void done() {
+            try {
+                get();
+                component.updateMessage(message);
+                component.updateUI();
+            } catch (Exception e) {
+
+                Notifier.notifyError("ChatGPT Exception in processing response: response:" + message
+                        + " error: " + e.getMessage());
+            }
+        }
+    }
+
+    public void scrollToBottom() {
+        SwingUtilities.invokeLater(() -> {
+            Rectangle bounds = getBounds();
+            scrollRectToVisible(bounds);
+        });
+    }
+
+    public List<String> getAnswers() {
+        return answers;
+    }
+
+    public String prevAnswers() {
+        StringBuilder result = new StringBuilder();
+        for (String s : answers){
+            result.append(s);
+        }
+        return result.toString();
+    }
+
 }

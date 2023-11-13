@@ -11,6 +11,7 @@ import com.intellij.openapi.actionSystem.CommonDataKeys;
 import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.text.StringUtil;
+import com.oeong.gpt.ui.MainPanel;
 import com.oeong.gpt.ui.MessageComponent;
 import com.oeong.gpt.ui.MessageGroupComponent;
 import com.oeong.notice.Notifier;
@@ -44,9 +45,10 @@ public class GPTCoreAction {
         Project project = e.getProject();
         JPanel container = (JPanel)project.getUserData(ACTIVE_CONTENT);
         JPanel gptPanel = (JPanel)project.getUserData(ACTIVE_GPTPANEL);
-        MessageGroupComponent component = (MessageGroupComponent)project.getUserData(ACTIVE_COMPONENT);
+//        MessageGroupComponent component = (MessageGroupComponent)project.getUserData(ACTIVE_COMPONENT);
+        MainPanel mainPanel = (MainPanel)project.getUserData(ACTIVE_COMPONENT);
 
-        if (component == null || gptPanel == null || container == null) {
+        if (mainPanel == null || gptPanel == null || container == null) {
             Notifier.notifyWarn("Please open GPT page first.");
             return;
         }
@@ -56,11 +58,11 @@ public class GPTCoreAction {
         String selectedText = editor.getSelectionModel().getSelectedText();
         String question = prompt + selectedText;
 
-        chatGPT(question, container, gptPanel, component);
+        chatGPT(question, container, gptPanel, mainPanel);
     }
 
 
-    public void chatGPT(String question, JPanel container, JPanel gptPanel, MessageGroupComponent component) {
+    public void chatGPT(String question, JPanel container, JPanel gptPanel, MainPanel component) {
         addComponent(true, container, gptPanel, component, question);
 
         String openaiKey = propertiesComponent.getValue("openaiKey");
@@ -108,13 +110,14 @@ public class GPTCoreAction {
             } catch (Exception e) {
                 String notice = "There is something wrong in ChatGPT, please try again later.";
                 Notifier.notifyError(notice);
-                addComponent(false, container, gptPanel, component, notice);
+//                addComponent(false, container, gptPanel, component, notice);
                 throw new RuntimeException(e);
             }
         }).start();
     }
 
-    public void addComponent(boolean me, JPanel container, JPanel gptPanel, MessageGroupComponent component, String question) {
+    public void addComponent(boolean me, JPanel container, JPanel gptPanel, MainPanel mainPanel, String question) {
+        MessageGroupComponent component = mainPanel.getContentPanel();
         MessageComponent messageComponent = new MessageComponent(question, me);
         component.add(messageComponent);
         gptPanel.add(component, BorderLayout.CENTER);

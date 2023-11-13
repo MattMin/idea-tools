@@ -1,17 +1,24 @@
 package com.oeong.gpt.ui;
 
+import com.google.gson.JsonArray;
 import com.intellij.openapi.ui.NullableComponent;
 import com.intellij.ui.Gray;
 import com.intellij.ui.JBColor;
 import com.intellij.ui.components.JBLabel;
 import com.intellij.ui.components.JBPanel;
+import com.intellij.ui.components.labels.LinkLabel;
 import com.intellij.ui.components.panels.VerticalLayout;
 import com.intellij.util.ui.JBFont;
 import com.intellij.util.ui.JBUI;
 import com.intellij.util.ui.UIUtil;
+import com.oeong.gpt.GPTSettingDialog;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.AdjustmentEvent;
+import java.awt.event.AdjustmentListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 
 public class MessageGroupComponent extends JBPanel<MessageGroupComponent> implements NullableComponent {
 
@@ -21,6 +28,10 @@ public class MessageGroupComponent extends JBPanel<MessageGroupComponent> implem
     private int myScrollValue = 0;
     private final MessageComponent tips =
             new MessageComponent("Use 'Find Bug' in the Editor or 'Explain Exception' in the Console.",false);
+
+    private final MyAdjustmentListener scrollListener = new MyAdjustmentListener();
+    private JsonArray messages = new JsonArray();
+
 
     public MessageGroupComponent() {
         setBorder(JBUI.Borders.empty(10, 10, 10, 0));
@@ -43,6 +54,41 @@ public class MessageGroupComponent extends JBPanel<MessageGroupComponent> implem
         panel.setBorder(JBUI.Borders.empty(0,10,10,0));
 
         panel.add(myTitle, BorderLayout.WEST);
+
+        // clear
+        LinkLabel<String> newChat = new LinkLabel<>("Clear", null);
+        newChat.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                super.mouseClicked(e);
+                myList.removeAll();
+                myList.add(tips);
+                myList.updateUI();
+                messages = new JsonArray();
+            }
+        });
+        newChat.setFont(JBFont.label());
+        newChat.setBorder(JBUI.Borders.emptyRight(20));
+
+        // config
+        LinkLabel<String> config = new LinkLabel<>("Configuration", null);
+        config.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                super.mouseClicked(e);
+                GPTSettingDialog apiKeySettingsDialog = new GPTSettingDialog();
+                apiKeySettingsDialog.show();
+            }
+        });
+        config.setFont(JBFont.label());
+        config.setBorder(JBUI.Borders.emptyRight(20));
+
+        // 将 config 和 newChat 放在同一个 FlowLayout 中
+        JPanel buttonsPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 0, 0));
+        buttonsPanel.setOpaque(false);
+        buttonsPanel.add(newChat);
+        buttonsPanel.add(config);
+        panel.add(buttonsPanel, BorderLayout.EAST);
 
         mainPanel.add(panel, BorderLayout.NORTH);
 
@@ -117,4 +163,30 @@ public class MessageGroupComponent extends JBPanel<MessageGroupComponent> implem
     public boolean isNull() {
         return !isVisible();
     }
+
+    public void addScrollListener() {
+        myScrollPane.getVerticalScrollBar().
+                addAdjustmentListener(scrollListener);
+    }
+
+    public void removeScrollListener() {
+        myScrollPane.getVerticalScrollBar().
+                removeAdjustmentListener(scrollListener);
+    }
+
+    static class MyAdjustmentListener implements AdjustmentListener {
+
+        @Override
+        public void adjustmentValueChanged(AdjustmentEvent e) {
+            JScrollBar source = (JScrollBar) e.getSource();
+            if (!source.getValueIsAdjusting()) {
+                source.setValue(source.getMaximum());
+            }
+        }
+    }
+
+    public JsonArray getMessages() {
+        return messages;
+    }
+
 }

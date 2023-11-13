@@ -18,8 +18,8 @@ public class GPTSettingDialog extends JDialog {
         setContentPane(contentPane);
         setModal(true);
         setTitle("openAI Setting");
-        setLocation(400, 200);
         setSize(400, 200);
+        SwingUtilities.invokeLater(() -> setLocationRelativeTo(null)); // 居中
         getRootPane().setDefaultButton(okButton);
 
         String openaiKey = propertiesComponent.getValue("openaiKey");
