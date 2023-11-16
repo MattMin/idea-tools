@@ -19,23 +19,6 @@
         <border type="none"/>
         <children/>
       </grid>
-      <scrollpane id="3397d" binding="contentPanel">
-        <constraints border-constraint="South"/>
-        <properties/>
-        <border type="none"/>
-        <children/>
-      </scrollpane>
-      <scrollpane id="9f63" binding="titleListPanel">
-        <constraints border-constraint="Center"/>
-        <properties/>
-        <border type="none"/>
-        <children>
-          <component id="e06b7" class="javax.swing.JList" binding="titleJList">
-            <constraints/>
-            <properties/>
-          </component>
-        </children>
-      </scrollpane>
     </children>
   </grid>
   <buttonGroups>

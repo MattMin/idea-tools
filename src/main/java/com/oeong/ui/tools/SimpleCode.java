@@ -1,6 +1,7 @@
 package com.oeong.ui.tools;
 
 import com.intellij.openapi.project.Project;
+import com.intellij.ui.JBSplitter;
 import com.intellij.ui.SearchTextField;
 import com.intellij.ui.components.JBList;
 import com.intellij.ui.components.JBScrollPane;
@@ -18,7 +19,6 @@ import org.intellij.plugins.markdown.ui.preview.html.MarkdownUtil;
 import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
-import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.io.BufferedReader;
@@ -36,24 +36,33 @@ import java.util.regex.Pattern;
  * @date: 2023/9/18 10:26
  */
 public class SimpleCode {
+    private final JBCefBrowser browser = new JBCefBrowser();
     String responseBody;
     List<String> titleList;
     List<String> contentList;
     List<String> initTitleList;
     List<String> initContentList;
-
+    private Project project;
     private JPanel container;
     private SearchTextField searchTextField;
     private JScrollPane titleListPanel;
     private JScrollPane contentPanel;
     private JList titleJList;
     private JPanel searchPanel;
+    private JBSplitter splitter;
     private JPanel searchBoxPanel;
 
-
     public SimpleCode(Project project) {
-        initSimpleCode();
+        this.project = project;
+        splitter = new JBSplitter(true, 0.2f);
+        titleJList = new JBList();
+        titleListPanel = new JBScrollPane(titleJList);
+        contentPanel = new JBScrollPane();
+        splitter.setFirstComponent(titleListPanel);
+        splitter.setSecondComponent(contentPanel);
+        container.add(splitter);
 
+        initSimpleCode();
         titleJList.addListSelectionListener(new ListSelectionListener() {
             /**
              * Called whenever the value of the selection changes.
@@ -68,20 +77,12 @@ public class SimpleCode {
                     if (selectedIndex >= 0) {
                         //拿到选中项标题对应的内容
                         String content = contentList.get(selectedIndex);
-                        //显示内容
-                        ConsoleVirtualFile md = new ConsoleVirtualFile("md", project);
-                        String contentMd = MarkdownUtil.INSTANCE.generateMarkdownHtml(md, content, project);
-                        JBCefBrowser browser = new JBCefBrowser();
-                        browser.loadHTML(contentMd);
-                        //获取content显示的区域
-                        if (contentPanel == null) {
-                            contentPanel = new JBScrollPane();
-                        }
-                        contentPanel.setViewportView(browser.getComponent());
+                        browser.loadHTML(content);
                     }
                 }
             }
         });
+
     }
 
     public JPanel getContainer() {
@@ -124,14 +125,6 @@ public class SimpleCode {
         this.titleJList = titleJList;
     }
 
-    public JPanel getSearchPanel() {
-        return searchPanel;
-    }
-
-    public void setSearchPanel(JPanel searchPanel) {
-        this.searchPanel = searchPanel;
-    }
-
     public void initSimpleCode() {
         //获取示例代码信息
         HttpGet get = new HttpGet("https://oeong.com/assets/file/demo-code.md");
@@ -148,11 +141,6 @@ public class SimpleCode {
             responseBody = EntityUtils.toString(response.getEntity(), StandardCharsets.UTF_8);
             try (InputStreamReader isr = new InputStreamReader(new ByteArrayInputStream(responseBody.getBytes()));
                  BufferedReader br = new BufferedReader(isr)) {
-//                fis = new FileInputStream(file);
-                //创建一个InputstreamReader对象，将FileInputstream对象作为袋数传入
-                //创建一BufferedReader对象，将InputstreamReader对象作为鉴物传入
-
-                //BufferedReader的readLine()方法遂行读欺文件中容
                 String line;
                 StringBuilder contentBuilder = new StringBuilder();
                 titleList = new ArrayList<>();
@@ -173,6 +161,8 @@ public class SimpleCode {
                     }
                 }
                 contentList.add(contentBuilder.toString());
+                //contentList内容转为html
+                contentList = changeContentList(contentList);
                 initContentList = contentList;
                 initTitleList = titleList;
             } catch (Exception e) {
@@ -181,10 +171,19 @@ public class SimpleCode {
         }
     }
 
+    public List<String> changeContentList(List<String> contentList) {
+        List<String> contentMdList = new ArrayList<>();
+        ConsoleVirtualFile md = new ConsoleVirtualFile("md", project);
+        for (String content : contentList) {
+            //显示内容
+            String contentMd = MarkdownUtil.INSTANCE.generateMarkdownHtml(md, content, project);
+            contentMdList.add(contentMd);
+        }
+        return contentMdList;
+    }
+
 
     public JPanel getSimpleCodeContainer(Project project, String searchStr) {
-        container.setLayout(new BorderLayout());
-
         //添加搜索框
         JPanel searchBox = this.createSearchBox(project, searchStr);
         searchPanel.add(searchBox);
@@ -202,17 +201,16 @@ public class SimpleCode {
         titleJList.setSelectedIndex(0);
         //初始化内容数据
         String content = contentList.get(0);
-        ConsoleVirtualFile md = new ConsoleVirtualFile("md", project);
-        String contentMd = MarkdownUtil.INSTANCE.generateMarkdownHtml(md, content, project);
-        JBCefBrowser browser = new JBCefBrowser();
-        browser.loadHTML(contentMd);
+        browser.loadHTML(content);
         //获取content显示的区域
         contentPanel = this.getContentPanel();
         if (contentPanel == null) {
             contentPanel = new JBScrollPane();
         }
         contentPanel.setBorder(null);
-        contentPanel.setViewportView(browser.getComponent());
+        if (searchStr == null) {
+            contentPanel.setViewportView(browser.getComponent());
+        }
         //设置显示数量
         titleJList.setVisibleRowCount(5);
         //获取Title显示的区域
@@ -221,10 +219,6 @@ public class SimpleCode {
         }
         titleListPanel.setBorder(null);
         titleListPanel.setViewportView(titleJList);
-
-        container.add(searchPanel, BorderLayout.NORTH);
-        container.add(titleListPanel, BorderLayout.CENTER);
-        container.add(contentPanel, BorderLayout.SOUTH);
         return container;
     }
 
@@ -300,4 +294,5 @@ public class SimpleCode {
             contentList = initContentList;
         }
     }
+
 }

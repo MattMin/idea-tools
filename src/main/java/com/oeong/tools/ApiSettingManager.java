@@ -3,6 +3,7 @@ package com.oeong.tools;
 import com.intellij.openapi.actionSystem.*;
 import com.intellij.openapi.extensions.PluginId;
 import com.intellij.openapi.project.Project;
+import com.intellij.ui.JBSplitter;
 import com.intellij.ui.components.JBList;
 import com.intellij.ui.components.JBScrollPane;
 import com.oeong.action.AddAction;
@@ -11,13 +12,11 @@ import com.oeong.action.OcrAction;
 import com.oeong.action.ScreenshotAction;
 import com.oeong.dialog.ApiKeySettingsDialog;
 import com.oeong.dialog.ConfirmDialog;
-import com.oeong.dialog.OcrDialog;
 import com.oeong.vo.ApiInfo;
 
 import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
-import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
@@ -35,12 +34,12 @@ import static com.oeong.tools.ScreenshotTools.startScreenshot;
 public class ApiSettingManager {
     private Project project;
     private JScrollPane connectionListPanel;
+    private JBScrollPane ocrScrollPane;
     private JList connectionJList;
     private JPanel container;
     private PropertyUtil propertyUtil;
     private ApiInfo apiInfo;
-    private boolean ocrRegisterFlag = true;
-    private boolean screenshotRegisterFlag = true;
+    private JBSplitter splitterContainer;
 
     /**
      * 插件初始化时会调用
@@ -57,11 +56,12 @@ public class ApiSettingManager {
     }
 
 
-    public ActionToolbar createOcrToolbar(ApiInfo apiInfo, JPanel container) {
+    public ActionToolbar createOcrToolbar(ApiInfo apiInfo, JPanel container, JBSplitter splitterContainer) {
         if (apiInfo != null) {
             this.apiInfo = apiInfo;
         }
         this.container = container;
+        this.splitterContainer = splitterContainer;
         // 工具栏
         DefaultActionGroup actions = new DefaultActionGroup();
         // 增加key
@@ -72,7 +72,7 @@ public class ApiSettingManager {
         // 截图
         actions.add(createScreenshotAction());
         // ocr
-        actions.add(createOcrAction());
+//        actions.add(createOcrAction());
 
         ActionToolbar actionToolbar = ActionManager.getInstance().createActionToolbar("ToolwindowToolbar", actions, true);
         actionToolbar.setTargetComponent(container);
@@ -165,9 +165,11 @@ public class ApiSettingManager {
         }
         OcrAction ocrAction = (OcrAction) action;
         ocrAction.setAction(e -> {
-            // 弹出Ocr窗口
-            OcrDialog ocrDialog = new OcrDialog(project, this);
-            ocrDialog.show();
+//            ocrPanel = this.createOcrPanel();
+//            ocrPanel.setVisible(true);
+//            // 弹出Ocr窗口
+//            OcrDialog ocrDialog = new OcrDialog(project, this);
+//            ocrDialog.show();
         });
 //        KeyStroke firstKeyStroke = KeyStroke.getKeyStroke("control alt A");
 //        KeyStroke secondKeyStroke = KeyStroke.getKeyStroke("C");
@@ -295,7 +297,8 @@ public class ApiSettingManager {
         }
 
         connectionListPanel.setViewportView(connectionJList);
-        container.add(connectionListPanel, BorderLayout.CENTER);
+        splitterContainer.setFirstComponent(connectionListPanel);
+//        container.add(connectionListPanel, BorderLayout.CENTER);
         container.updateUI();
     }
 
