@@ -1,6 +1,7 @@
-package com.oeong.gpt;
+package com.oeong.ui.ai;
 
 import com.intellij.ide.util.PropertiesComponent;
+import com.oeong.gpt.core.OpenAISettingsState;
 
 import javax.swing.*;
 

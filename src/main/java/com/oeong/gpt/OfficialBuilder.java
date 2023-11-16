@@ -2,7 +2,8 @@ package com.oeong.gpt;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
-import com.oeong.gpt.ui.MessageGroupComponent;
+import com.oeong.gpt.core.OpenAISettingsState;
+import com.oeong.ui.ai.MessageGroupComponent;
 
 public class OfficialBuilder {
 

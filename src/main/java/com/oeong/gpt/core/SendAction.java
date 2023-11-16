@@ -2,10 +2,10 @@ package com.oeong.gpt.core;
 
 import com.intellij.openapi.project.Project;
 import com.oeong.gpt.GPT35TurboHandler;
-import com.oeong.gpt.ui.MainPanel;
-import com.oeong.gpt.ui.MessageComponent;
-import com.oeong.gpt.ui.MessageGroupComponent;
 import com.oeong.notice.Notifier;
+import com.oeong.ui.ai.MainPanel;
+import com.oeong.ui.ai.MessageComponent;
+import com.oeong.ui.ai.MessageGroupComponent;
 import okhttp3.Call;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;

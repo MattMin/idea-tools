@@ -1,9 +1,8 @@
-package com.oeong.gpt;
+package com.oeong.ui.ai;
 
 
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.Key;
-import com.oeong.gpt.ui.MainPanel;
 import lombok.Getter;
 
 import javax.swing.*;

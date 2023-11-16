@@ -1,7 +1,7 @@
 package com.oeong.gpt;
 
-import com.oeong.gpt.ui.MainPanel;
-import com.oeong.gpt.ui.MessageComponent;
+import com.oeong.ui.ai.MainPanel;
+import com.oeong.ui.ai.MessageComponent;
 
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManager;

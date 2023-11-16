@@ -1,4 +1,4 @@
-package com.oeong.gpt.ui;
+package com.oeong.ui.ai;
 
 import cn.hutool.core.swing.clipboard.ClipboardUtil;
 import com.intellij.icons.AllIcons;

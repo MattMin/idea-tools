@@ -1,4 +1,4 @@
-package com.oeong.gpt;
+package com.oeong.gpt.core;
 
 
 import com.intellij.openapi.actionSystem.AnAction;
@@ -6,13 +6,12 @@ import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.CommonDataKeys;
 import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.project.Project;
-import com.oeong.gpt.core.SendAction;
-import com.oeong.gpt.ui.MainPanel;
+import com.oeong.ui.ai.MainPanel;
 import org.jetbrains.annotations.NotNull;
 
-import static com.oeong.gpt.GPT.ACTIVE_CONTENT;
-import static com.oeong.gpt.OpenAISettingsState.BUG;
-import static com.oeong.gpt.OpenAISettingsState.BUG_PROMPT;
+import static com.oeong.gpt.core.OpenAISettingsState.BUG;
+import static com.oeong.gpt.core.OpenAISettingsState.BUG_PROMPT;
+import static com.oeong.ui.ai.GPT.ACTIVE_CONTENT;
 
 public class FindBugAction extends AnAction {
 
@@ -29,8 +28,10 @@ public class FindBugAction extends AnAction {
 
         // get main panel
         Project project = e.getProject();
+        assert project != null;
         MainPanel mainPanel = (MainPanel) project.getUserData(ACTIVE_CONTENT);
 
+        assert mainPanel != null;
         SendAction sendAction = mainPanel.getProject().getService(SendAction.class);
         sendAction.doPromptActionPerformed(mainPanel, BUG_PROMPT, "```" + selectedText + "```");
     }
