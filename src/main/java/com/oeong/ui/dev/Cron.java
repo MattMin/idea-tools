@@ -31,7 +31,7 @@ public class Cron {
             String item = (String) e.getItem();
             if("UNIX".equals(item)){
                 expression.setText("0 */12 * * *");
-            }else if("Java".equals(item)){
+            }else if("Java(Spring)".equals(item)){
                 expression.setText("0 0 18 28-31 * ?");
             }else if("Quartz".equals(item)){
                 expression.setText("0 0 18 L * ?");
@@ -40,6 +40,7 @@ public class Cron {
         definitionMap.keySet().forEach(type::addItem);
     }
     public void getCron(ActionEvent e){
+        resultArea.setText("");
         String text = expression.getText();
         if(StringUtil.isEmpty(text)){
             return;
@@ -50,21 +51,18 @@ public class Cron {
         resultArea.setText(ret);
     }
 
-//    static DateTimeFormatter format = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
     static Map<String, Function<String,String>> definitionMap = new HashMap<>();
     static {
         definitionMap.put("UNIX",Cron::unixCron);
-        definitionMap.put("Java",Cron::javaCron);
+        definitionMap.put("Java(Spring)",Cron::javaCron);
         definitionMap.put("Quartz",Cron::quartz);
     }
-//    Set<Character> unixSpe = Set.of('-','*','/',',');
-//    Set<Character> commonChar = Set.of('1','2','3','4','5','6','7','8','9','0');
-
     static String reg = "[\\-*/,?0-9]+";
     public static String unixCron(String expStr){
         String[] arr = expStr.split(" ");
         if(expStr.split(" ").length!=5){
             Notifier.notifyError("表达式长度必须等于5");
+            return "";
         }
         if(arr[4].equals("*")){
             expStr = expStr.substring(0,expStr.lastIndexOf('*'))+"?";
@@ -92,6 +90,9 @@ public class Cron {
         Date d = new Date();
         for(int i=0;i<5;i++){
             d = exp.getNextValidTimeAfter(d);
+            if(d==null){
+                return sb.toString();
+            }
             sb.append(format.format(d)).append("\r\n");
         }
         return sb.toString();
@@ -101,6 +102,7 @@ public class Cron {
         String[] arr = expStr.split(" ");
         if(arr.length!=6){
             Notifier.notifyError("表达式长度必须等于6");
+            return "";
         }
         if(arr[5].equals("*")){
             expStr = expStr.substring(0,expStr.lastIndexOf('*'))+"?";

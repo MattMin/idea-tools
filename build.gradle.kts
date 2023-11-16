@@ -33,6 +33,7 @@ tasks {
 
     patchPluginXml {
         sinceBuild.set("222")
+        untilBuild.set(provider { null })
     }
 
     signPlugin {
@@ -51,5 +52,7 @@ tasks {
         annotationProcessor("org.projectlombok:lombok:1.18.22")
         testCompileOnly("org.projectlombok:lombok:1.18.22")
         testAnnotationProcessor("org.projectlombok:lombok:1.18.22")
+        implementation("com.squareup.okhttp3:okhttp:4.10.0")
+        implementation("com.squareup.okhttp3:okhttp-sse:4.10.0")
     }
 }
