@@ -6,6 +6,7 @@ import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.CommonDataKeys;
 import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.project.Project;
+import com.oeong.notice.Notifier;
 import com.oeong.ui.ai.MainPanel;
 import org.jetbrains.annotations.NotNull;
 
@@ -31,7 +32,10 @@ public class FindBugAction extends AnAction {
         assert project != null;
         MainPanel mainPanel = (MainPanel) project.getUserData(ACTIVE_CONTENT);
 
-        assert mainPanel != null;
+        if (mainPanel == null) {
+            Notifier.notifyWarn("Please open the GPT window first.");
+            return;
+        }
         SendAction sendAction = mainPanel.getProject().getService(SendAction.class);
         sendAction.doPromptActionPerformed(mainPanel, BUG_PROMPT, "```" + selectedText + "```");
     }

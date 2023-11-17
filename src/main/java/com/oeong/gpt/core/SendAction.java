@@ -54,10 +54,6 @@ public class SendAction {
     }
 
     public void doPromptActionPerformed(MainPanel mainPanel, String prompt, String data) {
-        if (mainPanel == null) {
-            Notifier.notifyWarn("Please open the GPT window first.");
-            return;
-        }
 
         if (StringUtils.isEmpty(data)) {
             Notifier.notifyWarn("Please select the text first.");
