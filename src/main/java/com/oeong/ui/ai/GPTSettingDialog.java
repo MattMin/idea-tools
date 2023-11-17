@@ -1,6 +1,5 @@
 package com.oeong.ui.ai;
 
-import com.intellij.ide.util.PropertiesComponent;
 import com.oeong.gpt.core.OpenAISettingsState;
 
 import javax.swing.*;
@@ -14,7 +13,6 @@ public class GPTSettingDialog extends JDialog {
     private JButton cancelButton;
     private JPanel contentPane;
     OpenAISettingsState state = OpenAISettingsState.getInstance();
-    PropertiesComponent propertiesComponent = PropertiesComponent.getInstance();
 
     public GPTSettingDialog() {
         setContentPane(contentPane);
@@ -26,10 +24,6 @@ public class GPTSettingDialog extends JDialog {
 
         String openaiKey = state.apiKey;
         String openaiModel = state.gpt35Model;
-
-
-//        String openaiKey = propertiesComponent.getValue("openaiKey");
-//        String openaiModel = propertiesComponent.getValue("openaiModel");
 
         keyField.setText(openaiKey != null ? openaiKey : "");
         modelBox.setSelectedItem(openaiModel != null ? openaiModel : "gpt-3.5-turbo");
@@ -45,9 +39,6 @@ public class GPTSettingDialog extends JDialog {
 
         state.apiKey = apiKey;
         state.gpt35Model = selectedItem.toString();
-
-//        propertiesComponent.setValue("openaiKey", apiKey);
-//        propertiesComponent.setValue("openaiModel", selectedItem.toString());
 
         dispose();
     }
