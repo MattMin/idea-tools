@@ -1,7 +1,7 @@
 package com.oeong.ui.dev;
 
+import com.intellij.openapi.util.text.StringUtil;
 import lombok.Getter;
-import org.apache.commons.lang.StringUtils;
 
 import javax.swing.*;
 import java.util.HashMap;
@@ -60,7 +60,7 @@ public class Regular {
     }
 
     public String match(String pattern,String target){
-        if(StringUtils.isNotBlank(pattern) && StringUtils.isNotBlank(target)){
+        if(StringUtil.isNotEmpty(pattern) && StringUtil.isNotEmpty(target)){
             Pattern r = Pattern.compile(pattern);
             Matcher m = r.matcher(target);
             int matcher_start=0;
