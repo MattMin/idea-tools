@@ -8,10 +8,10 @@ import com.intellij.credentialStore.Credentials;
 import com.intellij.ide.passwordSafe.PasswordSafe;
 import com.intellij.ide.util.PropertiesComponent;
 import com.intellij.openapi.project.Project;
+import com.intellij.openapi.util.text.StringUtil;
 import com.oeong.service.ApiInfosService;
 import com.oeong.vo.ApiInfo;
 import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.lang.StringUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -79,7 +79,7 @@ public class PropertyUtil {
         List<ApiInfo> result = new ArrayList<>();
         for (String id : ids) {
             String connection = properties.getValue(id);
-            if (StringUtils.isEmpty(connection)) {
+            if (StringUtil.isEmpty(connection)) {
                 removeConnectionOld(id);
                 continue;
             }
@@ -96,7 +96,7 @@ public class PropertyUtil {
 
         for (ApiInfo connection : connections) {
             // connectionInfo 如果有 password 则将 connection 中存储的 password 删除, 使用 PasswordSafe 存储 password
-            if (StringUtils.isEmpty(connection.getApiSecret())) {
+            if (StringUtil.isEmpty(connection.getApiSecret())) {
                 String password = retrievePassword(connection.getId());
                 connection.setApiSecret(password);
             }
@@ -120,7 +120,7 @@ public class PropertyUtil {
         }
 
         // connectionInfo 如果有 password 则将 connection 中存储的 password 删除, 使用 PasswordSafe 存储 password
-        if (apiInfo != null && StringUtils.isEmpty(apiInfo.getApiSecret())) {
+        if (apiInfo != null && StringUtil.isEmpty(apiInfo.getApiSecret())) {
             String password = retrievePassword(apiInfo.getId());
             apiInfo.setApiSecret(password);
         }
@@ -140,7 +140,7 @@ public class PropertyUtil {
         }
 
         String connectionInfoId = apiInfo.getId();
-        if (StringUtils.isEmpty(connectionInfoId)) {
+        if (StringUtil.isEmpty(connectionInfoId)) {
             connectionInfoId = UUID.randomUUID().toString();
             apiInfo.setId(connectionInfoId);
         }
@@ -188,7 +188,7 @@ public class PropertyUtil {
      * @return 连接信息
      */
     public ApiInfo getConnection(String id) {
-        if (StringUtils.isEmpty(id)) {
+        if (StringUtil.isEmpty(id)) {
             return null;
         }
 
@@ -214,7 +214,7 @@ public class PropertyUtil {
     private String retrievePassword(String connectionId) {
         CredentialAttributes credentialAttributes = createCredentialAttributes(connectionId);
         String password = PasswordSafe.getInstance().getPassword(credentialAttributes);
-        return StringUtils.isEmpty(password) ? null : password;
+        return StringUtil.isEmpty(password) ? null : password;
     }
 
     /**
@@ -223,7 +223,7 @@ public class PropertyUtil {
     private void savePassword(String connectionId, String password) {
         CredentialAttributes credentialAttributes = createCredentialAttributes(connectionId);
         Credentials credentials = null;
-        if (StringUtils.isNotEmpty(password)) {
+        if (StringUtil.isNotEmpty(password)) {
             credentials = new Credentials(connectionId, password);
         }
         PasswordSafe.getInstance().set(credentialAttributes, credentials);

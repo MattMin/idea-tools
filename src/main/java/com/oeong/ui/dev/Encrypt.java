@@ -62,10 +62,20 @@ public class Encrypt {
         MD5RadioButton = new JRadioButton("MD5");
         urlRadioButton.setSelected(true);
         group.add(urlRadioButton);
+        // 添加水平间距
+        group.add(Box.createHorizontalStrut(10));
         group.add(SHA256RadioButton);
+        // 添加水平间距
+        group.add(Box.createHorizontalStrut(10));
         group.add(SHA1RadioButton);
+        // 添加水平间距
+        group.add(Box.createHorizontalStrut(10));
         group.add(Base64RadioButton);
+        // 添加水平间距
+        group.add(Box.createHorizontalStrut(10));
         group.add(MD5RadioButton);
+        // 添加水平间距
+        group.add(Box.createHorizontalStrut(10));
         group.add(SHA512RadioButton);
         urlRadioButton.setSelected(true);
         List<JRadioButton> enableList = Arrays.asList(SHA256RadioButton, SHA1RadioButton, MD5RadioButton, SHA512RadioButton);

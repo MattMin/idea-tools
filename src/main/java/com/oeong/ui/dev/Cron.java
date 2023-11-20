@@ -61,7 +61,7 @@ public class Cron {
     public static String unixCron(String expStr){
         String[] arr = expStr.split(" ");
         if(expStr.split(" ").length!=5){
-            Notifier.notifyError("表达式长度必须等于5");
+            Notifier.notifyError("Expression length must be equal to 5");
             return "";
         }
         if(arr[4].equals("*")){
@@ -72,7 +72,7 @@ public class Cron {
             String dm = exp.getDaysOfMonthExp();
             String dw = exp.getDaysOfWeekExp();
             if(!dm.matches(reg) || !dw.matches(reg)){
-                Notifier.notifyError("表达式不支持");
+                Notifier.notifyError("Length of expression is not supported");
                 return "";
             }
             return getDateStr(exp);
@@ -101,7 +101,7 @@ public class Cron {
     public static String javaCron(String expStr){
         String[] arr = expStr.split(" ");
         if(arr.length!=6){
-            Notifier.notifyError("表达式长度必须等于6");
+            Notifier.notifyError("Length of expression must be equal to 6");
             return "";
         }
         if(arr[5].equals("*")){
