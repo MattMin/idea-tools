@@ -8,6 +8,7 @@ import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.DialogWrapper;
 import com.intellij.openapi.ui.LoadingDecorator;
 import com.intellij.openapi.ui.ValidationInfo;
+import com.intellij.openapi.util.text.StringUtil;
 import com.intellij.ui.JBColor;
 import com.intellij.ui.components.JBRadioButton;
 import com.intellij.util.ui.JBUI;
@@ -16,7 +17,6 @@ import com.oeong.tools.AliyunTools;
 import com.oeong.tools.ApiSettingManager;
 import com.oeong.tools.BaiduTools;
 import com.oeong.vo.ApiInfo;
-import org.apache.commons.lang.StringUtils;
 import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
@@ -136,7 +136,7 @@ public class ApiKeySettingsDialog extends DialogWrapper implements Disposable {
                 } else {
                     String apiSecret;
                     String pwd = new String(apiSecretField.getPassword());
-                    if (StringUtils.isEmpty(pwd)) {
+                    if (StringUtil.isEmpty(pwd)) {
                         apiSecret = null;
                     } else {
                         apiSecret = pwd;
@@ -277,11 +277,11 @@ public class ApiKeySettingsDialog extends DialogWrapper implements Disposable {
         }
         if (!isTest) {
             String text = nameTextField.getText();
-            if (StringUtils.isBlank(text)) {
+            if (StringUtil.isEmptyOrSpaces(text)) {
                 return new ValidationInfo("API Name can not be empty");
             } else {
-                boolean b = apiSettingManager.checkApiName(text,apiInfo);
-                if (!b){
+                boolean b = apiSettingManager.checkApiName(text, apiInfo);
+                if (!b) {
                     return new ValidationInfo("API name already exists ");
                 }
             }
@@ -295,13 +295,13 @@ public class ApiKeySettingsDialog extends DialogWrapper implements Disposable {
         }
 
         if (type == ApiServerTypeEnum.baidu.getType()) {
-            if (StringUtils.isBlank(apiKeyField.getText())) {
+            if (StringUtil.isEmptyOrSpaces(apiKeyField.getText())) {
                 return new ValidationInfo("API key can not be empty");
             }
         }
 
         String apiSecret = new String(apiSecretField.getPassword());
-        if (StringUtils.isEmpty(apiSecret)) {
+        if (StringUtil.isEmptyOrSpaces(apiSecret)) {
             return new ValidationInfo("API Secret can not be empty");
         }
         return null;

@@ -1,13 +1,13 @@
 package com.oeong.gpt.core;
 
 import com.intellij.openapi.project.Project;
+import com.intellij.openapi.util.text.StringUtil;
 import com.oeong.gpt.GPT35TurboHandler;
 import com.oeong.gpt.ui.MainPanel;
 import com.oeong.gpt.ui.MessageComponent;
 import com.oeong.gpt.ui.MessageGroupComponent;
 import com.oeong.notice.Notifier;
 import okhttp3.Call;
-import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -19,7 +19,7 @@ public class SendAction {
 
     public void doActionPerformed(MainPanel mainPanel, String data) {
         // Filter the empty text
-        if (StringUtils.isEmpty(data)) {
+        if (StringUtil.isEmpty(data)) {
             return;
         }
 
@@ -59,7 +59,7 @@ public class SendAction {
             return;
         }
 
-        if (StringUtils.isEmpty(data)) {
+        if (StringUtil.isEmpty(data)) {
             Notifier.notifyWarn("Please select the text first.");
             return;
         }
