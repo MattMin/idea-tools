@@ -1,4 +1,4 @@
-package com.oeong.gpt.ui;
+package com.oeong.ui.ai;
 
 import com.intellij.ui.components.JBScrollPane;
 import com.intellij.util.ui.JBUI;

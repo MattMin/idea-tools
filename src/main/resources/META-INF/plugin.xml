@@ -31,7 +31,7 @@
                     icon="AllIcons.Toolwindows.WebToolWindow" anchor="right"/>
         <notificationGroup id="Custom Notification Group" displayType="BALLOON"/>
 
-        <applicationService serviceImplementation="com.oeong.gpt.OpenAISettingsState"/>
+        <applicationService serviceImplementation="com.oeong.gpt.core.OpenAISettingsState"/>
         <applicationService serviceImplementation="com.oeong.gpt.TokenManager"/>
         <projectService serviceImplementation="com.oeong.service.ApiInfosService"/>
         <projectService serviceImplementation="com.oeong.tools.ApiSettingManager"/>
@@ -55,7 +55,7 @@
 
         <group id="ChatGPTFindBug">
             <action id="FindBug" icon="AllIcons.Debugger.AttachToProcess"
-                    class="com.oeong.gpt.FindBugAction"/>
+                    class="com.oeong.gpt.core.FindBugAction"/>
             <separator/>
             <add-to-group group-id="EditorPopupMenu" anchor="first"/>
             <separator/>
@@ -63,7 +63,7 @@
 
         <group id="ChatGPTExplainException">
             <action id="ExplainException" icon="AllIcons.Debugger.Db_disabled_exception_breakpoint"
-                    class="com.oeong.gpt.ExplainExceptionAction"/>
+                    class="com.oeong.gpt.core.ExplainExceptionAction"/>
             <separator/>
             <add-to-group group-id="ConsoleEditorPopupMenu" anchor="first"/>
             <separator/>

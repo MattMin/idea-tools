@@ -1,4 +1,4 @@
-package com.oeong.gpt.ui;
+package com.oeong.ui.ai;
 
 import cn.hutool.core.swing.clipboard.ClipboardUtil;
 import com.intellij.icons.AllIcons;
@@ -20,6 +20,7 @@ public class MessageComponent extends JBPanel<MessageComponent> {
     private String answer;
 
     public MessageComponent(String content, boolean me) {
+        answer = content;
         setDoubleBuffered(true);
         setOpaque(true);
         setBackground(me ? new JBColor(0xEAEEF7, 0x45494A) : new JBColor(0xE0EEF7, 0x2d2f30 /*2d2f30*/));
@@ -40,8 +41,8 @@ public class MessageComponent extends JBPanel<MessageComponent> {
         copyAction.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
-                ClipboardUtil.setStr(content);
-                Notifier.notifyInfo("It has been copied to the clipboard.\n" + content);
+                ClipboardUtil.setStr(answer);
+                Notifier.notifyInfo("Copy Success!\n" + answer);
             }
         });
         actionPanel.add(copyAction, BorderLayout.NORTH);

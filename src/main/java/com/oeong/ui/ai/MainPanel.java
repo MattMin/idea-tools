@@ -1,4 +1,4 @@
-package com.oeong.gpt.ui;
+package com.oeong.ui.ai;
 
 import com.intellij.find.SearchTextArea;
 import com.intellij.icons.AllIcons;
@@ -7,7 +7,7 @@ import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.IconLoader;
 import com.intellij.ui.OnePixelSplitter;
 import com.intellij.ui.components.JBTextArea;
-import com.oeong.gpt.OpenAISettingsState;
+import com.oeong.gpt.core.OpenAISettingsState;
 import com.oeong.gpt.core.SendListener;
 import lombok.Getter;
 import okhttp3.Call;
@@ -67,6 +67,7 @@ public class MainPanel {
         });
         stopGenerating.setUI(new DarculaButtonUI());
 
+        // action panel and content panel
         actionPanel = new JPanel(new BorderLayout());
         progressBar = new JProgressBar();
         progressBar.setVisible(false);

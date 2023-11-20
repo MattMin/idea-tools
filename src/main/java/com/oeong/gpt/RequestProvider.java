@@ -1,6 +1,7 @@
 package com.oeong.gpt;
 
-import com.oeong.gpt.ui.MainPanel;
+import com.oeong.gpt.core.OpenAISettingsState;
+import com.oeong.ui.ai.MainPanel;
 import lombok.Getter;
 
 import java.util.Map;

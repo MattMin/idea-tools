@@ -1,5 +1,5 @@
 
-package com.oeong.gpt;
+package com.oeong.gpt.core;
 
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.components.PersistentStateComponent;
@@ -11,7 +11,7 @@ import org.jetbrains.annotations.Nullable;
 
 
 @State(
-        name = "com.oeong.gpt.OpenAISettingsState",
+        name = "com.oeong.gpt.core.OpenAISettingsState",
         storages = @Storage("ChatGPTSettingsPlugin.xml")
 )
 public class OpenAISettingsState implements PersistentStateComponent<OpenAISettingsState> {

@@ -1,7 +1,7 @@
 package com.oeong.gpt.core;
 
 
-import com.oeong.gpt.ui.MainPanel;
+import com.oeong.ui.ai.MainPanel;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;

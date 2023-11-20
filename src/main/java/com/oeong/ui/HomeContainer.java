@@ -10,13 +10,22 @@ import javax.swing.*;
 import java.awt.*;
 import java.net.URL;
 import java.net.URLDecoder;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
-import java.util.*;
+import java.util.Map;
+import java.util.Set;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 import java.util.stream.Collectors;
 
-import static com.oeong.ui.MenuAction.*;
+import static com.oeong.ui.MenuAction.AI;
+import static com.oeong.ui.MenuAction.DEV;
+import static com.oeong.ui.MenuAction.FISH;
+import static com.oeong.ui.MenuAction.TOOLS;
 import static java.nio.charset.StandardCharsets.UTF_8;
 
 @Slf4j
@@ -114,7 +123,7 @@ public class HomeContainer {
             list.forEach(ma->{
                 var item = menu.add(ma.getName());
                 item.setFont(new Font("Default", Font.PLAIN,13));
-                item.setPreferredSize(new Dimension(100,35));
+//                item.setPreferredSize(new Dimension(100,35)/);
                 item.addActionListener(e->{
                     hide(parent);
                     JPanel panel = subJPanels.get(ma.getName());

@@ -1,8 +1,9 @@
 package com.oeong.gpt;
 
 import com.intellij.openapi.util.text.StringUtil;
-import com.oeong.gpt.ui.MainPanel;
-import com.oeong.gpt.ui.MessageComponent;
+import com.oeong.gpt.core.OpenAISettingsState;
+import com.oeong.ui.ai.MainPanel;
+import com.oeong.ui.ai.MessageComponent;
 import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.Headers;
@@ -75,8 +76,7 @@ public class GPT35TurboHandler extends AbstractHandler {
                         mainPanel.aroundRequest(false);
                         return;
                     }
-                    OfficialParser.ParseResult parseResult = OfficialParser.
-                            parseGPT35Turbo(responseMessage);
+                    OfficialParser.ParseResult parseResult = OfficialParser.parseGPT35Turbo(responseMessage);
 
                     mainPanel.getContentPanel().getMessages().add(OfficialBuilder.assistantMessage(parseResult.getSource()));
                     component.setSourceContent(parseResult.getSource());

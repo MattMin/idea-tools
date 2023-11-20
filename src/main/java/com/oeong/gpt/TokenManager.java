@@ -1,6 +1,7 @@
 package com.oeong.gpt;
 
 import com.intellij.openapi.application.ApplicationManager;
+import com.oeong.gpt.core.OpenAISettingsState;
 
 import java.util.HashMap;
 import java.util.Map;

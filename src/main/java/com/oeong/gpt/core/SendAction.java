@@ -3,10 +3,10 @@ package com.oeong.gpt.core;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.text.StringUtil;
 import com.oeong.gpt.GPT35TurboHandler;
-import com.oeong.gpt.ui.MainPanel;
-import com.oeong.gpt.ui.MessageComponent;
-import com.oeong.gpt.ui.MessageGroupComponent;
 import com.oeong.notice.Notifier;
+import com.oeong.ui.ai.MainPanel;
+import com.oeong.ui.ai.MessageComponent;
+import com.oeong.ui.ai.MessageGroupComponent;
 import okhttp3.Call;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -54,10 +54,6 @@ public class SendAction {
     }
 
     public void doPromptActionPerformed(MainPanel mainPanel, String prompt, String data) {
-        if (mainPanel == null) {
-            Notifier.notifyWarn("Please open the GPT window first.");
-            return;
-        }
 
         if (StringUtil.isEmpty(data)) {
             Notifier.notifyWarn("Please select the text first.");

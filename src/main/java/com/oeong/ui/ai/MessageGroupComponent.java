@@ -1,4 +1,4 @@
-package com.oeong.gpt.ui;
+package com.oeong.ui.ai;
 
 import com.google.gson.JsonArray;
 import com.intellij.openapi.ui.NullableComponent;
@@ -11,7 +11,6 @@ import com.intellij.ui.components.panels.VerticalLayout;
 import com.intellij.util.ui.JBFont;
 import com.intellij.util.ui.JBUI;
 import com.intellij.util.ui.UIUtil;
-import com.oeong.gpt.GPTSettingDialog;
 import lombok.Getter;
 
 import javax.swing.*;
@@ -28,7 +27,7 @@ public class MessageGroupComponent extends JBPanel<MessageGroupComponent> implem
             ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
     private int myScrollValue = 0;
     private final MessageComponent tips =
-            new MessageComponent("You need to set the 'Configuration' firstly. And you can use 'Find Bug' in the Editor or 'Explain Exception' in the Console.", false);
+            new MessageComponent("You need to set the 'Configuration' first. And you can use 'Find Bug' in the Editor or 'Explain Exception' in the Console.", false);
 
     private final MyAdjustmentListener scrollListener = new MyAdjustmentListener();
     @Getter
@@ -39,6 +38,7 @@ public class MessageGroupComponent extends JBPanel<MessageGroupComponent> implem
         setLayout(new BorderLayout(JBUI.scale(7), 0));
         setBackground(UIUtil.getListBackground());
 
+        // mainPanel
         JPanel mainPanel = new JPanel(new BorderLayout(0, JBUI.scale(8)));
         mainPanel.setOpaque(false);
         mainPanel.setBorder(JBUI.Borders.emptyLeft(8));
