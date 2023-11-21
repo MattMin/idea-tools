@@ -48,7 +48,7 @@
             <properties/>
             <border type="none"/>
             <children>
-              <component id="ef825" class="javax.swing.JLabel" binding="date1">
+              <component id="ef825" class="javax.swing.JLabel">
                 <constraints>
                   <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
                 </constraints>
@@ -72,7 +72,7 @@
                   <text value="Set Today"/>
                 </properties>
               </component>
-              <component id="4db35" class="javax.swing.JLabel" binding="date2">
+              <component id="4db35" class="javax.swing.JLabel">
                 <constraints>
                   <grid row="1" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
                 </constraints>
@@ -174,7 +174,7 @@
             <properties/>
             <border type="none"/>
             <children>
-              <component id="647f2" class="javax.swing.JLabel" binding="date3">
+              <component id="647f2" class="javax.swing.JLabel">
                 <constraints>
                   <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
                 </constraints>
