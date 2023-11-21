@@ -24,10 +24,15 @@ public class OpenAISettingsState implements PersistentStateComponent<OpenAISetti
     public Boolean enableTokenConsumption = false;
     public Boolean enableGPT35StreamResponse = false;
     public Boolean enableLineWarp = true;
+    public String OPENAI_URL = "https://api.openai.com/v1/chat/completions";
     public static final String BUG = "Find Bug";
-    public static final String EXPLAIN = "Explain Exception";
+    public static final String EXPLAIN = "Explain Code";
+    public static final String OPTIMIZE = "Optimize Code";
+    public static final String EXCEPTION = "Explain Exception";
     public static final String BUG_PROMPT = "Find bug from the following code: ";
-    public static final String EXCEPTION_PROMPT = "explain this exception: ";
+    public static final String EXPLAIN_PROMPT = "Explain this code: ";
+    public static final String OPTIMIZE_PROMPT = "Optimize this code: ";
+    public static final String EXCEPTION_PROMPT = "Explain this exception: ";
 
     public static OpenAISettingsState getInstance() {
         return ApplicationManager.getApplication().getService(OpenAISettingsState.class);

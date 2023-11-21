@@ -10,7 +10,6 @@ import java.util.Map;
 @Getter
 public class RequestProvider {
 
-    public static final String OFFICIAL_GPT35_TURBO_URL = "https://api.openai-proxy.com/v1/chat/completions";
     private String url;
     private String data;
     private Map<String, String> header;
@@ -19,7 +18,7 @@ public class RequestProvider {
         RequestProvider provider = new RequestProvider();
 
         OpenAISettingsState instance = OpenAISettingsState.getInstance();
-        provider.url = OFFICIAL_GPT35_TURBO_URL;
+        provider.url = instance.OPENAI_URL;
         provider.header = TokenManager.getInstance().getGPT35TurboHeaders();
         if (instance.enableContext) {
             provider.data = OfficialBuilder.buildGpt35Turbo(question, mainPanel.getContentPanel()).toString();

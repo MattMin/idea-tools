@@ -27,7 +27,9 @@ public class MessageGroupComponent extends JBPanel<MessageGroupComponent> implem
             ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
     private int myScrollValue = 0;
     private final MessageComponent tips =
-            new MessageComponent("You need to set the 'Configuration' first. And you can use 'Find Bug' in the Editor or 'Explain Exception' in the Console.", false);
+            new MessageComponent("You need to set the 'Configuration' first. " +
+                    "And you can use 'Find Bug / Explain Code / Optimize Code' in the Editor " +
+                    "or 'Explain Exception' in the Console.", false);
 
     private final MyAdjustmentListener scrollListener = new MyAdjustmentListener();
     @Getter

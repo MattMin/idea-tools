@@ -31,13 +31,13 @@ public class GPT35TurboHandler extends AbstractHandler {
         RequestProvider provider = new RequestProvider().create(mainPanel, question);
         try {
             LOG.info("ChatGPT Request: question={}", question);
+            OpenAISettingsState instance = OpenAISettingsState.getInstance();
             Request request = new Request.Builder()
                     .url(provider.getUrl())
                     .headers(Headers.of(provider.getHeader()))
                     .post(RequestBody.create(provider.getData().getBytes(StandardCharsets.UTF_8),
                             MediaType.parse("application/json")))
                     .build();
-            OpenAISettingsState instance = OpenAISettingsState.getInstance();
             OkHttpClient.Builder builder = new OkHttpClient.Builder()
                     .connectTimeout(Integer.parseInt(instance.connectionTimeout), TimeUnit.MILLISECONDS)
                     .readTimeout(Integer.parseInt(instance.readTimeout), TimeUnit.MILLISECONDS);

@@ -5,6 +5,9 @@ import com.google.gson.JsonObject;
 import com.oeong.gpt.core.OpenAISettingsState;
 import com.oeong.ui.ai.MessageGroupComponent;
 
+/**
+ * role为system可以限定AI的角色，role为user是用户发送的内容，role为assistant是AI回答的内容。
+ */
 public class OfficialBuilder {
 
     public static JsonObject buildGpt35Turbo(String text) {
