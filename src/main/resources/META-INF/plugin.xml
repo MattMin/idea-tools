@@ -53,7 +53,7 @@
                     keymap="$default"/>
         </action>
 
-        <group id="ChatGPTFindBug">
+        <group id="ChatGPTEditor">
             <action id="FindBug" icon="AllIcons.Debugger.AttachToProcess" class="com.oeong.gpt.core.FindBugAction"/>
             <action id="ExplainCode" icon="AllIcons.Actions.ShowCode" class="com.oeong.gpt.core.ExplainCodeAction"/>
             <action id="OptimizeCode" icon="AllIcons.Actions.StepOutCodeBlock" class="com.oeong.gpt.core.OptimizeCodeAction"/>
