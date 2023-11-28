@@ -54,6 +54,8 @@ tasks {
         testAnnotationProcessor("org.projectlombok:lombok:1.18.22")
         implementation("com.squareup.okhttp3:okhttp:4.10.0")
         implementation("com.squareup.okhttp3:okhttp-sse:4.10.0")
+        implementation("org.yaml:snakeyaml:1.30")
+
         implementation("org.mariuszgromada.math:MathParser.org-mXparser:5.2.1")
     }
 }
