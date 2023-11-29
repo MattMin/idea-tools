@@ -15,7 +15,7 @@ public class GPTMenuItem implements MenuAction {
      */
     @Override
     public @NotNull String getName() {
-        return "GPT";
+        return "chatGPT";
     }
 
     /**
