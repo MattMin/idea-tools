@@ -11,7 +11,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 
-
 public class CalculatorKeyArea extends JPanel {
     private final GridBagConstraints gridBagConstraints = new GridBagConstraints(); // 实例化该对象用来对组件进行管理
     private final GridBagLayout gridBagLayout = new GridBagLayout(); //实例化布局对象, 网格袋布局
@@ -56,18 +55,27 @@ public class CalculatorKeyArea extends JPanel {
     private final JButton B_enter = new JButton("="); // 等号
 
     public CalculatorKeyArea() {
+        initUI();
+
+        setupControls();
+    }
+
+    public void initUI() {
         Font font = this.getFont();
 
-        this.setLayout(gridBagLayout); // 窗体对象设置为GridBagLayout布局
+        // 窗体对象设置为GridBagLayout布局
+        this.setLayout(gridBagLayout);
         gridBagConstraints.fill = GridBagConstraints.BOTH; // 该方法是为了设置如果组件所在的区域比组件本身要大时的显示情况
 
         int row = 0;
         int maxCol = 4;
 
+        // 输入框
         setControl(TF_expression, 0, row, maxCol, 2);
         TF_expression.setHorizontalAlignment(JTextField.RIGHT);
         TF_expression.setFont(new Font(font.getName(), font.getStyle(), font.getSize() * 2));
 
+        // 输出框
         row = 2;
         setControl(TF_result, 0, row, maxCol, 2);
         TF_result.setHorizontalAlignment(JTextField.RIGHT);
@@ -80,7 +88,7 @@ public class CalculatorKeyArea extends JPanel {
         B_copy.setToolTipText("Copy the expression and results to the clipboard.");
 
         setControl(B_clear, 2, row, 1, 1);
-        B_clear.setActionCommand("C");
+        B_clear.setActionCommand("Clear");
         B_clear.setToolTipText("Clear all.");
 
         setControl(B_backspace, 3, row, 1, 1);
@@ -122,8 +130,6 @@ public class CalculatorKeyArea extends JPanel {
         setControl(B_0, 1, row, 1, 1);
         setControl(B_point, 2, row, 1, 1);
         setControl(B_enter, 3, row, 1, 1);
-
-        setupControls();
     }
 
     /**
@@ -173,7 +179,10 @@ public class CalculatorKeyArea extends JPanel {
         }, KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0), WHEN_IN_FOCUSED_WINDOW);
     }
 
-    class MyActionListener implements ActionListener { // 实现动作Listener接口。实现里面的actionPerformed方法
+    /**
+     * 实现动作Listener接口的actionPerformed方法
+     */
+    class MyActionListener implements ActionListener {
         public void actionPerformed(ActionEvent e) {
             String inputString = TF_expression.getText();
             String outputString = TF_result.getText();
@@ -182,15 +191,15 @@ public class CalculatorKeyArea extends JPanel {
             String insertChar = "";
             switch (str) {
                 case "0", "1", "2", "3", "4", "5", "6", "7", "8", "9", ".", "+", "-", "*", "/", "(", ")", "e", "π" ->
-                        insertChar = str;
+                    insertChar = str;
                 case "=" -> // 计算结果
-                        calcAndSetResult(inputString);
+                    calcAndSetResult(inputString);
                 case "Copy" -> { // 复制输入输出
                     Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
-                    StringSelection selection = new StringSelection(inputString + " = " + outputString);
+                    StringSelection selection = new StringSelection(inputString + " = " + outputString.substring(4));
                     clipboard.setContents(selection, null);
                 }
-                case "C" -> { // 清空输入输出
+                case "Clear" -> { // 清空输入输出
                     TF_expression.setText("");
                     TF_result.setText("");
                 }
@@ -234,12 +243,14 @@ public class CalculatorKeyArea extends JPanel {
     void calcAndSetResult(String inputString) {
         if (!inputString.isEmpty()) {
             Expression expression = new Expression(inputString);
-            double v = expression.calculate();
-            String vStr = String.valueOf(v);
-            if (vStr.endsWith(".0")) {
-                vStr = vStr.substring(0, vStr.length() - 2);
+            double answer = expression.calculate();
+            String result = String.valueOf(answer);
+            if (result.endsWith(".0")) {
+                result = result.substring(0, result.length() - 2);
             }
-            TF_result.setText(vStr);
+            TF_result.setText("    " + result);
+        } else {
+            TF_result.setText("");
         }
     }
 }

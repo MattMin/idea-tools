@@ -225,7 +225,9 @@
                     <preferred-size width="150" height="-1"/>
                   </grid>
                 </constraints>
-                <properties/>
+                <properties>
+                  <text value="1"/>
+                </properties>
               </component>
               <component id="8e9a6" class="javax.swing.JComboBox" binding="unitComboBox">
                 <constraints>
