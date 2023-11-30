@@ -17,6 +17,8 @@
           </grid>
         </constraints>
         <properties>
+          <lineWrap value="true"/>
+          <rows value="1000"/>
           <text value=""/>
         </properties>
       </component>
@@ -88,6 +90,8 @@
           </grid>
         </constraints>
         <properties>
+          <lineWrap value="true"/>
+          <rows value="1000"/>
           <text value=""/>
         </properties>
       </component>
