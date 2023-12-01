@@ -14,6 +14,9 @@ import org.jetbrains.annotations.NotNull;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 
+import java.awt.*;
+import java.awt.datatransfer.StringSelection;
+
 import static com.oeong.ui.dev.Clipboard.CLIPBOARD;
 
 public class CopyAction extends AnAction {
@@ -54,5 +57,7 @@ public class CopyAction extends AnAction {
         ClipboardComponent copy = new ClipboardComponent(doc.html(), true);
         mainPanel.add(copy);
         project.putUserData(LAST_SELECTED_TEXT, selectedText);
+        //添加到剪贴板
+        Toolkit.getDefaultToolkit().getSystemClipboard().setContents(new StringSelection(selectedText), null);
     }
 }

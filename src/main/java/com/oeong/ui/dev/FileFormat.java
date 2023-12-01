@@ -56,6 +56,8 @@ public class FileFormat {
     private String radioSelected = "";
 
     public FileFormat(Project project) {
+        inputArea.setToolTipText("请输入要格式化的内容");
+        resultArea.setToolTipText("格式化结果");
         yamlRadioButton = new JRadioButton("YAML");
         jsonRadioButton = new JRadioButton("JSON");
         xmlRadioButton = new JRadioButton("XML");

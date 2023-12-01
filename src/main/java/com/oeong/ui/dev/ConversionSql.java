@@ -22,6 +22,8 @@ public class ConversionSql {
     private Project project;
 
     public ConversionSql(Project project) {
+        inputArea.setToolTipText("输入mybatis日志");
+        resultArea.setToolTipText("SQL转换结果");
         conversionButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {

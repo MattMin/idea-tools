@@ -54,6 +54,8 @@ public class Encrypt {
     private String radioSelected = "";
 
     public Encrypt(Project project) {
+        inputArea.setToolTipText("请输入要加密的内容");
+        resultArea.setToolTipText("加密结果");
         urlRadioButton = new JRadioButton("URL");
         SHA256RadioButton = new JRadioButton("SHA256");
         SHA1RadioButton = new JRadioButton("SHA1");
