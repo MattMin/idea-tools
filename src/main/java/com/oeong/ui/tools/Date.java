@@ -73,14 +73,14 @@ public class Date {
         try {
             localDate1 = LocalDate.parse(date1);
         } catch (Exception exception) {
-            Notifier.notifyError("First date error. Correct format: yyyy-MM-dd");
+            Notifier.notifyError("Start date error. Correct format: yyyy-MM-dd");
             return;
         }
 
         try {
             localDate2 = LocalDate.parse(date2);
         } catch (Exception exception) {
-            Notifier.notifyError("Second date error. Correct format: yyyy-MM-dd");
+            Notifier.notifyError("End date error. Correct format: yyyy-MM-dd");
             return;
         }
 
@@ -98,7 +98,7 @@ public class Date {
         try {
             localDate = LocalDate.parse(date);
         } catch (Exception exception) {
-            Notifier.notifyError("Third date error. Correct format: yyyy-MM-dd");
+            Notifier.notifyError("Date error. Correct format: yyyy-MM-dd");
             return;
         }
 
