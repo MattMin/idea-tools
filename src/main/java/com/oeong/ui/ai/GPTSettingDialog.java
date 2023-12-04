@@ -3,6 +3,7 @@ package com.oeong.ui.ai;
 import com.oeong.gpt.core.OpenAISettingsState;
 
 import javax.swing.*;
+import java.awt.*;
 
 public class GPTSettingDialog extends JDialog {
 
@@ -13,6 +14,9 @@ public class GPTSettingDialog extends JDialog {
     private JButton cancelButton;
     private JPanel contentPane;
     private JTextField urlField;
+    private JLabel urlLabel;
+    private JLabel modelLabel;
+    private JLabel keyLabel;
     OpenAISettingsState state = OpenAISettingsState.getInstance();
 
     public GPTSettingDialog() {
@@ -22,6 +26,10 @@ public class GPTSettingDialog extends JDialog {
         setSize(500, 200);
         SwingUtilities.invokeLater(() -> setLocationRelativeTo(null)); // 居中
         getRootPane().setDefaultButton(okButton);
+
+        modelLabel.setPreferredSize(new Dimension(65,30));
+        keyLabel.setPreferredSize(new Dimension(65,30));
+        urlLabel.setPreferredSize(new Dimension(65,30));
 
         String openaiKey = state.apiKey;
         String openaiUrl = state.OPENAI_URL;
