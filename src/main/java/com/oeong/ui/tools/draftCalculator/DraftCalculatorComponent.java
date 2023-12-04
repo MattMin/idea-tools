@@ -80,6 +80,7 @@ public class DraftCalculatorComponent extends JBPanel<DraftCalculatorComponent> 
         answer = inputText + " = " + result;
 
         // 判断下一个组件是否存在，存在则更新，不存在则创建
+        // TODO: 2023/12/1 mylist 
         Integer newIndex = index + 1;
         if (componentMap.containsKey(newIndex)) {
             componentMap.get(newIndex).inputField.setText(result);
