@@ -18,6 +18,8 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.util.HashMap;
+import java.util.Map;
 
 import static com.oeong.ui.tools.DraftCalculator.CALCULATOR_CONTENT;
 import static com.oeong.ui.tools.DraftCalculator.CALCULATOR_JBScroll;
@@ -28,6 +30,7 @@ public class DraftCalculatorGroupComponent extends JBPanel<DraftCalculatorGroupC
     private final MyScrollPane myScrollPane = new MyScrollPane(myList, ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED,
             ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
     private int myScrollValue = 0;
+    public static Map<Integer, DraftCalculatorComponent> componentMap = new HashMap<>();
 
     public DraftCalculatorGroupComponent(Project project) {
 

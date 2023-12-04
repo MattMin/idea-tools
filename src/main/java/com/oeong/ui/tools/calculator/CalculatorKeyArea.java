@@ -196,7 +196,7 @@ public class CalculatorKeyArea extends JPanel {
                     calcAndSetResult(inputString);
                 case "Copy" -> { // 复制输入输出
                     Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
-                    StringSelection selection = new StringSelection(inputString + " = " + outputString.substring(4));
+                    StringSelection selection = new StringSelection(outputString.substring(4));
                     clipboard.setContents(selection, null);
                 }
                 case "Clear" -> { // 清空输入输出
