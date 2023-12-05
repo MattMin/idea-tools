@@ -14,18 +14,16 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.util.HashMap;
-import java.util.Map;
 
 import static com.oeong.ui.tools.DraftCalculator.CALCULATOR_CONTENT;
 import static com.oeong.ui.tools.DraftCalculator.CALCULATOR_JBScroll;
+import static com.oeong.ui.tools.draftCalculator.DraftCalculatorGroupComponent.componentMap;
 
 public class DraftCalculatorComponent extends JBPanel<DraftCalculatorComponent> {
 
     private String answer;
     private final JTextField inputField;
     private final JLabel resultLabel;
-    public static Map<Integer, DraftCalculatorComponent> componentMap = new HashMap<>();
 
     public DraftCalculatorComponent(Integer index, String content, boolean me, Project project) {
         answer = content;
@@ -77,7 +75,7 @@ public class DraftCalculatorComponent extends JBPanel<DraftCalculatorComponent> 
         }
 
         resultLabel.setText("= " + result);
-        answer = inputText + " = " + result;
+        answer = result;
 
         // 判断下一个组件是否存在，存在则更新，不存在则创建
         Integer newIndex = index + 1;
@@ -92,7 +90,6 @@ public class DraftCalculatorComponent extends JBPanel<DraftCalculatorComponent> 
         // 将焦点移动到下一个组件
         componentMap.get(newIndex).inputField.requestFocusInWindow();
         this.scrollToBottom(project);
-
     }
 
     // 将JBScrollPane滚动到底部

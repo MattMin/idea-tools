@@ -133,6 +133,7 @@ public class FileFormat {
                 Consumer<String> function = encryptMap.get(text);
                 String input = inputArea.getText();
                 if (input == null || "".equals(input)) {
+                    //
                     Notifier.notifyError("请输入需要格式化的内容");
                     return;
                 }

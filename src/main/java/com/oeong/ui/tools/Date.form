@@ -30,7 +30,7 @@
                 </constraints>
                 <properties>
                   <font size="14" style="1"/>
-                  <text value="Date difference"/>
+                  <text value="Date Difference"/>
                 </properties>
               </component>
               <hspacer id="80d37">
@@ -53,7 +53,7 @@
                   <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
                 </constraints>
                 <properties>
-                  <text value="Date"/>
+                  <text value="Start Date"/>
                 </properties>
               </component>
               <component id="2a09a" class="javax.swing.JTextField" binding="dateTextField1">
@@ -77,7 +77,7 @@
                   <grid row="1" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
                 </constraints>
                 <properties>
-                  <text value="Gap"/>
+                  <text value="End Date"/>
                 </properties>
               </component>
               <component id="5f52e" class="javax.swing.JButton" binding="setTodayButton2">
@@ -156,7 +156,7 @@
                 </constraints>
                 <properties>
                   <font size="14" style="1"/>
-                  <text value="Projected date"/>
+                  <text value="Projected Date"/>
                 </properties>
               </component>
               <hspacer id="c2a5f">
