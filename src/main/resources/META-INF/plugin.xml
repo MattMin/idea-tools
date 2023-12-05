@@ -42,7 +42,6 @@
     </extensions>
 
     <depends>org.intellij.plugins.markdown</depends>
-
     <actions>
         <action id="com.oeong.action.OcrAction" class="com.oeong.action.OcrAction" text="OCR">
             <keyboard-shortcut first-keystroke="control alt A"
@@ -69,31 +68,6 @@
                     class="com.oeong.gpt.core.ExplainExceptionAction"/>
             <separator/>
             <add-to-group group-id="ConsoleEditorPopupMenu" anchor="first"/>
-            <separator/>
-        </group>
-
-
-        <group id="Clipboard">
-            <action id="ClipboardCopyAction" icon="AllIcons.Debugger.AttachToProcess"
-                    class="com.oeong.action.CopyAction">
-                <keyboard-shortcut
-                        first-keystroke="ctrl C"
-                        keymap="$default"/>
-            </action>
-            <separator/>
-            <add-to-group group-id="EditorPopupMenu" anchor="last"/>
-            <separator/>
-        </group>
-
-        <group id="ClipboardPaste">
-            <action id="ClipboardPasteAction" icon="AllIcons.Debugger.AttachToProcess"
-                    class="com.oeong.action.PasteAction">
-                <keyboard-shortcut
-                        first-keystroke="ctrl V"
-                        keymap="$default"/>
-            </action>
-            <separator/>
-            <add-to-group group-id="EditorPopupMenu" anchor="last"/>
             <separator/>
         </group>
     </actions>

@@ -9,16 +9,25 @@ import com.intellij.openapi.vfs.LocalFileSystem;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.oeong.notice.Notifier;
 import com.oeong.service.BookService;
-import com.oeong.service.ReadingProgressDao;
 import com.oeong.vo.BookData;
+import com.oeong.vo.ChapterInfo;
+import org.apache.commons.lang3.ObjectUtils;
 import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
-import java.io.*;
+import java.io.BufferedInputStream;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.nio.charset.Charset;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
-import java.util.*;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -36,8 +45,6 @@ public class Book {
     public static DefaultTableModel tableModel = new DefaultTableModel(null, head);
     // 是否切换了书本（是否点击了开始阅读按钮）
     public static boolean isReadClick = false;
-    // 阅读进度持久化
-    static ReadingProgressDao readingProgressDao = ReadingProgressDao.getInstance();
     // 全局模块对象
     public Project project;
     //书籍本地导入地址
@@ -69,12 +76,14 @@ public class Book {
     private JPanel textContentPanel;
     // 最新章节临时存储
     private String chapter;
-    // 最新章节临时存储
-    private List<String> bookChapterList = new ArrayList<>();
     // 书籍列表持久化
     private BookService bookService = BookService.getInstance();
     // 当前阅读书籍
     private BookData bookDataReading;
+    // 当前章节内容
+    private String chapterContent;
+    // 内容
+    private List<String> lineList;
 
 
     public Book(Project project) {
@@ -120,25 +129,30 @@ public class Book {
             new StartReading().execute();
 
             // 阅读进度持久化
-            readingProgressDao.loadState(readingProgressDao);
+            BookData bookData = bookService.getBookData().get(valueAtName);
+            bookData.setReadFlag(true);
+            bookData.setNowChapterIndex(0);
+            bookService.getBookData().put(valueAtName, bookData);
+            bookDataReading = bookData;
+            getLinesList(bookDataReading);
         });
 
         // 上一章节跳转
         btnOn.addActionListener(e -> {
             mainPanel.setCursor(new Cursor(Cursor.WAIT_CURSOR));
 
-            if (readingProgressDao.chapters.size() == 0 || readingProgressDao.nowChapterIndex == 0) {
+            if (bookDataReading.getBookChapterList().size() == 0 || bookDataReading.getNowChapterIndex() == 0) {
                 Notifier.notifyError("已经是第一章了");
                 // 恢复默认鼠标样式
                 mainPanel.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
                 return;
             }
-            readingProgressDao.nowChapterIndex = readingProgressDao.nowChapterIndex - 1;
+            bookDataReading.setNowChapterIndex(bookDataReading.getNowChapterIndex() - 1);
             // 加载阅读信息
             new LoadChapterInformation().execute();
 
             // 阅读进度持久化
-            readingProgressDao.loadState(readingProgressDao);
+            bookService.getBookData().put(valueAtName, bookDataReading);
         });
 
         // 下一章跳转
@@ -146,21 +160,22 @@ public class Book {
             // 等待鼠标样式
             mainPanel.setCursor(new Cursor(Cursor.WAIT_CURSOR));
 
-            if (readingProgressDao.chapters.size() == 0 || readingProgressDao.nowChapterIndex == readingProgressDao.chapters.size() - 1) {
+            List<ChapterInfo> bookChapterList = bookDataReading.getBookChapterList();
+            int nowChapterIndex = bookDataReading.getNowChapterIndex();
+            if (bookChapterList.size() == 0 || nowChapterIndex == bookChapterList.size() - 1) {
                 Notifier.notifyError("已经是最后一章了");
                 // 恢复默认鼠标样式
                 mainPanel.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
                 return;
             }
-
             // 章节下标加一
-            readingProgressDao.nowChapterIndex = readingProgressDao.nowChapterIndex + 1;
+            bookDataReading.setNowChapterIndex(nowChapterIndex + 1);
 
             // 加载阅读信息
             new LoadChapterInformation().execute();
 
             // 阅读进度持久化
-            readingProgressDao.loadState(readingProgressDao);
+            bookService.getBookData().put(valueAtName, bookDataReading);
         });
 
         // 章节跳转
@@ -169,9 +184,9 @@ public class Book {
             mainPanel.setCursor(new Cursor(Cursor.WAIT_CURSOR));
 
             // 根据下标跳转
-            readingProgressDao.nowChapterIndex = chapterList.getSelectedIndex();
+            bookDataReading.setNowChapterIndex(chapterList.getSelectedIndex());
 
-            if (readingProgressDao.chapters.size() == 0 || readingProgressDao.nowChapterIndex < 0) {
+            if (bookDataReading.getBookChapterList().size() == 0 || bookDataReading.getNowChapterIndex() < 0) {
                 Notifier.notifyError("未知章节");
                 // 恢复默认鼠标样式
                 mainPanel.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
@@ -182,7 +197,7 @@ public class Book {
             new LoadChapterInformation().execute();
 
             // 阅读进度持久化
-            readingProgressDao.loadState(readingProgressDao);
+            bookService.getBookData().put(valueAtName, bookDataReading);
         });
 
 //        // 阅读滚动
@@ -196,210 +211,12 @@ public class Book {
 //        });
     }
 
-    public void init() {
-        // 初始化表格
-        HashMap<String, BookData> bookData = bookService.getBookData();
-        if (bookData != null) {
-            for (Map.Entry<String, BookData> entry : bookData.entrySet()) {
-                BookData data = entry.getValue();
-                tableModel.addRow(new Object[]{data.getBookName(), data.getChapter(), data.getBookLink()});
-            }
+    private static List<String> getChapters(List<ChapterInfo> chapterInfos) {
+        List<String> chapters = new ArrayList<>();
+        for (ChapterInfo chapterInfo : chapterInfos) {
+            chapters.add(chapterInfo.getChapterName());
         }
-        bookTable.setModel(tableModel);
-        bookTable.setEnabled(true);
-
-        if (readingProgressDao.bookName != null) {
-            bookTable.setSelectionMode(tableModel.findColumn(readingProgressDao.bookName));
-        }
-
-        if (readingProgressDao.chapters != null) {
-            List<String> chapters = readingProgressDao.chapters;
-            for (String chapter : chapters) {
-                chapterList.addItem(chapter);
-            }
-        }
-
-        if (readingProgressDao.textContent != null) {
-            textContent.setText(readingProgressDao.textContent);
-        }
-
-        if (chapterList.getItemCount() != 0) {
-            int nowChapterIndex = readingProgressDao.nowChapterIndex;
-            chapterList.setSelectedIndex(nowChapterIndex);
-        }
-
-
-        // 设置表格内容大小
-        tablePane.setPreferredSize(new Dimension(-1, 30));
-        // 页面滚动步长
-        JScrollBar jScrollBar = new JScrollBar();
-        // 滚动步长为8
-        jScrollBar.setMaximum(15);
-        paneTextContent.setVerticalScrollBar(jScrollBar);
-
-        // 阅读按钮
-        openBook.setToolTipText("开始阅读");
-        openBook.setIcon(AllIcons.Actions.Execute);
-        // 上一章
-        btnOn.setToolTipText("上一章");
-        btnOn.setIcon(AllIcons.Actions.ArrowCollapse);
-        // 下一章
-        underOn.setToolTipText("下一章");
-        underOn.setIcon(AllIcons.Actions.ArrowExpand);
-        // 跳转
-        jumpButton.setToolTipText("跳转");
-        jumpButton.setIcon(AllIcons.Vcs.Push);
-    }
-
-    /**
-     * 书籍导入
-     */
-    private void applyImportBook() {
-
-        readingProgressDao.loadState(readingProgressDao);
-        readingProgressDao.importPath = importBookPath;
-
-        VirtualFile file = LocalFileSystem.getInstance().findFileByPath(readingProgressDao.importPath);
-
-        assert file != null;
-
-        if (!this.importBook(file)) {
-            Notifier.notifyError("书籍导入失败");
-            return;
-        }
-        // 获取选中行数据
-        int selectedRow = bookTable.getSelectedRow();
-
-        if (selectedRow < 0) {
-            Notifier.notifyError("还没有选择要读哪本书");
-            // 恢复默认鼠标样式
-            mainPanel.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
-            return;
-        }
-
-        // 获取书籍链接
-        valueAtName = bookTable.getValueAt(selectedRow, 0).toString();
-        // 执行开始阅读
-        new StartReading().execute();
-
-        // 阅读进度持久化
-        readingProgressDao.loadState(readingProgressDao);
-
-    }
-
-    /**
-     * 导入书籍
-     *
-     * @param file 书籍
-     * @return 是否导入成功，true：成功、false：失败
-     */
-    public boolean importBook(@NotNull VirtualFile file) {
-        // 获取扩展名
-        String extension = file.getExtension();
-
-        // 获取文件名
-        String name = file.getName();
-
-
-        if (StringUtil.isEmpty(extension)) {
-            return false;
-        }
-
-        // 获取文件路径
-        String filePath = file.getPath();
-
-        if (StringUtil.isEmpty(filePath)) {
-            return false;
-        }
-
-        // 存储书籍信息
-        Map<String, String> bookMap = new HashMap<>(16);
-
-        // 存储目录信息
-        List<String> chapterList = new ArrayList<>(16);
-        // 执行书籍解析
-        try {
-            assert extension != null;
-            if (extension.equals("txt") || extension.equals("TXT")) {
-                bookMap = this.parseTxt(filePath, chapterList);
-            } else {
-                Notifier.notifyError("格式不支持");
-            }
-        } catch (Exception e) {
-            return false;
-        }
-
-        if (bookMap.isEmpty() || chapterList.isEmpty()) return false;
-
-        // 存储书籍
-        BookData bookData = new BookData();
-        bookData.setBookName(name);
-        bookData.setBookLink(filePath);
-        bookData.setBookMap(bookMap);
-        bookData.setChapter(chapter);
-        bookData.setBookChapterList(bookChapterList);
-
-        // 持久化书籍
-        bookService.getBookData().put(name, bookData);
-
-        //添加到表格
-        tableModel.addRow(bookData2Array(bookData));
-        bookTable.setModel(tableModel);
-        return true;
-    }
-
-    /**
-     * 解析本地 txt 文件为 Map 格式，K 为章节名称，Value 为章节内容
-     *
-     * @param filePath txt 文件路径
-     * @return <章节，章节内容>
-     */
-    public Map<String, String> parseTxt(String filePath, List<String> chapterList) {
-
-        Map<String, String> chapterMap = new LinkedHashMap<>();
-
-        String fileCharset = this.getFileCharset(filePath);
-
-        chapter = "";
-        bookChapterList = new ArrayList<>();
-
-        try (BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(filePath), fileCharset))) {
-            String line;
-            StringBuilder contentBuilder = new StringBuilder();
-            String title = null;
-
-            while (true) {
-                try {
-                    if ((line = reader.readLine()) == null) break;
-                } catch (IOException e) {
-                    throw new RuntimeException(e);
-                }
-                Matcher matcher = CHAPTER_PATTERN.matcher(line);
-                if (matcher.find()) {
-                    if (title != null) {
-                        if (!bookChapterList.contains(title)) {
-                            bookChapterList.add(title);
-                            chapterList.add(title);
-                        }
-                        chapterMap.put(title, contentBuilder.toString());
-                        contentBuilder.setLength(0);
-                    }
-                    title = line;
-                } else {
-                    contentBuilder.append(line);
-                    contentBuilder.append(System.lineSeparator());
-                }
-            }
-
-            if (title != null) {
-                chapter = title;
-                chapterMap.put(title, contentBuilder.toString());
-                chapterList.add(title);
-            }
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-        return chapterMap;
+        return chapters;
     }
 
     /**
@@ -408,7 +225,7 @@ public class Book {
      * @param filePath 文件路径
      * @return 字符集
      */
-    public String getFileCharset(String filePath) {
+    public static String getFileCharset(String filePath) {
         String charset = "GBK";
         byte[] first3Bytes = new byte[3];
         try {
@@ -468,12 +285,229 @@ public class Book {
         return charset;
     }
 
+    private static int findRowIndexByValue(DefaultTableModel model, String value) {
+        for (int row = 0; row < model.getRowCount(); row++) {
+            for (int col = 0; col < model.getColumnCount(); col++) {
+                Object cellValue = model.getValueAt(row, col);
+                if (cellValue != null && cellValue.toString().equals(value)) {
+                    return row;
+                }
+            }
+        }
+        // 返回 -1 表示未找到匹配的值
+        return -1;
+    }
+
+    public void init() {
+        // 初始化表格
+        tableModel = new DefaultTableModel(null, head);
+        HashMap<String, BookData> bookData = bookService.getBookData();
+        if (bookData != null) {
+            for (Map.Entry<String, BookData> entry : bookData.entrySet()) {
+                BookData data = entry.getValue();
+                tableModel.addRow(new Object[]{data.getBookName(), data.getChapter(), data.getBookLink()});
+                if (data.getReadFlag()) {
+                    bookDataReading = data;
+                }
+            }
+        }
+        bookTable.setModel(tableModel);
+        bookTable.setEnabled(true);
+
+        if (!ObjectUtils.isEmpty(bookDataReading)) {
+            //加载表格选中项
+            bookTable.setSelectionMode(findRowIndexByValue(tableModel, bookDataReading.getBookName()));
+            //加载章节列表
+            List<ChapterInfo> chapters = bookDataReading.getBookChapterList();
+            for (ChapterInfo chapter : chapters) {
+                chapterList.addItem(chapter.getChapterName());
+            }
+            if (chapterList.getItemCount() != 0) {
+                //加载章节选中项
+                int nowChapterIndex = bookDataReading.getNowChapterIndex();
+                chapterList.setSelectedIndex(nowChapterIndex);
+            }
+            //加载章节内容
+            getLinesList(bookDataReading);
+            ChapterInfo chapterInfo = bookDataReading.getBookChapterList().get(bookDataReading.getNowChapterIndex());
+            getChapterContent(chapterInfo);
+            textContent.setText(chapterContent);
+        }
+
+        // 设置表格内容大小
+        tablePane.setPreferredSize(new Dimension(-1, 30));
+        // 页面滚动步长
+        JScrollBar jScrollBar = new JScrollBar();
+        // 滚动步长为8
+        jScrollBar.setMaximum(15);
+        paneTextContent.setVerticalScrollBar(jScrollBar);
+
+        // 阅读按钮
+        openBook.setToolTipText("开始阅读");
+        openBook.setIcon(AllIcons.Actions.Execute);
+        // 上一章
+        btnOn.setToolTipText("上一章");
+        btnOn.setIcon(AllIcons.Actions.ArrowCollapse);
+        // 下一章
+        underOn.setToolTipText("下一章");
+        underOn.setIcon(AllIcons.Actions.ArrowExpand);
+        // 跳转
+        jumpButton.setToolTipText("跳转");
+        jumpButton.setIcon(AllIcons.Vcs.Push);
+    }
+
+    /**
+     * 书籍导入
+     */
+    private void applyImportBook() {
+
+        VirtualFile file = LocalFileSystem.getInstance().findFileByPath(importBookPath);
+
+        assert file != null;
+
+        if (!this.importBook(file)) {
+            Notifier.notifyError("书籍导入失败");
+            return;
+        }
+    }
+
+    /**
+     * 导入书籍
+     *
+     * @param file 书籍
+     * @return 是否导入成功，true：成功、false：失败
+     */
+    public boolean importBook(@NotNull VirtualFile file) {
+        // 获取扩展名
+        String extension = file.getExtension();
+
+        // 获取文件名
+        String name = file.getName();
+
+        if (StringUtil.isEmpty(extension)) {
+            return false;
+        }
+
+        // 获取文件路径
+        String filePath = file.getPath();
+
+        if (StringUtil.isEmpty(filePath)) {
+            return false;
+        }
+
+        // 存储书籍信息
+        List<ChapterInfo> characterList = new ArrayList<>(16);
+
+        // 存储目录信息
+        List<String> chapterList = new ArrayList<>(16);
+        // 执行书籍解析
+        try {
+            assert extension != null;
+            if (extension.equals("txt") || extension.equals("TXT")) {
+                characterList = this.parseTxt(filePath, chapterList);
+            } else {
+                Notifier.notifyError("格式不支持");
+            }
+        } catch (Exception e) {
+            return false;
+        }
+
+        if (characterList.isEmpty() || chapterList.isEmpty()) return false;
+
+        // 存储书籍
+        BookData bookData = new BookData();
+        bookData.setBookName(name);
+        bookData.setBookLink(filePath);
+        bookData.setChapter(chapter);
+        bookData.setBookChapterList(characterList);
+        bookData.setNowChapterIndex(0);
+        bookData.setReadFlag(false);
+
+        // 持久化书籍
+        bookService.getBookData().put(name, bookData);
+
+        //添加到表格
+        tableModel.addRow(bookData2Array(bookData));
+        bookTable.setModel(tableModel);
+        bookTable.updateUI();
+        return true;
+    }
+
+    /**
+     * 解析本地 txt 文件为 Map 格式，K 为章节名称，Value 为章节内容
+     *
+     * @param filePath txt 文件路径
+     * @return <章节，章节内容>
+     */
+    public List<ChapterInfo> parseTxt(String filePath, List<String> chapterList) {
+        //章节信息列表
+        List<ChapterInfo> characterList = new ArrayList<>();
+        List<Integer> indexList = new ArrayList<>();
+        String fileCharset = this.getFileCharset(filePath);
+        List<String> lines = new ArrayList<>();
+
+        try {
+            Path path = Paths.get(filePath);
+            lines = Files.readAllLines(path, Charset.forName(fileCharset));
+            for (int i = 0; i < lines.size(); i++) {
+                String line = lines.get(i);
+                Matcher matcher = CHAPTER_PATTERN.matcher(line);
+                if (matcher.find()) {
+                    if (chapterList.contains(line)) {
+                        continue;
+                    }
+                    indexList.add(i);
+                    chapterList.add(line);
+                    chapter = line;
+                }
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        for (int i = 0; i < indexList.size(); i++) {
+            ChapterInfo chapterInfoFirst = new ChapterInfo();
+            Integer index = indexList.get(i);
+            chapterInfoFirst.setChapterName(lines.get(index));
+            chapterInfoFirst.setStartLine(index);
+            if (index + 1 < indexList.size()) {
+                chapterInfoFirst.setEndLine(indexList.get(index + 1));
+            } else {
+                chapterInfoFirst.setEndLine(lines.size());
+            }
+            characterList.add(chapterInfoFirst);
+        }
+        return characterList;
+    }
+
     public String[] bookData2Array(BookData noteData) {
         String[] raw = new String[3];
         raw[0] = noteData.getBookName();
         raw[1] = noteData.getChapter();
         raw[2] = noteData.getBookLink();
         return raw;
+    }
+
+    public void getLinesList(BookData bookDataReading) {
+        Path path = Paths.get(bookDataReading.getBookLink());
+        String fileCharset = getFileCharset(bookDataReading.getBookLink());
+        try {
+            lineList = Files.readAllLines(path, Charset.forName(fileCharset));
+        } catch (IOException e) {
+            Notifier.notifyError("获取章节内容失败");
+        }
+    }
+
+    public void getChapterContent(ChapterInfo chapterInfo) {
+        List<String> list = lineList.subList(chapterInfo.getStartLine(), chapterInfo.getEndLine());
+        StringBuilder stringBuilder = new StringBuilder();
+        for (String text : list) {
+            stringBuilder.append(text);
+            stringBuilder.append(System.lineSeparator());
+        }
+        chapterContent = stringBuilder.toString();
+        if (chapterContent == null) {
+            Notifier.notifyError("章节内容为空");
+        }
     }
 
     /**
@@ -483,23 +517,34 @@ public class Book {
 
         @Override
         protected Void doInBackground() {
-            bookDataReading = bookService.getBookData().get(valueAtName);
-            readingProgressDao.chapters.clear();
-            readingProgressDao.chapters.addAll(bookChapterList);
             return null;
         }
 
         @Override
         protected void done() {
-            // 清空章节信息
-            readingProgressDao.nowChapterIndex = 0;
 
             // 清空下拉列表
             chapterList.removeAllItems();
 
             // 加载下拉列表
-            for (String chapter : bookDataReading.getBookChapterList()) {
-                chapterList.addItem(chapter);
+            for (ChapterInfo chapter : bookDataReading.getBookChapterList()) {
+                chapterList.addItem(chapter.getChapterName());
+            }
+            // 设置书籍
+            HashMap<String, BookData> bookData = bookService.getBookData();
+            if (bookData != null) {
+                for (Map.Entry<String, BookData> entry : bookData.entrySet()) {
+                    BookData data = entry.getValue();
+                    String bookName = data.getBookName();
+                    if (data.getReadFlag()) {
+                        data.setReadFlag(false);
+                        bookService.getBookData().put(bookName, data);
+                    }
+                    if (bookName.equals(bookDataReading.getBookName())) {
+                        data.setReadFlag(true);
+                        bookService.getBookData().put(bookName, data);
+                    }
+                }
             }
 
             // 解析当前章节内容
@@ -519,18 +564,12 @@ public class Book {
     final class LoadChapterInformation extends SwingWorker<Void, String> {
         @Override
         protected Void doInBackground() {
+            List<ChapterInfo> bookChapterList = bookDataReading.getBookChapterList();
+            ChapterInfo chapterInfo = bookChapterList.get(bookDataReading.getNowChapterIndex());
             // 清空书本表格
-            String chapter = readingProgressDao.chapters.get(readingProgressDao.nowChapterIndex);
-
+            String chapter = chapterInfo.getChapterName();
             // 内容
-            Map<String, String> bookMap = bookDataReading.getBookMap();
-
-            readingProgressDao.textContent = bookMap.get(chapter);
-
-            if (readingProgressDao.textContent == null) {
-                Notifier.notifyError("章节内容为空");
-                return null;
-            }
+            getChapterContent(chapterInfo);
             //将当前进度信息加入chunks中
             publish(chapter);
             return null;
@@ -540,7 +579,7 @@ public class Book {
         protected void process(List<String> chapters) {
             String chapter = chapters.get(0);
             // 章节内容赋值
-            textContent.setText(readingProgressDao.textContent);
+            textContent.setText(chapterContent);
             // 设置下拉框的值
             chapterList.setSelectedItem(chapter);
             // 回到顶部
@@ -553,5 +592,4 @@ public class Book {
             mainPanel.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
         }
     }
-
 }

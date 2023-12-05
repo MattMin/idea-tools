@@ -22,6 +22,8 @@ public class ConversionSql {
     private Project project;
 
     public ConversionSql(Project project) {
+
+
         inputArea.setToolTipText("输入mybatis日志");
         resultArea.setToolTipText("SQL转换结果");
         conversionButton.addActionListener(new ActionListener() {
@@ -41,6 +43,11 @@ public class ConversionSql {
             }
         });
     }
+
+//    public void initUI() {
+//        container = new JPanel(new FlowLayout(FlowLayout.LEFT)))
+//        this.project = project;
+//    }
 
     public String textToSql(String inputStr) {
         // 获取带问号的SQL语句
@@ -72,7 +79,7 @@ public class ConversionSql {
             String typeStr = splitParameters[i].substring(splitParameters[i].indexOf("(") + 1, splitParameters[i].indexOf(")"));
             // 如果为字符类型
             if (typeStr == "String" || typeStr == "Timestamp") {
-                statementStr = statementStr.replace("?", "'" + tempStr.trim() + "'");
+                statementStr = statementStr.replace("?", '"' + tempStr.trim() + '"');
             } else {
                 // 数值类型
                 statementStr = statementStr.replace("?", tempStr.trim());

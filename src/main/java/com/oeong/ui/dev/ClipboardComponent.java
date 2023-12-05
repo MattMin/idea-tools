@@ -3,6 +3,8 @@ package com.oeong.ui.dev;
 import cn.hutool.core.swing.clipboard.ClipboardUtil;
 import com.intellij.icons.AllIcons;
 import com.intellij.notification.impl.ui.NotificationsUtil;
+import com.intellij.openapi.project.Project;
+import com.intellij.openapi.util.Key;
 import com.intellij.ui.JBColor;
 import com.intellij.ui.components.JBPanel;
 import com.intellij.ui.components.panels.VerticalLayout;
@@ -10,6 +12,8 @@ import com.intellij.util.ui.JBUI;
 import com.oeong.notice.Notifier;
 import com.oeong.ui.ai.MessagePanel;
 import lombok.Getter;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
 
 import javax.swing.*;
 import java.awt.*;
@@ -17,12 +21,12 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
 public class ClipboardComponent extends JBPanel<ClipboardComponent> {
-
+    public static final Key<Object> COPY_FLAG = Key.create("copyFlag");
     private final MessagePanel component = new MessagePanel();
     @Getter
     private String answer;
 
-    public ClipboardComponent(String content, boolean me) {
+    public ClipboardComponent(String content, boolean me, Project project) {
         answer = content;
         setDoubleBuffered(true);
         setOpaque(true);
@@ -44,8 +48,11 @@ public class ClipboardComponent extends JBPanel<ClipboardComponent> {
         copyAction.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
-                ClipboardUtil.setStr(answer);
-                Notifier.notifyInfo("Copy Success!\n" + answer);
+                Document document = Jsoup.parse(answer);
+                String pre = document.getElementsByTag("pre").text();
+                ClipboardUtil.setStr(pre);
+                Notifier.notifyInfo("Copy Success!\n" + pre);
+                project.putUserData(COPY_FLAG, true);
             }
         });
         actionPanel.add(copyAction, BorderLayout.NORTH);

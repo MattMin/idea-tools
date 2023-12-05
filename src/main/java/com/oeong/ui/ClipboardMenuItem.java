@@ -1,7 +1,7 @@
 package com.oeong.ui;
 
 import com.intellij.openapi.project.Project;
-import com.oeong.ui.dev.Clipboard;
+import com.oeong.ui.dev.MyClipboard;
 import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
@@ -61,7 +61,7 @@ public class ClipboardMenuItem implements MenuAction {
      */
     @Override
     public @NotNull JPanel getContainer(Project project) {
-        Clipboard clipboard = new Clipboard(project);
-        return clipboard.getContainer();
+        MyClipboard myClipboard = new MyClipboard(project);
+        return myClipboard.getContainer();
     }
 }

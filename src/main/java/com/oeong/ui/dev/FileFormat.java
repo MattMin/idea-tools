@@ -1,29 +1,34 @@
 package com.oeong.ui.dev;
 
-import cn.hutool.json.JSONObject;
-import cn.hutool.json.JSONUtil;
+import com.intellij.json.JsonLanguage;
+import com.intellij.lang.Language;
+import com.intellij.lang.html.HTMLLanguage;
+import com.intellij.lang.xml.XMLLanguage;
+import com.intellij.openapi.actionSystem.*;
+import com.intellij.openapi.editor.Document;
+import com.intellij.openapi.editor.Editor;
+import com.intellij.openapi.editor.EditorFactory;
+import com.intellij.openapi.editor.EditorSettings;
+import com.intellij.openapi.editor.ex.EditorEx;
+import com.intellij.openapi.fileTypes.PlainTextLanguage;
 import com.intellij.openapi.project.Project;
+import com.intellij.ui.EditorSettingsProvider;
+import com.intellij.ui.EditorTextField;
+import com.intellij.ui.LanguageTextField;
+import com.intellij.ui.components.JBTextArea;
 import com.oeong.notice.Notifier;
-import groovy.json.StringEscapeUtils;
 import lombok.Getter;
 import org.jdesktop.swingx.JXRadioGroup;
-import org.jdom.input.SAXBuilder;
-import org.jdom.output.Format;
-import org.jdom.output.XMLOutputter;
-import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
-import org.yaml.snakeyaml.DumperOptions;
-import org.yaml.snakeyaml.Yaml;
-import org.yaml.snakeyaml.error.YAMLException;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.StringReader;
-import java.io.StringWriter;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.function.Function;
+import java.util.function.Consumer;
 
 /**
  * @descriptions: YAML/JSON/XML/HTML 格式化
@@ -31,7 +36,9 @@ import java.util.function.Function;
  * @date: 2023/11/6 9:37
  */
 public class FileFormat {
-    static Map<String, Function<String, String>> encryptMap = new HashMap<>();
+    static Map<String, Consumer<String>> encryptMap = new HashMap<>();
+    private static Project project;
+    private static EditorTextField resultArea;
 
     static {
         encryptMap.put("YAML", FileFormat::yamlTool);
@@ -40,9 +47,7 @@ public class FileFormat {
         encryptMap.put("HTML", FileFormat::htmlTool);
     }
 
-    private Project project;
     private JTextArea inputArea;
-    private JTextArea resultArea;
     private JRadioButton yamlRadioButton;
     private JRadioButton jsonRadioButton;
     private JRadioButton xmlRadioButton;
@@ -52,12 +57,20 @@ public class FileFormat {
     @Getter
     private JPanel container;
     private JXRadioGroup<JRadioButton> group;
+    private JScrollPane inputPanel;
+    private JScrollPane resultPanel;
 
     private String radioSelected = "";
 
     public FileFormat(Project project) {
-        inputArea.setToolTipText("请输入要格式化的内容");
-        resultArea.setToolTipText("格式化结果");
+        inputArea = new JBTextArea();
+        inputArea.setLineWrap(true);
+        inputArea.setWrapStyleWord(true);
+        inputPanel.setViewportView(inputArea);
+        // 禁用水平滚动条
+        inputPanel.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+        resultArea = new LanguageTextField(PlainTextLanguage.INSTANCE, project, "", false);
+        resultPanel.setViewportView(resultArea);
         yamlRadioButton = new JRadioButton("YAML");
         jsonRadioButton = new JRadioButton("JSON");
         xmlRadioButton = new JRadioButton("XML");
@@ -89,58 +102,21 @@ public class FileFormat {
         this.project = project;
     }
 
-    public static String yamlTool(String text) {
-        Yaml yamText = new Yaml();
-        try {
-            yamText.load(new StringReader(text));
-        } catch (YAMLException e) {
-            Notifier.notifyError("Incorrect format of YAML");
-        }
-        DumperOptions options = new DumperOptions();
-        options.setDefaultFlowStyle(DumperOptions.FlowStyle.BLOCK);
-        options.setPrettyFlow(true);
-        Yaml yaml = new Yaml(options);
-        StringWriter writer = new StringWriter();
-        yaml.dump(text, writer);
-        return writer.toString();
+    public static void yamlTool(String text) {
+        resultArea = new LanguageTextField(Language.findLanguageByID("yaml"), project, text, false);
     }
 
-    public static String jsonTool(String text) {
-        String res = StringEscapeUtils.unescapeJava(text);
-        JSONObject jsonObject = null;
-        try {
-            jsonObject = JSONUtil.parseObj(res);
-        } catch (Exception e) {
-            Notifier.notifyError("Incorrect format of JSON");
-            return null;
-        }
-        return jsonObject.toStringPretty();
+    public static void jsonTool(String text) {
+        resultArea = new LanguageTextField(JsonLanguage.INSTANCE, project, text, false);
+
     }
 
-    public static String xmlTool(String text) {
-        StringWriter writer = null;
-        try {
-            SAXBuilder builder = new SAXBuilder();
-            StringReader reader = new StringReader(text);
-            org.jdom.Document build = builder.build(reader);
-            XMLOutputter xmlOutputter = new XMLOutputter();
-            xmlOutputter.setFormat(Format.getPrettyFormat());
-            writer = new StringWriter();
-            xmlOutputter.output(build, writer);
-        } catch (Exception e) {
-            Notifier.notifyError("Incorrect format of XML");
-            return null;
-        }
-        return writer.toString();
+    public static void xmlTool(String text) {
+        resultArea = new LanguageTextField(XMLLanguage.INSTANCE, project, text, false);
     }
 
-    public static String htmlTool(String text) {
-        if (!text.startsWith("<html")) {
-            Notifier.notifyError("Incorrect format of HTML");
-            return null;
-        }
-        Document document = Jsoup.parse(text);
-        return document.html();
+    public static void htmlTool(String text) {
+        resultArea = new LanguageTextField(HTMLLanguage.INSTANCE, project, text, false);
     }
 
     private void changeRadio(String text) {
@@ -154,20 +130,70 @@ public class FileFormat {
         formatButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                Function<String, String> function = encryptMap.get(text);
+                Consumer<String> function = encryptMap.get(text);
                 String input = inputArea.getText();
                 if (input == null || "".equals(input)) {
                     Notifier.notifyError("请输入需要格式化的内容");
                     return;
                 }
-                String result = function.apply(input);
-                resultArea.setText(result);
-                resultArea.updateUI();
+                function.accept(input);
+                resultArea.setAutoscrolls(true);
+                resultArea.setOneLineMode(false);
+                resultArea.setMinimumSize(new Dimension(100, 100));
+                resultArea.addSettingsProvider(new EditorSettingsProvider() {
+                    @Override
+                    public void customizeSettings(EditorEx editorEx) {
+                        EditorSettings settings = editorEx.getSettings();
+                        settings.setUseSoftWraps(true);
+                        settings.setWhitespacesShown(true);
+                        settings.setLeadingWhitespaceShown(true);
+                        // 启用自动换行
+                        settings.setUseSoftWraps(true);
+                    }
+                });
+                ActionManager am = ActionManager.getInstance();
+                am.getAction("ReformatCode").actionPerformed(
+                        new AnActionEvent(
+                                null,
+                                new DataContext() {
+                                    /**
+                                     * Returns the object corresponding to the specified data identifier. Some of the supported
+                                     * data identifiers are defined in the {@link PlatformDataKeys} class.
+                                     *
+                                     * <b>NOTE:</b> For implementation only, prefer {@link DataContext#getData(DataKey)} in client code.
+                                     *
+                                     * @param dataId the data identifier for which the value is requested.
+                                     * @return the value, or null if no value is available in the current context for this identifier.
+                                     */
+                                    @Override
+                                    public @Nullable Object getData(@NotNull String dataId) {
+                                        // 在这里根据需要提供数据
+                                        if (CommonDataKeys.PROJECT.is(dataId)) {
+                                            // 在这个例子中，我们提供一个虚拟的项目对象
+                                            return project;
+                                        }
+                                        if (CommonDataKeys.EDITOR.is(dataId)) {
+                                            Document document = resultArea.getDocument();
+                                            Editor editor = EditorFactory.getInstance().createEditor(document, project);
+                                            return editor;
+                                        }
+                                        return null;
+                                    }
+                                },
+//                                DataManager.getInstance().getDataContext(resultArea),
+                                ActionPlaces.UNKNOWN,
+                                new Presentation(),
+                                ActionManager.getInstance(),
+                                0
+                        )
+                );
+                resultPanel.setViewportView(resultArea);
+                resultPanel.updateUI();
             }
         });
 
         radioSelected = text;
     }
-
-
 }
+
+
