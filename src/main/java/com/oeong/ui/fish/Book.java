@@ -37,6 +37,18 @@ import java.util.regex.Pattern;
  * @date: 2023/11/24 14:48
  */
 public class Book {
+    // TODO: 2023/12/6
+    /**
+     * 1 上下拖动
+     * 2 监听表格异动
+     * 3 按钮文字提示
+     * 4 openbook 按钮修改
+     * 5 书籍选择框修改为没有输入框
+     * 6 格式化框需要可以自适应
+     * 7 yaml需要添加插件依赖
+     * 8 书籍缓存只缓存一章
+     * 9 书籍读取方式修改为按行读取
+     */
     // Default Pattern
     private static final Pattern CHAPTER_PATTERN = Pattern.compile("^\\s*[第卷][0123456789一二三四五六七八九十零〇百千两]*[章回部节集卷].*");
     // 表头内容

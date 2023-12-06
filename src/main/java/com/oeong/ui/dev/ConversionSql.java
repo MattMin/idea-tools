@@ -78,8 +78,8 @@ public class ConversionSql {
             // 获取括号中内容
             String typeStr = splitParameters[i].substring(splitParameters[i].indexOf("(") + 1, splitParameters[i].indexOf(")"));
             // 如果为字符类型
-            if (typeStr == "String" || typeStr == "Timestamp") {
-                statementStr = statementStr.replace("?", '"' + tempStr.trim() + '"');
+            if (typeStr.equals("String") || typeStr.equals("Timestamp")) {
+                statementStr = statementStr.replace("?", "'" + tempStr.trim() + "'");
             } else {
                 // 数值类型
                 statementStr = statementStr.replace("?", tempStr.trim());
