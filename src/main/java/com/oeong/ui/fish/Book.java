@@ -7,6 +7,12 @@ import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.TextFieldWithBrowseButton;
 import com.intellij.openapi.vfs.LocalFileSystem;
 import com.intellij.openapi.vfs.VirtualFile;
+import com.intellij.ui.JBSplitter;
+import com.intellij.ui.components.JBLabel;
+import com.intellij.ui.components.JBPanel;
+import com.intellij.ui.components.JBScrollPane;
+import com.intellij.ui.components.JBTextArea;
+import com.intellij.ui.table.JBTable;
 import com.oeong.notice.Notifier;
 import com.oeong.service.BookService;
 import com.oeong.vo.BookData;
@@ -15,11 +21,13 @@ import org.apache.commons.lang3.ObjectUtils;
 import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
+import javax.swing.event.TableModelEvent;
+import javax.swing.event.TableModelListener;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableCellRenderer;
 import java.awt.*;
-import java.io.BufferedInputStream;
-import java.io.FileInputStream;
-import java.io.IOException;
+import java.awt.event.ActionListener;
+import java.io.*;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -39,20 +47,20 @@ import java.util.regex.Pattern;
 public class Book {
     // TODO: 2023/12/6
     /**
-     * 1 上下拖动
-     * 2 监听表格异动
-     * 3 按钮文字提示
-     * 4 openbook 按钮修改
+     * 1 *上下拖动
+     * 2 *监听表格异动
+     * 3 *按钮文字提示
+     * 4 *openbook 按钮修改
      * 5 书籍选择框修改为没有输入框
-     * 6 格式化框需要可以自适应
-     * 7 yaml需要添加插件依赖
-     * 8 书籍缓存只缓存一章
-     * 9 书籍读取方式修改为按行读取
+     * 6 *格式化框需要可以自适应
+     * 7 *yaml需要添加插件依赖
+     * 8 *书籍缓存只缓存一章
+     * 9 *书籍读取方式修改为按行读取
      */
     // Default Pattern
     private static final Pattern CHAPTER_PATTERN = Pattern.compile("^\\s*[第卷][0123456789一二三四五六七八九十零〇百千两]*[章回部节集卷].*");
     // 表头内容
-    public static String[] head = {"文章名称", "最新章节", "链接"};
+    public static String[] head = {"", "文章名称", "最新章节", "链接"};
     // 表格内容
     public static DefaultTableModel tableModel = new DefaultTableModel(null, head);
     // 是否切换了书本（是否点击了开始阅读按钮）
@@ -65,6 +73,8 @@ public class Book {
     public JPanel mainPanel;
     // 表格选中的书名
     public String valueAtName;
+    // 分隔
+    private JBSplitter splitterContainer;
     // 导入本地书籍
     private TextFieldWithBrowseButton selectFile;
     // 上一章按钮
@@ -85,7 +95,6 @@ public class Book {
     private JTable bookTable;
     // 打开按钮
     private JButton openBook;
-    private JPanel textContentPanel;
     // 最新章节临时存储
     private String chapter;
     // 书籍列表持久化
@@ -94,8 +103,6 @@ public class Book {
     private BookData bookDataReading;
     // 当前章节内容
     private String chapterContent;
-    // 内容
-    private List<String> lineList;
 
 
     public Book(Project project) {
@@ -115,39 +122,9 @@ public class Book {
                         importBookPath = file.getPath();
                         // 导入书籍
                         applyImportBook();
+                        selectFile.getTextField().setText("");
                     }
                 });
-
-        // 开始阅读
-        openBook.addActionListener(e -> {
-
-            // 等待鼠标样式
-            mainPanel.setCursor(new Cursor(Cursor.WAIT_CURSOR));
-
-            // 获取选中行数据
-            int selectedRow = bookTable.getSelectedRow();
-
-            if (selectedRow < 0) {
-                Notifier.notifyError("还没有选择要读哪本书");
-                // 恢复默认鼠标样式
-                mainPanel.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
-                return;
-            }
-
-            // 获取书籍链接
-            valueAtName = bookTable.getValueAt(selectedRow, 0).toString();
-
-            // 执行开始阅读
-            new StartReading().execute();
-
-            // 阅读进度持久化
-            BookData bookData = bookService.getBookData().get(valueAtName);
-            bookData.setReadFlag(true);
-            bookData.setNowChapterIndex(0);
-            bookService.getBookData().put(valueAtName, bookData);
-            bookDataReading = bookData;
-            getLinesList(bookDataReading);
-        });
 
         // 上一章节跳转
         btnOn.addActionListener(e -> {
@@ -311,21 +288,73 @@ public class Book {
     }
 
     public void init() {
+        mainPanel = new JBPanel(new BorderLayout());
+
+        JPanel topPanel = new JPanel();
+        topPanel.setLayout(new BoxLayout(topPanel, BoxLayout.X_AXIS));
+        JBLabel jbLabel = new JBLabel("本地书籍:");
+        selectFile = new TextFieldWithBrowseButton();
+        selectFile.setMaximumSize(new Dimension(150, 25));
+        selectFile.setMinimumSize(new Dimension(50, 25));
+        topPanel.add(jbLabel);
+        topPanel.add(selectFile);
+
+        splitterContainer = new JBSplitter(true, 0.2f);
+
         // 初始化表格
         tableModel = new DefaultTableModel(null, head);
         HashMap<String, BookData> bookData = bookService.getBookData();
         if (bookData != null) {
             for (Map.Entry<String, BookData> entry : bookData.entrySet()) {
                 BookData data = entry.getValue();
-                tableModel.addRow(new Object[]{data.getBookName(), data.getChapter(), data.getBookLink()});
+                JButton jButton = new JButton();
+                jButton.setText("openBook");
+                tableModel.addRow(new Object[]{jButton, data.getBookName(), data.getChapter(), data.getBookLink()});
                 if (data.getReadFlag()) {
                     bookDataReading = data;
                 }
             }
         }
+
+        JPanel bottomPanel = new JPanel();
+        bottomPanel.setLayout(new BoxLayout(bottomPanel, BoxLayout.X_AXIS));
+        btnOn = new JButton("上一章");
+        btnOn.setMaximumSize(new Dimension(100, 25));
+        btnOn.setMinimumSize(new Dimension(50, 25));
+        underOn = new JButton("下一章");
+        underOn.setMaximumSize(new Dimension(100, 25));
+        underOn.setMinimumSize(new Dimension(50, 25));
+        jumpButton = new JButton("跳转到指定章节");
+        jumpButton.setMaximumSize(new Dimension(100, 25));
+        jumpButton.setMinimumSize(new Dimension(50, 25));
+        chapterList = new JComboBox();
+        chapterList.setMaximumSize(new Dimension(250, 25));
+        chapterList.setMinimumSize(new Dimension(100, 25));
+
+        //设置表格样式
+        bookTable = new JBTable();
         bookTable.setModel(tableModel);
         bookTable.setEnabled(true);
+        setTableButton();
+        tableModel.addTableModelListener(new TableModelListener() {
+            @Override
+            public void tableChanged(TableModelEvent e) {
+                int column = e.getColumn();
+                if (column == 3) {
+                    if (e.getType() == TableModelEvent.UPDATE) {
+                        // 在此处执行你希望执行的操作
+                        int selectedRow = bookTable.getSelectedRow();
+                        DefaultTableModel model = (DefaultTableModel) e.getSource();
+                        String bookName = (String) model.getValueAt(selectedRow, 1);
+                        BookData bookDataSelect = bookService.getBookData().get(bookName);
+                        bookDataSelect.setBookLink((String) model.getValueAt(selectedRow, 3));
+                        bookService.getBookData().put(bookName, bookDataSelect);
+                    }
+                }
+            }
+        });
 
+        textContent = new JBTextArea();
         if (!ObjectUtils.isEmpty(bookDataReading)) {
             //加载表格选中项
             bookTable.setSelectionMode(findRowIndexByValue(tableModel, bookDataReading.getBookName()));
@@ -339,24 +368,25 @@ public class Book {
                 int nowChapterIndex = bookDataReading.getNowChapterIndex();
                 chapterList.setSelectedIndex(nowChapterIndex);
             }
-            //加载章节内容
-            getLinesList(bookDataReading);
             ChapterInfo chapterInfo = bookDataReading.getBookChapterList().get(bookDataReading.getNowChapterIndex());
-            getChapterContent(chapterInfo);
+            getChapterContent(bookDataReading.getBookLink(), chapterInfo);
             textContent.setText(chapterContent);
         }
 
+        tablePane = new JBScrollPane();
         // 设置表格内容大小
         tablePane.setPreferredSize(new Dimension(-1, 30));
+        tablePane.setViewportView(bookTable);
         // 页面滚动步长
         JScrollBar jScrollBar = new JScrollBar();
         // 滚动步长为8
         jScrollBar.setMaximum(15);
+        paneTextContent = new JBScrollPane();
         paneTextContent.setVerticalScrollBar(jScrollBar);
 
         // 阅读按钮
-        openBook.setToolTipText("开始阅读");
-        openBook.setIcon(AllIcons.Actions.Execute);
+//        openBook.setToolTipText("开始阅读");
+//        openBook.setIcon(AllIcons.Actions.Execute);
         // 上一章
         btnOn.setToolTipText("上一章");
         btnOn.setIcon(AllIcons.Actions.ArrowCollapse);
@@ -366,6 +396,89 @@ public class Book {
         // 跳转
         jumpButton.setToolTipText("跳转");
         jumpButton.setIcon(AllIcons.Vcs.Push);
+
+
+        splitterContainer.setFirstComponent(tablePane);
+        textContent.setCaretPosition(0);
+        textContent.setLineWrap(true);
+        paneTextContent.setViewportView(textContent);
+        paneTextContent.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+        splitterContainer.setSecondComponent(paneTextContent);
+        // 同步滚动步长
+        paneTextContent.getVerticalScrollBar().setUnitIncrement(8);
+        // 字体大小
+        textContent.setFont(new Font("", Font.BOLD, 16));
+
+        bottomPanel.add(btnOn);
+        bottomPanel.add(underOn);
+        bottomPanel.add(jumpButton);
+        chapterList.setVisible(true);
+        chapterList.updateUI();
+        chapterList.setPreferredSize(new Dimension(-1, 30));
+        bottomPanel.add(chapterList);
+//        chapterList.addItemListener(new ItemListener() {
+//            @Override
+//            public void itemStateChanged(ItemEvent e) {
+//                // 等待鼠标样式
+//                mainPanel.setCursor(new Cursor(Cursor.WAIT_CURSOR));
+//
+//                // 根据下标跳转
+//                if (e.getStateChange() == bookDataReading.getNowChapterIndex()){
+//                    return;
+//                }
+//                bookDataReading.setNowChapterIndex(e.getStateChange());
+//                if (bookDataReading.getBookChapterList().size() == 0 || bookDataReading.getNowChapterIndex() < 0) {
+//                    Notifier.notifyError("未知章节");
+//                    // 恢复默认鼠标样式
+//                    mainPanel.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
+//                    return;
+//                }
+//
+//                // 加载阅读信息
+//                new LoadChapterInformation().execute();
+//
+//                // 阅读进度持久化
+//                bookService.getBookData().put(valueAtName, bookDataReading);
+//            }
+//        });
+
+        mainPanel.add(topPanel, BorderLayout.NORTH);
+        mainPanel.add(splitterContainer, BorderLayout.CENTER);
+        mainPanel.add(bottomPanel, BorderLayout.SOUTH);
+    }
+
+    private void setTableButton() {
+        bookTable.getColumnModel().getColumn(0).setCellRenderer(new TableCellRendererButton());
+        bookTable.getColumnModel().getColumn(0).setCellEditor(new TableCellEditorButton(e -> {
+
+            // 等待鼠标样式
+            mainPanel.setCursor(new Cursor(Cursor.WAIT_CURSOR));
+
+            // 获取选中行数据
+            int selectedRow = bookTable.getSelectedRow();
+
+            if (selectedRow < 0) {
+                Notifier.notifyError("还没有选择要读哪本书");
+                // 恢复默认鼠标样式
+                mainPanel.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
+                return;
+            }
+
+            // 获取书籍链接
+            valueAtName = bookTable.getValueAt(selectedRow, 1).toString();
+
+            // 执行开始阅读
+            new StartReading().execute();
+
+            // 阅读进度持久化
+            BookData bookDataNew = bookService.getBookData().get(valueAtName);
+            bookDataNew.setReadFlag(true);
+            bookDataNew.setNowChapterIndex(0);
+            bookService.getBookData().put(valueAtName, bookDataNew);
+            bookDataReading = bookDataNew;
+            ChapterInfo chapterInfo = bookDataReading.getBookChapterList().get(bookDataReading.getNowChapterIndex());
+            getChapterContent(bookDataNew.getBookLink(), chapterInfo);
+        }));
     }
 
     /**
@@ -395,6 +508,12 @@ public class Book {
 
         // 获取文件名
         String name = file.getName();
+
+        BookData bookDataFind = bookService.getBookData().get(name);
+        if (bookDataFind != null) {
+            Notifier.notifyError("书籍已存在");
+            return false;
+        }
 
         if (StringUtil.isEmpty(extension)) {
             return false;
@@ -441,6 +560,7 @@ public class Book {
         //添加到表格
         tableModel.addRow(bookData2Array(bookData));
         bookTable.setModel(tableModel);
+        setTableButton();
         bookTable.updateUI();
         return true;
     }
@@ -455,36 +575,76 @@ public class Book {
         //章节信息列表
         List<ChapterInfo> characterList = new ArrayList<>();
         List<Integer> indexList = new ArrayList<>();
-        String fileCharset = this.getFileCharset(filePath);
-        List<String> lines = new ArrayList<>();
+        long fileSize = 0;
 
+        //读取路径，并创建read对象
+        BufferedReader read = null;
         try {
             Path path = Paths.get(filePath);
-            lines = Files.readAllLines(path, Charset.forName(fileCharset));
-            for (int i = 0; i < lines.size(); i++) {
-                String line = lines.get(i);
+            fileSize = Files.size(path);
+            // 记录每一行字节大小
+            int lineSize = 0;
+            // 记录已经读取到的字节总大小
+            int totalSize = 0;
+            read = new BufferedReader(new FileReader(filePath));
+            //创建字符串line，指向read.readLine()返回的字符串
+            String line = "";
+            while (true) {
+                try {
+                    if ((line = read.readLine()) == null) break;
+                } catch (IOException e) {
+                    Notifier.notifyError("读取文件失败");
+                }
+                lineSize = line.getBytes().length;
                 Matcher matcher = CHAPTER_PATTERN.matcher(line);
                 if (matcher.find()) {
-                    if (chapterList.contains(line)) {
-                        continue;
+                    if (!chapterList.contains(line)) {
+                        indexList.add(totalSize);
+                        chapterList.add(line);
+                        chapter = line;
                     }
-                    indexList.add(i);
-                    chapterList.add(line);
-                    chapter = line;
                 }
+                //每行有换行符 需要+2
+                totalSize = totalSize + lineSize + 2;
             }
-        } catch (IOException e) {
-            e.printStackTrace();
+        } catch (Exception e) {
+            Notifier.notifyError("读取文件失败");
         }
+
+
+//        try {
+//            Path path = Paths.get(filePath);
+//            fileSize = Files.size(path);
+//            // 记录每一行字节大小
+//            int lineSize = 0;
+//            // 记录已经读取到的字节总大小
+//            int totalSize = 0;
+//            lines = Files.readAllLines(path, Charset.forName(fileCharset));
+//            for (int i = 0; i < lines.size(); i++) {
+//                String line = lines.get(i);
+//                lineSize = line.getBytes().length;
+//                Matcher matcher = CHAPTER_PATTERN.matcher(line);
+//                if (matcher.find()) {
+//                    if (!chapterList.contains(line)) {
+//                        indexList.add(totalSize);
+//                        chapterList.add(line);
+//                        chapter = line;
+//                    }
+//                }
+//                //每行有换行符 需要+2
+//                totalSize = totalSize + lineSize + 2;
+//            }
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
         for (int i = 0; i < indexList.size(); i++) {
             ChapterInfo chapterInfoFirst = new ChapterInfo();
-            Integer index = indexList.get(i);
-            chapterInfoFirst.setChapterName(lines.get(index));
-            chapterInfoFirst.setStartLine(index);
-            if (index + 1 < indexList.size()) {
-                chapterInfoFirst.setEndLine(indexList.get(index + 1));
+            chapterInfoFirst.setChapterName(chapterList.get(i));
+            chapterInfoFirst.setStartLine(indexList.get(i));
+            if (i + 1 < indexList.size()) {
+                chapterInfoFirst.setEndLine(indexList.get(i + 1));
             } else {
-                chapterInfoFirst.setEndLine(lines.size());
+                chapterInfoFirst.setEndLine((int) fileSize);
             }
             characterList.add(chapterInfoFirst);
         }
@@ -492,33 +652,41 @@ public class Book {
     }
 
     public String[] bookData2Array(BookData noteData) {
-        String[] raw = new String[3];
-        raw[0] = noteData.getBookName();
-        raw[1] = noteData.getChapter();
-        raw[2] = noteData.getBookLink();
+        String[] raw = new String[4];
+        raw[0] = "";
+        raw[1] = noteData.getBookName();
+        raw[2] = noteData.getChapter();
+        raw[3] = noteData.getBookLink();
         return raw;
     }
 
-    public void getLinesList(BookData bookDataReading) {
-        Path path = Paths.get(bookDataReading.getBookLink());
-        String fileCharset = getFileCharset(bookDataReading.getBookLink());
-        try {
-            lineList = Files.readAllLines(path, Charset.forName(fileCharset));
-        } catch (IOException e) {
-            Notifier.notifyError("获取章节内容失败");
-        }
-    }
+//    public void getLinesList(BookData bookDataReading) {
+//        Path path = Paths.get(bookDataReading.getBookLink());
+//        String fileCharset = getFileCharset(bookDataReading.getBookLink());
+//        try {
+//            lineList = Files.readAllLines(path, Charset.forName(fileCharset));
+//        } catch (IOException e) {
+//            Notifier.notifyError("获取章节内容失败");
+//        }
+//    }
 
-    public void getChapterContent(ChapterInfo chapterInfo) {
-        List<String> list = lineList.subList(chapterInfo.getStartLine(), chapterInfo.getEndLine());
-        StringBuilder stringBuilder = new StringBuilder();
-        for (String text : list) {
-            stringBuilder.append(text);
-            stringBuilder.append(System.lineSeparator());
-        }
-        chapterContent = stringBuilder.toString();
-        if (chapterContent == null) {
-            Notifier.notifyError("章节内容为空");
+    public void getChapterContent(String filePath, ChapterInfo chapterInfo) {
+        File file = new File(filePath);
+        RandomAccessFile randomAccessFile = null;
+        try {
+//            BufferedReader read = new BufferedReader(new FileReader(filePath));
+//            char[] byteArray = new char[(int) file.length()];
+//            read.read(byteArray, chapterInfo.getStartLine(), chapterInfo.getEndLine());
+            randomAccessFile = new RandomAccessFile(file, "r");
+            byte[] byteArray = new byte[(int) file.length()];
+            randomAccessFile.seek(chapterInfo.getStartLine());
+            randomAccessFile.read(byteArray, chapterInfo.getStartLine(), chapterInfo.getEndLine());
+            chapterContent = new String(byteArray, Charset.forName(getFileCharset(filePath))).trim();
+            if ("".equals(chapterContent)) {
+                Notifier.notifyError("章节内容为空");
+            }
+        } catch (Exception e) {
+            Notifier.notifyError("读取章节内容失败");
         }
     }
 
@@ -581,7 +749,7 @@ public class Book {
             // 清空书本表格
             String chapter = chapterInfo.getChapterName();
             // 内容
-            getChapterContent(chapterInfo);
+            getChapterContent(bookDataReading.getBookLink(), chapterInfo);
             //将当前进度信息加入chunks中
             publish(chapter);
             return null;
@@ -595,7 +763,7 @@ public class Book {
             // 设置下拉框的值
             chapterList.setSelectedItem(chapter);
             // 回到顶部
-            textContent.setCaretPosition(1);
+            textContent.setCaretPosition(0);
         }
 
         @Override
@@ -605,3 +773,39 @@ public class Book {
         }
     }
 }
+
+
+class TableCellRendererButton implements TableCellRenderer {
+
+
+    @Override
+    public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus,
+                                                   int row, int column) {
+        JButton button = new JButton("openBook");
+        return button;
+    }
+
+}
+
+class TableCellEditorButton extends DefaultCellEditor {
+
+    private JButton btn;
+
+    public TableCellEditorButton(ActionListener actionListener) {
+        super(new JTextField());
+        //设置点击一次就激活，否则默认好像是点击2次激活。
+        this.setClickCountToStart(1);
+        btn = new JButton("openBook");
+        btn.addActionListener(actionListener);
+    }
+
+    @Override
+    public Component getTableCellEditorComponent(JTable table, Object value, boolean isSelected, int row, int column) {
+
+        return btn;
+    }
+
+
+}
+
+

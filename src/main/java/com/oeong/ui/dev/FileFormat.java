@@ -1,7 +1,6 @@
 package com.oeong.ui.dev;
 
 import com.intellij.json.JsonLanguage;
-import com.intellij.lang.Language;
 import com.intellij.lang.html.HTMLLanguage;
 import com.intellij.lang.xml.XMLLanguage;
 import com.intellij.openapi.actionSystem.*;
@@ -15,12 +14,12 @@ import com.intellij.openapi.project.Project;
 import com.intellij.ui.EditorSettingsProvider;
 import com.intellij.ui.EditorTextField;
 import com.intellij.ui.LanguageTextField;
-import com.intellij.ui.components.JBTextArea;
 import com.oeong.notice.Notifier;
 import lombok.Getter;
 import org.jdesktop.swingx.JXRadioGroup;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.jetbrains.yaml.YAMLLanguage;
 
 import javax.swing.*;
 import java.awt.*;
@@ -63,7 +62,6 @@ public class FileFormat {
     private String radioSelected = "";
 
     public FileFormat(Project project) {
-        inputArea = new JBTextArea();
         inputArea.setLineWrap(true);
         inputArea.setWrapStyleWord(true);
         inputPanel.setViewportView(inputArea);
@@ -103,7 +101,7 @@ public class FileFormat {
     }
 
     public static void yamlTool(String text) {
-        resultArea = new LanguageTextField(Language.findLanguageByID("yaml"), project, text, false);
+        resultArea = new LanguageTextField(YAMLLanguage.INSTANCE, project, text, false);
     }
 
     public static void jsonTool(String text) {
