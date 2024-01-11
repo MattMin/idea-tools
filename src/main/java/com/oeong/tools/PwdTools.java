@@ -1,7 +1,7 @@
 package com.oeong.tools;
 
+import com.intellij.openapi.util.text.StringUtil;
 import com.oeong.ui.RandomPwdUI;
-import org.jsoup.internal.StringUtil;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -25,9 +25,9 @@ public class PwdTools {
             assert wordsFile != null;
             var in = new BufferedReader(new InputStreamReader(wordsFile.openStream()));
             String line = in.readLine();
-            while(line!=null && !StringUtil.isBlank(line=line.trim())){
+            while (line != null && !StringUtil.isEmpty(line = line.trim())) {
                 words.add(line);
-                line=in.readLine();
+                line = in.readLine();
             }
             words.add(line);
         } catch (IOException e) {

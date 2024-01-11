@@ -1,5 +1,6 @@
 package com.oeong.ui.dev;
 
+import com.intellij.openapi.Disposable;
 import com.intellij.openapi.ide.CopyPasteManager;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.Key;
@@ -22,11 +23,11 @@ import static com.oeong.ui.dev.ClipboardComponent.COPY_FLAG;
  * @date: 2023/11/22 9:36
  */
 public class MyClipboard {
+    public static final Key<Object> LAST_SELECTED_TEXT = Key.create("lastSelectedText");
     @Getter
     private JPanel container;
     private Project project;
     private boolean clipboardSelected = false;
-    public static final Key<Object> LAST_SELECTED_TEXT = Key.create("lastSelectedText");
 
     public MyClipboard(Project project) {
         this.project = project;
@@ -126,6 +127,11 @@ public class MyClipboard {
                 ClipboardComponent copy = new ClipboardComponent(doc.html(), true, project);
                 clipboardGroupComponent.add(copy);
                 project.putUserData(LAST_SELECTED_TEXT, text);
+            }
+        }, new Disposable() {
+            @Override
+            public void dispose() {
+
             }
         });
     }
